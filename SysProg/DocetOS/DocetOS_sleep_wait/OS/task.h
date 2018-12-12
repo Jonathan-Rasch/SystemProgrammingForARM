@@ -31,15 +31,16 @@ typedef struct {
 	/* Task stack pointer.  It's important that this is the first entry in the structure,
 	   so that a simple double-dereference of a TCB pointer yields a stack pointer. */
 	void * volatile sp;
-	/* This field is intended to describe the state of the thread - whether it's yielding,
-	   runnable, or whatever.  Only one bit of this field is currently defined (see the #define
-	   below), so you can use the remaining 31 bits for anything you like. */
+	/* STATE
+		 This field is intended to describe the state of the thread - whether it's yielding,
+	   runnable, or whatever.
+		 
+		 state[0] YIELD flag, if set scheduler will give controll to other task next time it is invoked
+	*/
 	uint32_t volatile state;
-	/* The remaining fields are provided for expandability.  None of them have a dedicated
-	   purpose, but their names might imply a use.  Feel free to use these fields for anything
-	   you like. */
-	uint32_t volatile priority;
-	uint32_t volatile data;
+	
+	uint32_t volatile priority;		// NOT USED ATM
+	uint32_t volatile data;				// NOT USED ATM
 } OS_TCB_t;
 
 /* Constants that define bits in a thread's 'state' field. */
