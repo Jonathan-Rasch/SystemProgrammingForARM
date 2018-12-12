@@ -12,3 +12,4 @@
 
 //static functions, only visible to same translation unit
 static OS_TCB_t const * patientPreemptivePriorityScheduler(void);
+
