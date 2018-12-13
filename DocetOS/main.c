@@ -1,15 +1,16 @@
 #include "os.h"
+#include "../utils/heap.h"
 #include <stdio.h>
 #include "utils/serial.h"
 #include "simpleRoundRobin.h"
 
 void task1(void const *const args) {
-	while (1) {
+	while (0) {
 		printf("Message from Task 1\r\n");
 	}
 }
 void task2(void const *const args) {
-	while (1) {
+	while (0) {
 		printf("Message from Task 2\r\n");
 	}
 }
@@ -27,7 +28,13 @@ int main(void) {
 	__align(8)
 	static uint32_t stack1[64], stack2[64];
 	static OS_TCB_t TCB1, TCB2;
-
+	
+	minHeap heap;
+	minHeapNode node_array[64];
+	initHeap(node_array,&heap,64);
+	for(int i=0;i<64;i++){
+		printf("node %d:\n\t %d %p \r\n",i,heap.ptrToUnderlyingArray[i].nodeValue,heap.ptrToUnderlyingArray);
+	}
 	/* Initialise the TCBs using the two functions above */
 	OS_initialiseTCB(&TCB1, stack1+64, task1, 0);
 	OS_initialiseTCB(&TCB2, stack2+64, task2, 0);

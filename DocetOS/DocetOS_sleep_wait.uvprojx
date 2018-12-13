@@ -426,7 +426,25 @@
         </Group>
         <Group>
           <GroupName>Debug</GroupName>
+        </Group>
+        <Group>
+          <GroupName>utils</GroupName>
           <Files>
+            <File>
+              <FileName>heap.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\utils\heap.c</FilePath>
+            </File>
+            <File>
+              <FileName>retarget.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\utils\retarget.c</FilePath>
+            </File>
+            <File>
+              <FileName>serial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\utils\serial.c</FilePath>
+            </File>
             <File>
               <FileName>hardfault.c</FileName>
               <FileType>1</FileType>
