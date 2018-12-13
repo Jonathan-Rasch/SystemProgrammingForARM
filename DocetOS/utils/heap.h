@@ -27,5 +27,5 @@ typedef struct __s_heap{
 // Exported Functions
 //=============================================================================
 void initHeap(minHeapNode * node_Array, minHeap * heap_struct, int max_number_of_heap_nodes);
-
+uint32_t addNode(minHeap * heap_to_operate_on, void * const element_to_add, const uint32_t value_to_order_by);
 #endif //DOCETOS_HEAP_H

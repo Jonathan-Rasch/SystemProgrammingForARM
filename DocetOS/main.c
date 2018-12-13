@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "utils/serial.h"
 #include "simpleRoundRobin.h"
-
+#include <stdlib.h>
 void task1(void const *const args) {
 	while (0) {
 		printf("Message from Task 1\r\n");
@@ -32,6 +32,14 @@ int main(void) {
 	minHeap heap;
 	minHeapNode node_array[64];
 	initHeap(node_array,&heap,64);
+	for(int i=0;i<64;i++){
+		printf("node %d:\n\t %d %p \r\n",i,heap.ptrToUnderlyingArray[i].nodeValue,heap.ptrToUnderlyingArray);
+	}
+	srand(1231412);
+	for(int i=64;i>0;i--){
+		addNode(&heap,stack1,rand());
+		printf("empty ptr: %p\r\n",heap.nextEmptyElement);
+	}
 	for(int i=0;i<64;i++){
 		printf("node %d:\n\t %d %p \r\n",i,heap.ptrToUnderlyingArray[i].nodeValue,heap.ptrToUnderlyingArray);
 	}

@@ -1,94 +1,0 @@
-Dependencies for Project 'DocetOS_sleep_wait', Target 'STM32F407 Flash': (DO NOT MODIFY !)
-F (.\utils\retarget.c)(0x5C0FA2DB)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I .\OS --c99-I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F407xx -DSTM32F4XX -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o .\flash\retarget_1.o --omf_browse .\flash\retarget_1.crf --depend .\flash\retarget_1.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599F4BBC)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\core_cm4.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F4BBE)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_version.h)(0x5B1FAF14)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_compiler.h)(0x5B58B446)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_armcc.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\mpu_armv7.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h)(0x5A9003E4)
-F (.\utils\serial.c)(0x5C0FA2DB)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I .\OS --c99-I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F407xx -DSTM32F4XX -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o .\flash\serial_1.o --omf_browse .\flash\serial_1.crf --depend .\flash\serial_1.d)
-I (utils\serial.h)(0x5C0FA2DB)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\core_cm4.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F4BBE)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_version.h)(0x5B1FAF14)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_compiler.h)(0x5B58B446)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_armcc.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\mpu_armv7.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h)(0x5A9003E4)
-F (.\main.c)(0x5C1256E0)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I .\OS --c99-I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F407xx -DSTM32F4XX -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o .\flash\main.o --omf_browse .\flash\main.crf --depend .\flash\main.d)
-I (.\OS\os.h)(0x5C0FA2DB)
-I (.\OS\task.h)(0x5C0FA2DB)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F4BBE)
-I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x599F4BBC)
-I (.\OS\../utils/heap.h)(0x5C1259D5)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599F4BBC)
-I (utils/serial.h)(0x5C0FA2DB)
-I (simpleRoundRobin.h)(0x5C0FA2DB)
-F (.\simpleRoundRobin.c)(0x5C0FA2DB)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I .\OS --c99-I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F407xx -DSTM32F4XX -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o .\flash\simpleroundrobin.o --omf_browse .\flash\simpleroundrobin.crf --depend .\flash\simpleroundrobin.d)
-I (simpleRoundRobin.h)(0x5C0FA2DB)
-I (.\OS\os.h)(0x5C0FA2DB)
-I (.\OS\task.h)(0x5C0FA2DB)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F4BBE)
-I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x599F4BBC)
-F (.\OS\os_asm.s)(0x5C0FA2DB)(--cpu Cortex-M4.fp -g --apcs=interwork -I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include--pd "__UVISION_VERSION SETA 526" --pd "_RTE_ SETA 1" --pd "STM32F407xx SETA 1"--list .\flash\os_asm.lst --xref -o .\flash\os_asm.o --depend .\flash\os_asm.d)
-F (.\OS\os.c)(0x5C0FA2DB)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I .\OS --c99-I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F407xx -DSTM32F4XX -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o .\flash\os.o --omf_browse .\flash\os.crf --depend .\flash\os.d)
-I (OS\os.h)(0x5C0FA2DB)
-I (OS\task.h)(0x5C0FA2DB)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F4BBE)
-I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x599F4BBC)
-I (OS\os_internal.h)(0x5C0FA2DB)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\core_cm4.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_version.h)(0x5B1FAF14)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_compiler.h)(0x5B58B446)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_armcc.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\mpu_armv7.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599F4BBC)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599F4BBC)
-F (.\utils\heap.c)(0x5C1259D5)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I .\OS --c99-I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F407xx -DSTM32F4XX -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o .\flash\heap.o --omf_browse .\flash\heap.crf --depend .\flash\heap.d)
-I (utils\heap.h)(0x5C1259D5)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599F4BBC)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F4BBE)
-F (.\utils\retarget.c)(0x5C0FA2DB)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I .\OS --c99-I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F407xx -DSTM32F4XX -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o .\flash\retarget_1.o --omf_browse .\flash\retarget_1.crf --depend .\flash\retarget_1.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599F4BBC)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\core_cm4.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F4BBE)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_version.h)(0x5B1FAF14)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_compiler.h)(0x5B58B446)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_armcc.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\mpu_armv7.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h)(0x5A9003E4)
-F (.\utils\serial.c)(0x5C0FA2DB)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I .\OS --c99-I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F407xx -DSTM32F4XX -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o .\flash\serial_1.o --omf_browse .\flash\serial_1.crf --depend .\flash\serial_1.d)
-I (utils\serial.h)(0x5C0FA2DB)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\core_cm4.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F4BBE)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_version.h)(0x5B1FAF14)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_compiler.h)(0x5B58B446)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_armcc.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\mpu_armv7.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h)(0x5A9003E4)
-F (.\utils\hardfault.c)(0x5C0FA2DB)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I .\OS --c99-I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F407xx -DSTM32F4XX -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o .\flash\hardfault.o --omf_browse .\flash\hardfault.crf --depend .\flash\hardfault.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F4BBE)
-F (RTE\Device\STM32F407VG\startup_stm32f407xx.s)(0x5C0FA2DB)(--cpu Cortex-M4.fp -g --apcs=interwork -I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include--pd "__UVISION_VERSION SETA 526" --pd "_RTE_ SETA 1" --pd "STM32F407xx SETA 1"--list .\flash\startup_stm32f407xx.lst --xref -o .\flash\startup_stm32f407xx.o --depend .\flash\startup_stm32f407xx.d)
-F (RTE\Device\STM32F407VG\system_stm32f4xx.c)(0x5C0FA2DB)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I .\OS --c99-I.\RTE\_STM32F407_Flash-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F407xx -DSTM32F4XX -DHSE_VALUE="8000000" -DPLL_M="8" -DPLL_N="336" -DPLL_P="2" -DPLL_Q="7"-o .\flash\system_stm32f4xx.o --omf_browse .\flash\system_stm32f4xx.crf --depend .\flash\system_stm32f4xx.d)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h)(0x5A9003E4)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\core_cm4.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F4BBE)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_version.h)(0x5B1FAF14)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_compiler.h)(0x5B58B446)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_armcc.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\mpu_armv7.h)(0x5B61E104)
-I (C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h)(0x5A9003E4)
