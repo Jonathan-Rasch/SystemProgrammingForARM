@@ -1,8 +1,8 @@
 #include "heap.h"
 
-//=============================================================================
+//================================================================================
 // Internal function prototypes
-//=============================================================================
+//================================================================================
 static uint32_t _getFirstChildIndex(uint32_t node_index_zero_based);
 static uint32_t _getSecondChildIndex(uint32_t node_index_zero_based);
 static void * _getPointerToItemAtIndex(uint32_t node_index_zero_based);
