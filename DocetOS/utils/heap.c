@@ -3,6 +3,7 @@
 //================================================================================
 // Internal Function Prototypes
 //================================================================================
+static void __printHeap(minHeap * heap);
 static uint32_t __getFirstChildIndex(uint32_t node_index_zero_based);
 static uint32_t __getSecondChildIndex(uint32_t node_index_zero_based);
 static uint32_t __getParentIndex(uint32_t node_index_zero_based);
@@ -49,9 +50,7 @@ uint32_t addNode(minHeap * heap_to_operate_on, void * const element_to_add, cons
 	if (heap_to_operate_on->lastArrayElement < heap_to_operate_on->nextEmptyElement){
 		
 		printf("INFO: [utils/heap.c addNode(...)]\nAttempt to add node to minHeap that is full, returning 0.\r\n");
-		#ifdef DEBUG_V
-		ASSERT(0);
-		#endif /*DEBUG_V*/
+		__printHeap(heap_to_operate_on); //DEBUG
 		return 0; // cant add node, no space
 	}
 	// 
@@ -59,9 +58,11 @@ uint32_t addNode(minHeap * heap_to_operate_on, void * const element_to_add, cons
 	node->ptrToNodeContent = element_to_add;
 	node->nodeValue = value_to_order_by;
 	/* restoring heap property */
+	printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 	//gives index because of "C Standard (6.5.6 Additive operators)"
 	uint32_t currentNodeIndex = heap_to_operate_on->nextEmptyElement - heap_to_operate_on->ptrToUnderlyingArray;
 	while(currentNodeIndex){
+		__printHeap(heap_to_operate_on); //DEBUG
 		uint32_t parentNodeIndex = __getParentIndex(currentNodeIndex);
 		minHeapNode * parentNode = __getPointerToItemAtIndex(heap_to_operate_on,parentNodeIndex);
 		// compare and swap
@@ -70,6 +71,8 @@ uint32_t addNode(minHeap * heap_to_operate_on, void * const element_to_add, cons
 			minHeapNode tempNode = *node;
 			tempNodeArray[currentNodeIndex] = tempNodeArray[parentNodeIndex];
 			tempNodeArray[parentNodeIndex] = tempNode;
+			currentNodeIndex = parentNodeIndex;//current node index is now index of previous parent (they swapped)
+			node = &tempNodeArray[currentNodeIndex];// updating ref to current node
 			continue; // child node is now at position of previous parent, repeat this procedure
 		}else{
 			break; // heap property restored
@@ -77,6 +80,8 @@ uint32_t addNode(minHeap * heap_to_operate_on, void * const element_to_add, cons
 	}
 	/* updating empty element pointer */
 	heap_to_operate_on->nextEmptyElement++;
+	printf("\n*** FINAL STATE ***\n");
+	__printHeap(heap_to_operate_on); //DEBUG
 	return 1;
 }
 
@@ -132,4 +137,37 @@ static minHeapNode * __getPointerToItemAtIndex(minHeap * heap, uint32_t node_ind
 	}
 	/* get pointer:*/
 	return &(heap->ptrToUnderlyingArray[node_index_zero_based]);
+}
+
+/*Debug function to print heap content and information*/
+static void __printHeap(minHeap * heap){
+	printf("----------------------------------------------------------------------------------------------------------------------------------\r\n");
+	printf("GENERAL INFO:\ncapacity:\t\t\t\t%d\nptr_to_underlying_array:\t%p\n",heap->maxNumberOfNodes,heap->ptrToUnderlyingArray);
+	printf("ptr_next_empty_elem:\t\t%p\nptr_last_elem:\t\t\t%p\n",heap->nextEmptyElement,heap->lastArrayElement);
+	printf("\nHEAP CONTENTS:\r\n");
+	printf("%-20s%-20s%-20s%-20s%-20s%-20s\r\n","[STATUS]","[INDEX]","[RELATION]","[NODE_VALUE]","[NODE_PTR]","[PARENT_PTR]");
+	//zero node
+	minHeapNode * zero_node = heap->ptrToUnderlyingArray;
+	if(heap->ptrToUnderlyingArray == heap->nextEmptyElement){
+		printf("%-20s%-20d%-20s%-20d%-20p%-20s\r\n","-WPtr->",0,"N/A",zero_node->nodeValue,zero_node,"N/A");
+	}else{
+		printf("%-20s%-20d%-20s%-20d%-20p%-20s\r\n","",0,"N/A",zero_node->nodeValue,zero_node,"N/A");
+	}
+	//all other nodes
+	for(int i=1;i<heap->maxNumberOfNodes;i++){
+		int parentIdx = __getParentIndex(i);
+		int childNum = (i % 2) ? 0:1;
+		minHeapNode * node = __getPointerToItemAtIndex(heap,i);
+		minHeapNode * parentNode = __getPointerToItemAtIndex(heap,parentIdx);
+		char relation[64];
+		sprintf(relation,"%d.%d",parentIdx,childNum);
+		if(node < heap->nextEmptyElement){
+			printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","",i,relation,node->nodeValue,node,parentNode);
+		}else if (node == heap->nextEmptyElement){
+			printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","-WPtr->",i,relation,node->nodeValue,node,parentNode);
+		}else{
+			printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","[UNUSED]",i,relation,node->nodeValue,node,parentNode);
+		}
+	}
+	printf("----------------------------------------------------------------------------------------------------------------------------------\n\r\n");
 }

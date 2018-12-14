@@ -30,18 +30,11 @@ int main(void) {
 	static OS_TCB_t TCB1, TCB2;
 	
 	minHeap heap;
-	minHeapNode node_array[64];
-	initHeap(node_array,&heap,64);
-	for(int i=0;i<64;i++){
-		printf("node %d:\n\t %d %p \r\n",i,heap.ptrToUnderlyingArray[i].nodeValue,heap.ptrToUnderlyingArray);
-	}
+	minHeapNode node_array[5];
+	initHeap(node_array,&heap,5);
 	srand(1231412);
-	for(int i=64;i>0;i--){
-		addNode(&heap,stack1,rand());
-		printf("empty ptr: %p\r\n",heap.nextEmptyElement);
-	}
-	for(int i=0;i<64;i++){
-		printf("node %d:\n\t %d %p \r\n",i,heap.ptrToUnderlyingArray[i].nodeValue,heap.ptrToUnderlyingArray);
+	for(int i=25;i>7;i--){
+		addNode(&heap,stack1,rand() % 100);
 	}
 	/* Initialise the TCBs using the two functions above */
 	OS_initialiseTCB(&TCB1, stack1+64, task1, 0);
