@@ -29,51 +29,6 @@ int main(void) {
 	static uint32_t stack1[64], stack2[64];
 	static OS_TCB_t TCB1, TCB2;
 	
-	/* HEAP TESTING*/
-	minHeap heap;
-	minHeapNode node_array[8];
-	initHeap(node_array,&heap,8);
-	srand(1231412);
-	//testing add node
-	for(int i=10;i>0;i--){
-		stack1[i] = rand() % 20;
-		int status_code = addNode(&heap,&stack1[i],stack1[i]);
-		if(status_code){
-			printf("ADDED: %d\r\n",stack1[i]);
-		}else{
-			printf("HEAP FULL, NOTHING ADDED\r\n");
-		}
-	}
-	//testing remove node
-	for(int i=10;i>0;i--){
-		uint32_t * returned_val;
-		int status_code = removeNode(&heap,(void *)&returned_val);
-		if(status_code){
-			printf("REMOVED: %d\r\n",*returned_val);
-		}else{
-			printf("HEAP EMPTY, NOTHING REMOVED\r\n");
-		}
-	}
-	//testing add and remove node
-	for(int i=3;i>0;i--){
-		stack1[i] = rand() % 20;
-		int status_code = addNode(&heap,&stack1[i],stack1[i]);
-		if(status_code){
-			printf("ADDED: %d\r\n",stack1[i]);
-		}else{
-			printf("HEAP FULL, NOTHING ADDED\r\n");
-		}
-	}
-	for(int i=4;i>0;i--){
-		uint32_t * returned_val;
-		int status_code = removeNode(&heap,(void *)&returned_val);
-		if(status_code){
-			printf("REMOVED: %d\r\n",*returned_val);
-		}else{
-			printf("HEAP EMPTY, NOTHING REMOVED\r\n");
-		}
-	}
-	
 	/* Initialise the TCBs using the two functions above */
 	OS_initialiseTCB(&TCB1, stack1+64, task1, 0);
 	OS_initialiseTCB(&TCB2, stack2+64, task2, 0);
