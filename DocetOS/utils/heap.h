@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include "debug.h"
+
 #define MAX_HEAP_SIZE 63 // 2^N - 1 , where n is the number of desired levels in binary tree
 
 typedef struct __s_node{
