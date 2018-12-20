@@ -17,6 +17,8 @@
     IMPORT _svc_OS_task_exit
     IMPORT _svc_OS_yield
     IMPORT _svc_OS_schedule
+	IMPORT _svc_OS_wait
+	IMPORT _svc_OS_notify
     
 SVC_Handler
     ; Link register contains special 'exit handler mode' code
@@ -46,6 +48,8 @@ SVC_tableStart
     DCD _svc_OS_task_exit
     DCD _svc_OS_yield
     DCD _svc_OS_schedule
+	DCD _svc_OS_wait
+	DCD _svc_OS_notify
 SVC_tableEnd
 
     ALIGN

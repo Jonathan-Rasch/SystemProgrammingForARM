@@ -56,6 +56,8 @@ void OS_init(OS_Scheduler_t const * scheduler) {
 	ASSERT(_scheduler->scheduler_callback);
 	ASSERT(_scheduler->addtask_callback);
 	ASSERT(_scheduler->taskexit_callback);
+	ASSERT(_scheduler->wait_callback);
+	ASSERT(_scheduler->notify_callback);
 }
 
 /* Starts the OS and never returns. */
@@ -98,6 +100,49 @@ void _svc_OS_enable_systick(void) {
 		SysTick_Config(SystemCoreClock / 1000);
 		NVIC_SetPriority(SysTick_IRQn, 0x10);
 	}
+}
+
+/*ME: quick overview of how software interrupt works (as reminder for myself)
+
+1) task calls svc delegate defined in os.h
+		e.g "void __svc(OS_SVC_WAIT) OS_wait(void * reason)", where OS_SVC_WAIT is a constant used to identify the appropriate handler later on
+
+2) if CMSIS compiler sees __svc(CODE) it:
+		2.1) pushes to corresponding stack (Main stack pointer (MSP) for handler / process stack pointer (PSP) for thread mode code)
+		-> it pushes arguments of the function into r0-r3 (in this case r0 = reason)
+		-> pushes r12 (Intra Procedure call scratch Register) running ocde might be using it as temporary storage !
+		-> pushes link-register (LR) (task might be executing some function, when the interrupt handler returns we want to know where that function was meant to return to !)
+		-> pushes programm-counter (PC) (after returning from interrupt we want to know what instruction to continue at)
+		-> pushes programm-status-register (PSR) (contains information such as priviledge level, by poping it back later we restor it)
+NOTE: this is all esentially because the current task "called" the interrupt and needs to follow the calling conventions, ie preserving r0-r3,r12. the interrupt handler must then ensure
+			to preserve r4-r11,LR and SP
+
+		2.2) a special code is loaded into the LR which indicates what stack the code was using (MSP/PSP) before the interrupt occured, it also causes the registers that were
+			pushed to the stacked due to the interrupt to be poped again once the interrupt handler is done and branches back.
+		2.3) MSP is selected, CPU enters priviledged mode and executes SVC_Handler (in os_asm)
+
+3) SVC_Handler begins:
+		-> determines what stack was in use by using bit at index 2 in the special code now stored in LR
+		-> loads that stack pointer into r0 
+		-> goes back through stack to obtain code that SVC was called with
+		-> looks in SVC_table for the given code, if code exists it branches to the corresponding handler function in os.c (if not it branches back to line after svc was called,
+				unstacking registers to restore state in the process)
+		
+4) handler function is now running in priviledged mode and can call the relevant callback. at this point r0 still contains the stack pointer (points at ), so if the handler has an argument
+	we are able to access this value. from this we can then access the rest of the stack too (r0 points at first stacked element (Full descending stack)).
+
+*/
+
+/* SVC handler for OS_wait()*/
+void _svc_OS_wait(_OS_SVC_StackFrame_t const * const stack){
+	void * reason = (void *)stack->r0; 
+	_scheduler->wait_callback(reason);
+}
+
+/* SVC handler for OS_notify()*/
+void _svc_OS_notify(_OS_SVC_StackFrame_t const * const stack){
+	void * reason = (void *)stack->r0;
+	_scheduler->notify_callback(reason);
 }
 
 /* SVC handler to add a task.  Invokes a callback to do the work. */

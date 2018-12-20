@@ -16,6 +16,8 @@
 static OS_TCB_t const * simpleRoundRobin_scheduler(void);
 static void simpleRoundRobin_addTask(OS_TCB_t * const tcb);
 static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb);
+static void simpleRoundRobin_wait(void * const reason);
+static void simpleRoundRobin_notify(void * const reason);
 
 static OS_TCB_t * tasks[SIMPLE_RR_MAX_TASKS] = {0};
 
@@ -24,7 +26,9 @@ OS_Scheduler_t const simpleRoundRobinScheduler = {
 	.preemptive = 1,
 	.scheduler_callback = simpleRoundRobin_scheduler,
 	.addtask_callback = simpleRoundRobin_addTask,
-	.taskexit_callback = simpleRoundRobin_taskExit
+	.taskexit_callback = simpleRoundRobin_taskExit,
+	.wait_callback = simpleRoundRobin_wait,
+	.notify_callback = simpleRoundRobin_notify
 };
 
 
@@ -35,19 +39,26 @@ static OS_TCB_t const * simpleRoundRobin_scheduler(void) {
 	OS_currentTCB()->state &= ~TASK_STATE_YIELD;
 	for (int j = 1; j <= SIMPLE_RR_MAX_TASKS; j++) {
 		i = (i + 1) % SIMPLE_RR_MAX_TASKS;
-		if((tasks[i]->state & TASK_STATE_SLEEP)){
-			//Task is asleep, check if it should wake up
-			int timeElapsedSinceSleep = ((int)OS_elapsedTicks() - (int)tasks[i]->data2);
-			int requestedSleepDuration = (int)tasks[i]->data;
-			if((requestedSleepDuration - timeElapsedSinceSleep) <= 0){
-				//wake task up
-				tasks[i]->state &= ~(TASK_STATE_SLEEP); // unset sleep flag
-			}else{
-				//still asleep
+		// check if task is valid (pointer not NULL)
+		if (tasks[i] != 0) {
+			//check if task is sleepping, wake up if needed, or move to next task
+			if((tasks[i]->state & TASK_STATE_SLEEP)){
+				//Task is asleep, check if it should wake up
+				int timeElapsedSinceSleep = ((int)OS_elapsedTicks() - (int)tasks[i]->data2);
+				int requestedSleepDuration = (int)tasks[i]->data;
+				if((requestedSleepDuration - timeElapsedSinceSleep) <= 0){
+					//wake task up
+					tasks[i]->state &= ~(TASK_STATE_SLEEP); // unset sleep flag
+				}else{
+					//still asleep
+					continue;
+				}
+			}
+			//check if task is waiting, if yes, skip
+			if(tasks[i]->state & TASK_STATE_WAIT){
 				continue;
 			}
-		}
-		if (tasks[i] != 0) {
+			//all ok, return task
 			return tasks[i];
 		}
 	}
@@ -74,4 +85,24 @@ static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb) {
 			tasks[i] = 0;
 		}
 	}	
+}
+
+static void simpleRoundRobin_wait(void * const reason){
+	OS_TCB_t * currentTCB = OS_currentTCB();
+	currentTCB->state |= TASK_STATE_WAIT;
+	currentTCB->data = (uint32_t)reason; //reason for waiting
+	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+}
+
+static void simpleRoundRobin_notify(void * const reason){
+	for (int i=0;i<SIMPLE_RR_MAX_TASKS;i++){
+		OS_TCB_t * selectedTCB = tasks[i];
+		if (selectedTCB == 0){
+			continue;
+		}
+		if(selectedTCB->state & TASK_STATE_WAIT && selectedTCB->data == (uint32_t)reason){
+			selectedTCB->state &= ~(TASK_STATE_WAIT);
+			selectedTCB->data = NULL;
+		}
+	}
 }

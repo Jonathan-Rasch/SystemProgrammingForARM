@@ -14,7 +14,9 @@ enum OS_SVC_e {
 	OS_SVC_ADD_TASK,
 	OS_SVC_EXIT,
 	OS_SVC_YIELD,
-	OS_SVC_SCHEDULE
+	OS_SVC_SCHEDULE,
+	OS_SVC_WAIT,
+	OS_SVC_NOTIFY
 };
 
 /* A structure to hold callbacks for a scheduler, plus a 'preemptive' flag */
@@ -23,6 +25,8 @@ typedef struct {
 	OS_TCB_t const * (* scheduler_callback)(void);//ME:called by SysTick or when task yields
 	void (* addtask_callback)(OS_TCB_t * const newTask);//ME:called by user...to add task to scheduler
 	void (* taskexit_callback)(OS_TCB_t * const task);//ME:called automatically on task func return. DO NOT CALL MANUALLY
+	void (* wait_callback)(void * const reason);
+	void (* notify_callback)(void * const reason);
 	void(*initialize)(void);//ME:needed for my scheduler to set up underlying heap
 } OS_Scheduler_t;
 
@@ -62,6 +66,12 @@ void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func
 
 /* SVC delegate to add a task */
 void __svc(OS_SVC_ADD_TASK) OS_addTask(OS_TCB_t const * const);
+
+/* SVC delegate to allow task to wait for resource*/
+void __svc(OS_SVC_WAIT) OS_wait(void * reason);
+
+/* SVC delegate to allow task to notify that a resource has been released*/
+void __svc(OS_SVC_NOTIFY) OS_notify(void * reason);
 
 /************************/
 /* Scheduling functions */

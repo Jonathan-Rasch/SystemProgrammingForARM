@@ -2,6 +2,7 @@
 #define __simpleRoundRobin_h__
 
 #include "os.h"
+#include "stm32f4xx.h"
 
 // How many tasks can this scheduler cope with?
 #define SIMPLE_RR_MAX_TASKS 8
