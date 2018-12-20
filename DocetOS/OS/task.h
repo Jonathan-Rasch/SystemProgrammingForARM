@@ -40,9 +40,11 @@ typedef struct {
 	   you like. */
 	uint32_t volatile priority;
 	uint32_t volatile data;
+	uint32_t volatile data2;
 } OS_TCB_t;
 
 /* Constants that define bits in a thread's 'state' field. */
 #define TASK_STATE_YIELD    (1UL << 0) // Bit zero is the 'yield' flag
+#define TASK_STATE_SLEEP		(1UL << 1) // sleep flag
 
 #endif /* _TASK_H_ */

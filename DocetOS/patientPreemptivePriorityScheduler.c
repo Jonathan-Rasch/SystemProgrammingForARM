@@ -32,7 +32,7 @@ OS_Scheduler_t const patientPreemptiveScheduler = {
 };
 
 static void initialize_scheduler(void){
-    initHeap(nodeArray,&heapStruct, sizeof(nodeArray)); //TODO check if correct size is passed down here
+    //initHeap(nodeArray,&heapStruct, sizeof(nodeArray)); //TODO check if correct size is passed down here
 }
 
 static OS_TCB_t const * patientPreemptivePriority_scheduler(void){

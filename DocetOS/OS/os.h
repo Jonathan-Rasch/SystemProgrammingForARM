@@ -2,6 +2,7 @@
 #define _OS_H_
 
 #include "task.h"
+
 /********************/
 /* Type definitions */
 /********************/

@@ -432,6 +432,16 @@
               <FileType>1</FileType>
               <FilePath>.\OS\os.c</FilePath>
             </File>
+            <File>
+              <FileName>sleep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\sleep.c</FilePath>
+            </File>
+            <File>
+              <FileName>sleep.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\sleep.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
