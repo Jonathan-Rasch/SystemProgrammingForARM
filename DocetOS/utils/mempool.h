@@ -1,0 +1,5 @@
+#ifndef DOCETOS_MEMPOOL_H
+#define DOCETOS_MEMPOOL_H
+
+
+#endif //DOCETOS_MEMPOOL_H

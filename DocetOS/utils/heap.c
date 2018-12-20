@@ -14,7 +14,7 @@ static minHeapNode * __getPointerToItemAtIndex(minHeap * heap, uint32_t node_ind
 //================================================================================
 
 /* Function that initialises a minHeap:
--> sets all node element content pointers to NULL 
+-> sets all node element content pointers to NULL
 -> sets the priority/value of each node to UINT32_MAX. Note that this is the lowest priority since
 the heap os a MIN_HEAP, meaning tha t the element with the lowest value is on top. Setting the value to
 the minimum ensures that empty nodes are never the parent of nodes that actyally point to something
@@ -29,7 +29,10 @@ void initHeap(minHeapNode * node_Array, minHeap * heap_struct, int max_number_of
 	heap_struct->maxNumberOfNodes = max_number_of_heap_nodes; 
 	heap_struct->nextEmptyElement = node_Array; //at first the first free heap node is the topmost node
 	heap_struct->lastArrayElement = node_Array + (max_number_of_heap_nodes-1); // points to last node in heap
+	heap_struct->currentNumNodes = 0;
 	for (uint32_t i = 0;i<max_number_of_heap_nodes;i++){
+		/*this is not really needed since the value of a node beyond write_ptr-1 is irrelevant,
+		 * but this makes it easier to see what is going on when printing out heap content*/
 			heap_struct->ptrToUnderlyingArray[i].ptrToNodeContent = NULL;
 			heap_struct->ptrToUnderlyingArray[i].nodeValue = UINT32_MAX;
 	};
@@ -87,6 +90,7 @@ uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _
 	}
 	/* updating empty element pointer */
 	_heap->nextEmptyElement++;
+	_heap->currentNumNodes = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
 	#ifdef HEAP_DEBUG
 	printf("\r\n*** FINAL STATE ***\r\n");
 	printHeap(_heap);
@@ -167,7 +171,8 @@ uint32_t removeNode(minHeap * _heap, void * * _return_content){
 	#ifdef HEAP_DEBUG
 	printf("*** FINAL STATE ***\r\n");
 	printHeap(_heap);
-	#endif /*HEAP_DEBUG*/
+    #endif /*HEAP_DEBUG*/
+	_heap->currentNumNodes = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
 	*_return_content = nodeToReturn.ptrToNodeContent;
 	return 1;
 }
@@ -230,10 +235,10 @@ Example of output:
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ----------------------------------------------------------------------------------------------------------------
 GENERAL INFO:
-capacity:									5
+capacity:					5
 ptr_to_underlying_array:	200009d4
-ptr_next_empty_elem:			200009e4
-ptr_last_elem:						200009f4
+ptr_next_empty_elem:		200009e4
+ptr_last_elem:				200009f4
 
 HEAP CONTENTS:
 [STATUS]            [INDEX]             [RELATION]          [NODE_VALUE]        [NODE_PTR]          [PARENT_PTR]       

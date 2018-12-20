@@ -51,8 +51,8 @@ SVC_tableEnd
     ALIGN
 PendSV_Handler
     STMFD   sp!, {r4, lr} ; r4 included for stack alignment
-    LDR     r0, =_OS_scheduler
-    BLX     r0
+    LDR     r0, =_OS_scheduler;ME: load address of scheduler function into r0
+    BLX     r0 ;ME: branch to address in r0, executing the scheduler function, r0 now contains OS_TCB*
     LDMFD   sp!, {r4, lr}
 _task_switch
     ; r0 contains nextTCB (OS_TCB *)

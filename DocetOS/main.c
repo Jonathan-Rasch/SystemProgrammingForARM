@@ -5,12 +5,12 @@
 #include "simpleRoundRobin.h"
 #include <stdlib.h>
 void task1(void const *const args) {
-	while (0) {
+	while (1) {
 		printf("Message from Task 1\r\n");
 	}
 }
 void task2(void const *const args) {
-	while (0) {
+	while (1) {
 		printf("Message from Task 2\r\n");
 	}
 }

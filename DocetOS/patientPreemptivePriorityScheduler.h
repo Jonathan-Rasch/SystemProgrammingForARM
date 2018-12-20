@@ -2,13 +2,13 @@
 #define DOCETOS_PATIENTPREEMPTIVEPRIORITYSCHEDULER_H
 
 #include "os.h"
-#include "heap.h"
-/*  The amount of sys_tickts that the scheduler will wait for a task to yield
- *  before forcibly taking the reigns.*/
-#define PATIENCE = 10
+#include "utils/heap.h"
 
 /*  The maximum number of tasks the scheduler can deal with*/
-#define MAX_TASKS = MAX_HEAP_SIZE
+#define MAX_TASKS MAX_HEAP_SIZE
+
+/*measured in SysTicks. If any given task has no*/
+#define MAX_TASK_TIME_IN_SYSTICKS 10
 
 extern OS_Scheduler_t const patientPreemptivePriorityScheduler;
 
