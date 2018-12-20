@@ -56,3 +56,4 @@ DocetOS/cmake-build-debug/
 DocetOS/.idea/
 DocetOS/Flash/
 *uvguix*
+*.txt

@@ -3,7 +3,7 @@
 //================================================================================
 // Internal Function Prototypes
 //================================================================================
-static void printHeap(minHeap * heap);
+void printHeap(minHeap * heap);
 static uint32_t __getFirstChildIndex(uint32_t node_index_zero_based);
 static uint32_t __getSecondChildIndex(uint32_t node_index_zero_based);
 static uint32_t __getParentIndex(uint32_t node_index_zero_based);
@@ -175,6 +175,12 @@ uint32_t removeNode(minHeap * _heap, void * * _return_content){
 	_heap->currentNumNodes = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
 	*_return_content = nodeToReturn.ptrToNodeContent;
 	return 1;
+}
+
+
+uint32_t getIndexOfNodeWithThisContent(minHeap * _heap,  void * const _content_ptr, uint32_t * _return_index){
+	//TODO need hashmap implementation for improved efficiency
+
 }
 
 //================================================================================

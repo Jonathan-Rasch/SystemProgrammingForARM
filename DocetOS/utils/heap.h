@@ -8,11 +8,9 @@
 #define MAX_HEAP_SIZE 63 // 2^N - 1 , where n is the number of desired levels in binary tree
 
 typedef struct __s_node{
-    /* Promising not to modify where the pointer points to or the underlying
-     * value*/
-    void * ptrToNodeContent;
+    void * volatile ptrToNodeContent; //ME: leave as volatile for now, ptr changes during swap
     /* Node value is used when restoring heap*/
-    uint32_t nodeValue;
+    volatile uint32_t nodeValue;
 }minHeapNode;
 
 typedef struct __s_heap{
@@ -20,8 +18,8 @@ typedef struct __s_heap{
      * restoration of the heap (node->nodeValue). */
     minHeapNode *   ptrToUnderlyingArray;
     uint32_t        maxNumberOfNodes;
-    uint32_t        currentNumNodes;
-    minHeapNode *   nextEmptyElement;
+    volatile uint32_t        currentNumNodes;
+    volatile minHeapNode *   nextEmptyElement;
     minHeapNode *   lastArrayElement;
 
 }minHeap;
@@ -35,8 +33,8 @@ void initHeap(minHeapNode * node_Array, minHeap * heap_struct, int max_number_of
  * the operation. Other returns (e.g index of a node) are obtained */
 uint32_t addNode(minHeap * heap_to_operate_on, void * const element_to_add, const uint32_t value_to_order_by);
 uint32_t removeNode(minHeap * _heap, void * * _return_content);
-uint32_t removeNodeAtIndex(minHeap * _heap, void * * _return_content); //TODO implement
-uint32_t getIndexOfNodeWithThisContent(minHeap * _heap,  void * const _content_ptr, uint32_t _return_index); //TODO implement
+uint32_t removeNodeAtIndex(minHeap * _heap, uint32_t _index, void * * _return_content); //TODO implement
+uint32_t getIndexOfNodeWithThisContent(minHeap * _heap,  void * const _content_ptr, uint32_t * _return_index);
 
 void printHeap(minHeap * heap);
 

@@ -19,9 +19,10 @@ enum OS_SVC_e {
 /* A structure to hold callbacks for a scheduler, plus a 'preemptive' flag */
 typedef struct {
 	uint_fast8_t preemptive;
-	OS_TCB_t const * (* scheduler_callback)(void);
-	void (* addtask_callback)(OS_TCB_t * const newTask);
-	void (* taskexit_callback)(OS_TCB_t * const task);
+	OS_TCB_t const * (* scheduler_callback)(void);//ME:called by SysTick or when task yields
+	void (* addtask_callback)(OS_TCB_t * const newTask);//ME:called by user...to add task to scheduler
+	void (* taskexit_callback)(OS_TCB_t * const task);//ME:called automatically on task func return. DO NOT CALL MANUALLY
+	void(*initialize)(void);//ME:needed for my scheduler to set up underlying heap
 } OS_Scheduler_t;
 
 /***************************/

@@ -407,6 +407,16 @@
               <FileType>1</FileType>
               <FilePath>.\simpleRoundRobin.c</FilePath>
             </File>
+            <File>
+              <FileName>patientPreemptivePriorityScheduler.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\patientPreemptivePriorityScheduler.h</FilePath>
+            </File>
+            <File>
+              <FileName>patientPreemptivePriorityScheduler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\patientPreemptivePriorityScheduler.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -449,6 +459,16 @@
               <FileName>hardfault.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\utils\hardfault.c</FilePath>
+            </File>
+            <File>
+              <FileName>mempool.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\utils\mempool.c</FilePath>
+            </File>
+            <File>
+              <FileName>mempool.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\utils\mempool.h</FilePath>
             </File>
           </Files>
         </Group>

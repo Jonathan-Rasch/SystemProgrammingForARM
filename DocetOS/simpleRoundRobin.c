@@ -56,7 +56,7 @@ static void simpleRoundRobin_addTask(OS_TCB_t * const tcb) {
 
 /* 'Task exit' callback */
 static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb) {
-	// Remove the givden TCB from the list of tasks so it won't be run again
+	// Remove the given TCB from the list of tasks so it won't be run again
 	for (int i = 0; i < SIMPLE_RR_MAX_TASKS; i++) {
 		if (tasks[i] == tcb) {
 			tasks[i] = 0;

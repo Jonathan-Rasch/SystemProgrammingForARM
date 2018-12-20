@@ -13,13 +13,14 @@
 //static functions, only visible to same translation unit
 static void initialize_scheduler(void);
 static OS_TCB_t const * patientPreemptivePriority_scheduler(void);
-static void patientPreemptivePriorityScheduler_addTask(OS_TCB_t * const tcb);
-static void patientPreemptivePriorityScheduler_taskExit(OS_TCB_t * const tcb);
+static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task_priority);
+static void patientPreemptivePriority_taskExit(OS_TCB_t * const tcb);
 
 
 //things needed for creating the heap used in the scheduler
 static minHeapNode * nodeArray[MAX_HEAP_SIZE];
 static minHeap heapStruct;
+volatile uint32_t task_has_exited_flag = 0;
 
 /*scheduler struct definition*/
 OS_Scheduler_t const patientPreemptiveScheduler = {
@@ -31,11 +32,13 @@ OS_Scheduler_t const patientPreemptiveScheduler = {
 };
 
 static void initialize_scheduler(void){
-    initHeap(nodeArray,&heapStruct);
+    initHeap(nodeArray,&heapStruct, sizeof(nodeArray)); //TODO check if correct size is passed down here
 }
 
 static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
     static int ticksSinceLastTaskSwitch = 0;// used to force task to yield after MAX_TASK_TIME_IN_SYSTICKS
+    /*check if any tasks have exited and remove them from the heap*/
+
     /*check if task has yielded or force it to yield if it has exceeded max allowed task time*/
     OS_TCB_t * currentTaskTCB = OS_currentTCB();
     uint32_t hasCurrentTaskYielded = currentTaskTCB->state & TASK_STATE_YIELD;
@@ -56,11 +59,17 @@ static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
      * selected but at the same time avoids starvation of lower priority tasks*/
 }
 
-static void patientPreemptivePriorityScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_priority){
-    if addNode(&heapStruct,tcb,task_priority) {
-        //TODO debug message: node added successfully
+static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task_priority){
+    if (addNode(&heapStruct,tcb,task_priority)) {
+        #ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
+            printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d/%d)\r\n",tcb,task_priority,heapStruct.currentNumNodes,
+                   sizeof(nodeArray));
+        #endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
     }else{
-        //TODO debug message: node could not be added
+        #ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
+            printf("SCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d/%d)\r\n",tcb,task_priority,heapStruct.currentNumNodes,
+               sizeof(nodeArray));
+        #endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
     }
 }
 
@@ -94,21 +103,17 @@ static void patientPreemptivePriority_taskExit(OS_TCB_t * const tcb){
      * search
      * */
     //TODO INVESTIGATE: at what number of tasks does this method become more efficient than linear search ?
-    uint32_t numberOfNodes = heapStruct.currentNumNodes;
-    for (int i=0; i < numberOfNodes; i++){
-        minHeapNode node = heapStruct.ptrToUnderlyingArray[i];
-        if (node.ptrToNodeContent == tcb){
-            uint32_t index = getIndexOfNodeWithThisContent(heapStruct,tcb);
-            uint32_t remove_success = removeNodeAtIndex(index);
-            if(remove_success){
-                //TODO debug message success
-                return; //done, exit
-            }else{
-                //TODO debug message failure
-                return;
-            }
-        }
-    }
-    //TODO debug message failure, node was not found
+    /*^
+     * cannot just use the number of nodes from the heap itself because this function is not called in PENDSV, and hence
+     * could be interrupted, which could lead to the node size changing, resulting in the task not getting removed from
+     * the heap!, hence the need to search through all elements
+     *
+     * TODO INVESTIGATE: this could still be a problem even when searching through entire array
+     * -> should i disable interrupts during task exit?
+     * -> set a flag in task TCB and let scheduler in handler mode sort this out?
+     * -> or lock heap?*/
+
+    task_has_exited_flag = 1; //solution for now
+    
 }
 
