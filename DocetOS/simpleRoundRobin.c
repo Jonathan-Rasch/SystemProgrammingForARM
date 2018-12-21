@@ -1,5 +1,6 @@
 #include "simpleRoundRobin.h"
-
+#include "os.h"
+#include <stdio.h>
 /* This is an implementation of an extremely simple (and inefficient!) round-robin scheduler.
 
    An array of pointers to TCBs is declared, and when tasks are added they are inserted into
@@ -16,7 +17,7 @@
 static OS_TCB_t const * simpleRoundRobin_scheduler(void);
 static void simpleRoundRobin_addTask(OS_TCB_t * const tcb);
 static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb);
-static void simpleRoundRobin_wait(void * const reason);
+static void simpleRoundRobin_wait(void * const reason, uint32_t _check_Code);
 static void simpleRoundRobin_notify(void * const reason);
 
 static OS_TCB_t * tasks[SIMPLE_RR_MAX_TASKS] = {0};
@@ -87,8 +88,11 @@ static void simpleRoundRobin_taskExit(OS_TCB_t * const tcb) {
 	}	
 }
 
-static void simpleRoundRobin_wait(void * const reason){
+static void simpleRoundRobin_wait(void * const reason, uint32_t _check_Code){
 	OS_TCB_t * currentTCB = OS_currentTCB();
+	if (_check_Code != OS_checkCode()){
+		return;//checkcode mismatch, notify called during function that uses wait
+	}
 	currentTCB->state |= TASK_STATE_WAIT;
 	currentTCB->data = (uint32_t)reason; //reason for waiting
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;

@@ -11,28 +11,28 @@ static OS_mutex_t testMutex;
 void task1(void const *const args) {
 	while (1) {
 		OS_mutex_acquire(&testMutex);
-		printf("1\r\n");
+		printf("1\t\t\t\t\t\t\t\tLock held by: %p\r\n",testMutex.tcbPointer);
 		OS_mutex_release(&testMutex);
 	}
 }
 void task2(void const *const args) {
 	while (1) {
 		OS_mutex_acquire(&testMutex);
-		printf("\t\t2\r\n");
+		printf("\t\t2\t\t\t\t\t\tLock held by: %p\r\n",testMutex.tcbPointer);
 		OS_mutex_release(&testMutex);
 	}
 }
 void task3(void const *const args) {
 	while (1) {
 		OS_mutex_acquire(&testMutex);
-		printf("\t\t\t\t3\r\n");
+		printf("\t\t\t\t3\t\t\t\tLock held by: %p\r\n",testMutex.tcbPointer);
 		OS_mutex_release(&testMutex);
 	}
 }
 void task4(void const *const args) {
 	while (1) {
 		OS_mutex_acquire(&testMutex);
-		printf("\t\t\t\t\t\t4\r\n");
+		printf("\t\t\t\t\t\t4\t\tLock held by: %p\r\n",testMutex.tcbPointer);
 		OS_mutex_release(&testMutex);
 	}
 }

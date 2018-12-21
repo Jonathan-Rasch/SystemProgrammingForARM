@@ -2,7 +2,8 @@
 #define _OS_H_
 
 #include "task.h"
-
+#include "sleep.h"
+#include "mutex.h"
 /********************/
 /* Type definitions */
 /********************/
@@ -25,7 +26,7 @@ typedef struct {
 	OS_TCB_t const * (* scheduler_callback)(void);//ME:called by SysTick or when task yields
 	void (* addtask_callback)(OS_TCB_t * const newTask);//ME:called by user...to add task to scheduler
 	void (* taskexit_callback)(OS_TCB_t * const task);//ME:called automatically on task func return. DO NOT CALL MANUALLY
-	void (* wait_callback)(void * const reason);
+	void (* wait_callback)(void * const reason, uint32_t check_Code);
 	void (* notify_callback)(void * const reason);
 	void(*initialize)(void);//ME:needed for my scheduler to set up underlying heap
 } OS_Scheduler_t;
@@ -46,6 +47,9 @@ OS_TCB_t * OS_currentTCB(void);
 
 /* Returns the number of elapsed systicks since the last reboot (modulo 2^32). */
 uint32_t OS_elapsedTicks(void);
+
+/* Returns check code used in OS_wait() to determine if wait is still needed*/
+volatile uint32_t const OS_checkCode(void);
 
 /******************************************/
 /* Task creation and management functions */
@@ -68,7 +72,7 @@ void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func
 void __svc(OS_SVC_ADD_TASK) OS_addTask(OS_TCB_t const * const);
 
 /* SVC delegate to allow task to wait for resource*/
-void __svc(OS_SVC_WAIT) OS_wait(void * reason);
+void __svc(OS_SVC_WAIT) OS_wait(void * reason, uint32_t check_Code);
 
 /* SVC delegate to allow task to notify that a resource has been released*/
 void __svc(OS_SVC_NOTIFY) OS_notify(void * reason);

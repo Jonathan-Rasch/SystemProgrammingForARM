@@ -433,16 +433,6 @@
               <FilePath>.\OS\os.c</FilePath>
             </File>
             <File>
-              <FileName>sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\sleep.c</FilePath>
-            </File>
-            <File>
-              <FileName>sleep.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\sleep.h</FilePath>
-            </File>
-            <File>
               <FileName>mutex.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\OS\mutex.c</FilePath>
@@ -451,6 +441,16 @@
               <FileName>mutex.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\OS\mutex.h</FilePath>
+            </File>
+            <File>
+              <FileName>sleep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\OS\sleep.c</FilePath>
+            </File>
+            <File>
+              <FileName>sleep.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\OS\sleep.h</FilePath>
             </File>
           </Files>
         </Group>

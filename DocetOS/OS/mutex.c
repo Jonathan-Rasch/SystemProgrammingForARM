@@ -8,6 +8,7 @@
 void OS_mutex_acquire(OS_mutex_t * _mutex){
 	uint32_t mutexTcbPtr; 
 	uint32_t lockNotObtained;
+	uint32_t checkCode = OS_checkCode();
 	while(1){
 		mutexTcbPtr = (uint32_t)__LDREXW((uint32_t*) &(_mutex->tcbPointer));
 		if(mutexTcbPtr == NULL){
@@ -21,7 +22,7 @@ void OS_mutex_acquire(OS_mutex_t * _mutex){
 			}
 		}else{
 			//somebody else holds the lock, wait for its release
-			OS_wait(_mutex);
+			OS_wait(_mutex,checkCode);
 			continue;//repeat the process of trying to obtain lock
 		}
 	}

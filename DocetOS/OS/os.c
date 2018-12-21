@@ -18,6 +18,12 @@ static volatile uint32_t _ticks = 0;
 /* Pointer to the 'scheduler' struct containing callback pointers */
 static OS_Scheduler_t const * _scheduler = 0;
 
+/* GLOBAL: check code used by wait() function to determine if wait is still needed or if notify has been called in the interim*/
+static volatile uint32_t  _checkCode = 0;
+volatile uint32_t const OS_checkCode(void){
+	return _checkCode;
+}
+
 /* GLOBAL: Holds pointer to current TCB.  DO NOT MODIFY, EVER. */
 OS_TCB_t * volatile _currentTCB = 0;
 /* Getter for the current TCB pointer.  Safer to use because it can't be used
@@ -135,13 +141,22 @@ NOTE: this is all esentially because the current task "called" the interrupt and
 
 /* SVC handler for OS_wait()*/
 void _svc_OS_wait(_OS_SVC_StackFrame_t const * const stack){
-	void * reason = (void *)stack->r0; 
-	_scheduler->wait_callback(reason);
+	void * reason = (void *)stack->r0;
+	uint32_t checkCode = (uint32_t)stack->r1;
+	_scheduler->wait_callback(reason, checkCode);
 }
 
 /* SVC handler for OS_notify()*/
 void _svc_OS_notify(_OS_SVC_StackFrame_t const * const stack){
 	void * reason = (void *)stack->r0;
+	uint32_t notStored = 1;
+	/* following do-while makes sure that every notify results in a change to _checkCode.
+	(even though this is not a problem at the moment since no higher priority interrupt does anything with notify() )*/
+	do{
+		uint32_t temp_checkCode = (uint32_t)__LDREXW((uint32_t *)&_checkCode);
+		temp_checkCode++; // change check code to inform any wait() calls that notify has been called in interim
+		notStored = __STREXW(temp_checkCode,(uint32_t *)&_checkCode);//returns 0 when success
+	}while(notStored);
 	_scheduler->notify_callback(reason);
 }
 
