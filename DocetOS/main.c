@@ -49,7 +49,7 @@ int main(void) {
 	   Remember that stacks must be 8-byte aligned. */
 	__align(8)
 	static uint32_t stack1[64], stack2[64], stack3[64], stack4[64];
-	static minHeapNode heapNodeArray[64];
+	static minHeapNode heapNodeArray[4];
 	static OS_TCB_t TCB1, TCB2, TCB3, TCB4;
 	
 	OS_init_mutex(&testMutex);
@@ -62,7 +62,7 @@ int main(void) {
 	OS_initialiseTCB(&TCB4, stack4+64, task4, 0);
 
 	/* Initialise and start the OS */
-	patientPreemptivePriorityScheduler.initialize(heapNodeArray,64);
+	patientPreemptivePriorityScheduler.initialize(heapNodeArray,4);
 	OS_init(&patientPreemptivePriorityScheduler);
 	OS_addTask(&TCB1,11);
 	OS_addTask(&TCB2,5);

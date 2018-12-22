@@ -85,6 +85,9 @@ static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
     ticksSinceLastTaskSwitch = 0; //set to 0 so that next task can run for MAX_TASK_TIME_IN_SYSTICKS
 		
 		/*Select random task to give cpu time to (probability of each task being selected based on its position in heap)*/
+		if(heapStruct.currentNumNodes == 0){
+			return OS_idleTCB_p;// no active tasks currently (maybe all sleeping).
+		}
 		OS_TCB_t * selectedTCB = currentTaskTCB;
 		{
 			int randNodeSelection = __getRandForTaskChoice(); // please see function definition for info on return values
