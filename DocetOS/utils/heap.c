@@ -4,8 +4,6 @@
 // Internal Function Prototypes
 //================================================================================
 void printHeap(minHeap * heap);
-static uint32_t __getFirstChildIndex(uint32_t node_index_zero_based);
-static uint32_t __getSecondChildIndex(uint32_t node_index_zero_based);
 static uint32_t __getParentIndex(uint32_t node_index_zero_based);
 static minHeapNode * __getPointerToItemAtIndex(minHeap * heap, uint32_t node_index_zero_based);
 
@@ -64,7 +62,7 @@ uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _
 	}
 	
 	/* restoring heap property */
-	minHeapNode * node = _heap->nextEmptyElement;
+	volatile minHeapNode * node = _heap->nextEmptyElement;
 	node->ptrToNodeContent = _element_to_add;
 	node->nodeValue = _value_to_order_by;
 	uint32_t currentNodeIndex = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
@@ -140,8 +138,8 @@ uint32_t removeNode(minHeap * _heap, void * * _return_content){
 		printf("RESTORING HEAP PROPERTY...\r\n");
 		printHeap(_heap);
 		#endif /*HEAP_DEBUG*/
-		uint32_t firstChildIdx = __getFirstChildIndex(elemIdx);
-		uint32_t secondChildIdx = __getSecondChildIndex(elemIdx);
+		uint32_t firstChildIdx = getFirstChildIndex(elemIdx);
+		uint32_t secondChildIdx = getSecondChildIndex(elemIdx);
 		minHeapNode firstChild = _heap->ptrToUnderlyingArray[firstChildIdx];
 		minHeapNode secondChild = _heap->ptrToUnderlyingArray[secondChildIdx];
 		// are both returned indicies valid nodes (not UNUSED) ?
@@ -183,21 +181,21 @@ uint32_t getIndexOfNodeWithThisContent(minHeap * _heap,  void * const _content_p
 
 }
 
-//================================================================================
-// Internal Functions
-//================================================================================
-
 /* Obtain the index of the first child of the given node
 (Note: the index for nodes in this min heap is ZERO BASED!)*/
-static uint32_t __getFirstChildIndex(uint32_t node_index_zero_based){
+uint32_t getFirstChildIndex(uint32_t node_index_zero_based){
 	return 2*node_index_zero_based + 1;
 }
 
 /* Obtain the index of the second child of the given node
 (Note: the index for nodes in this min heap is ZERO BASED!)*/
-static uint32_t __getSecondChildIndex(uint32_t node_index_zero_based){
+uint32_t getSecondChildIndex(uint32_t node_index_zero_based){
 	return 2*(node_index_zero_based+1);
 }
+
+//================================================================================
+// Internal Functions
+//================================================================================
 
 /* Get the index of the parent of node C
 (Note: the index for nodes in this min heap is ZERO BASED!)*/

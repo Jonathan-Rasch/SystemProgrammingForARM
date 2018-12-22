@@ -1,4 +1,5 @@
 #include "patientPreemptivePriorityScheduler.h"
+#include <stdlib.h>
 
 /*
  * The scheduler has the following features:
@@ -10,17 +11,28 @@
  *
  */
 
+
+//=============================================================================
+// Prototypes and vars
+//=============================================================================
+
 //static functions, only visible to same translation unit
 static void initialize_scheduler(void);
 static OS_TCB_t const * patientPreemptivePriority_scheduler(void);
 static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task_priority);
 static void patientPreemptivePriority_taskExit(OS_TCB_t * const tcb);
-
+static void patientPreemptivePriority_waitCallback(void * const _reason, uint32_t checkCode);
+static void patientPreemptivePriority_notifyCallback(void * const reason);
+static int __getRandForTaskChoice(void);
 
 //things needed for creating the heap used in the scheduler
 static minHeapNode * nodeArray[MAX_HEAP_SIZE];
 static minHeap heapStruct;
-volatile uint32_t task_has_exited_flag = 0;
+static OS_mutex_t heapLock;
+
+//=============================================================================
+// Scheduler struct definition and init function
+//=============================================================================
 
 /*scheduler struct definition*/
 OS_Scheduler_t const patientPreemptiveScheduler = {
@@ -28,38 +40,96 @@ OS_Scheduler_t const patientPreemptiveScheduler = {
         .initialize = initialize_scheduler,
         .scheduler_callback = patientPreemptivePriority_scheduler,
         .addtask_callback = patientPreemptivePriority_addTask,
-        .taskexit_callback = patientPreemptivePriority_taskExit
+        .taskexit_callback = patientPreemptivePriority_taskExit,
+				.wait_callback = patientPreemptivePriority_waitCallback,
+				.notify_callback = patientPreemptivePriority_notifyCallback,
 };
 
+/*TODO init scheduler by just passing it pointer to mempool !*/
 static void initialize_scheduler(void){
-    //initHeap(nodeArray,&heapStruct, sizeof(nodeArray)); //TODO check if correct size is passed down here
+    initHeap((minHeapNode *)nodeArray,&heapStruct, sizeof(nodeArray)); //TODO check if correct size is passed down here
+		OS_init_mutex(&heapLock);//TODO: determine if a mutex is needed in the scheduler
+		srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so dont really care
 }
 
+//=============================================================================
+// SCHEDULER FUNCTION
+//=============================================================================
+/* Determines which of the AWAKE and NOT WAITING tasks should be executed. The choice of task is RANDOM,
+but the probability of each task being selected corresponds to its position in the heap. So tasks with a low priority 
+(low down in the heap) will have a small but non-zero chance of getting cpu time.
+
+TODO: Need default task to run for when heap is empty.(round robin scheduler has one I think)
+*/
 static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
     static int ticksSinceLastTaskSwitch = 0;// used to force task to yield after MAX_TASK_TIME_IN_SYSTICKS
-    /*check if any tasks have exited and remove them from the heap*/
-
+		OS_TCB_t * currentTaskTCB = OS_currentTCB();
+	
     /*check if task has yielded or force it to yield if it has exceeded max allowed task time*/
-    OS_TCB_t * currentTaskTCB = OS_currentTCB();
-    uint32_t hasCurrentTaskYielded = currentTaskTCB->state & TASK_STATE_YIELD;
-    ticksSinceLastTaskSwitch += 1;
-    if(!hasCurrentTaskYielded){
-        // now check if task has run for more than max allowed time
-        if(ticksSinceLastTaskSwitch <= MAX_TASK_TIME_IN_SYSTICKS){
-            //task is allowed to continue running
-            return currentTaskTCB;
-        }
-    }
+		{
+			uint32_t hasCurrentTaskYielded = currentTaskTCB->state & TASK_STATE_YIELD;
+			ticksSinceLastTaskSwitch += 1;
+			if(!hasCurrentTaskYielded){
+					// now check if task has run for more than max allowed time
+					if(ticksSinceLastTaskSwitch <= MAX_TASK_TIME_IN_SYSTICKS){
+							//task is allowed to continue running
+							return currentTaskTCB;
+					}
+			}
+		}
+		
     /*Task has either yielded or it exceeded its maximum allowed time, switch task*/
+		//reset task state and task switch counter
     currentTaskTCB->state &= ~TASK_STATE_YIELD;// reset so task has chance of running after next task switch
     ticksSinceLastTaskSwitch = 0; //set to 0 so that next task can run for MAX_TASK_TIME_IN_SYSTICKS
-    /*TODO determine probabilities for choosing each layer in the heap
-     * (based on number of nodes in heap). Then get RANDOM NUMBER to determine what layer, and what node
-     * from that layer should be choosen. This gives high priority tasks a bigger likelyhood of being
-     * selected but at the same time avoids starvation of lower priority tasks*/
+		
+		/*Select random task to give cpu time to (probability of each task being selected based on its position in heap)*/
+		OS_TCB_t * selectedTCB = currentTaskTCB;
+		{
+			int randNodeSelection = __getRandForTaskChoice(); // please see function definition for info on return values
+			int nodeIndex = 0; //starting with highest priority node
+			const int maxValidHeapIdx = heapStruct.currentNumNodes - 1;
+			while(randNodeSelection){
+				/*current node not selected, one of its children has been selected. check if node has valid child node*/
+				int nextNodeIdx;
+				if(randNodeSelection == 1){//left child
+					nextNodeIdx = getFirstChildIndex(nodeIndex);
+				}else{//right child
+					nextNodeIdx = getSecondChildIndex(nodeIndex);
+				}
+				//check if selected child is valid node, if not, select parent
+				if (nextNodeIdx <= maxValidHeapIdx){
+					nodeIndex = nextNodeIdx;
+					randNodeSelection = __getRandForTaskChoice();
+					continue;
+				}else{
+					break;//nodeIndex not updated, so current node is selected for cpu time
+				}
+			}
+			selectedTCB = heapStruct.ptrToUnderlyingArray[nodeIndex].ptrToNodeContent;
+		}
+		return selectedTCB;
 }
 
+//=============================================================================
+// Task related function definitions
+//=============================================================================
+
+/* Adds task control block to the heap at a position determined by the specified priority.
+Depending on the given priority the task has a higher or lower probability of being given cpu time.
+NOTE: Schould there be no space on the heap the task is not added.
+*/
 static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task_priority){
+	/* DISABELING INTERRUPTS FOR THE DURATION OF THIS FUNCTION. Reason:
+	-> This scheduler is based on probability, so a low priority task (lets say TaskZ) still has a small probability of being run
+	-> If TaskZ runs and calls "addTask" it will result in the heap property needing to be checked/restored.
+	-> if that process gets interrupted by context switch to TaskB, which also calls "addTask" before heap is restored it could mess up the heap
+	-> this means that the heap needs to be locked. This could be done via mutex.
+	-> But if low priority TaskZ gets the lock, it might take a while for it to "randomly" get cpu time again (chance of being choosen based on task priority).
+	-> all other tasks that need to work with the scheduler heap will be blocked in the meantime.
+	-> hence it is more efficient to just prevent interrupts when heap is being worked on.
+	*/
+	__disable_irq();
     if (addNode(&heapStruct,tcb,task_priority)) {
         #ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
             printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d/%d)\r\n",tcb,task_priority,heapStruct.currentNumNodes,
@@ -71,6 +141,7 @@ static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task
                sizeof(nodeArray));
         #endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
     }
+	__enable_irq();
 }
 
 
@@ -111,9 +182,25 @@ static void patientPreemptivePriority_taskExit(OS_TCB_t * const tcb){
      * TODO INVESTIGATE: this could still be a problem even when searching through entire array
      * -> should i disable interrupts during task exit?
      * -> set a flag in task TCB and let scheduler in handler mode sort this out?
-     * -> or lock heap?*/
-
-    task_has_exited_flag = 1; //solution for now
-    
+     * -> or lock heap?*/   
 }
 
+static void patientPreemptivePriority_waitCallback(void * const _reason, uint32_t checkCode){
+	ASSERT(0);// TODO IMPLEMENT
+}
+
+static void patientPreemptivePriority_notifyCallback(void * const reason){
+	ASSERT(0);// TODO IMPLEMENT
+}
+
+//=============================================================================
+// Internal utility functions
+//=============================================================================
+/* Used for picking which task to give cpu time. returns 3 possible values:
+0: pick the task at the current index in heap
+1: go to left child of current node in the heap
+2: go to right child of current node
+*/
+int __getRandForTaskChoice(void){
+	return rand() % 3;
+}

@@ -24,7 +24,7 @@ enum OS_SVC_e {
 typedef struct {
 	uint_fast8_t preemptive;
 	OS_TCB_t const * (* scheduler_callback)(void);//ME:called by SysTick or when task yields
-	void (* addtask_callback)(OS_TCB_t * const newTask);//ME:called by user...to add task to scheduler
+	void (* addtask_callback)(OS_TCB_t * const newTask, uint32_t taskPriority);//ME:called by user...to add task to scheduler
 	void (* taskexit_callback)(OS_TCB_t * const task);//ME:called automatically on task func return. DO NOT CALL MANUALLY
 	void (* wait_callback)(void * const reason, uint32_t check_Code);
 	void (* notify_callback)(void * const reason);

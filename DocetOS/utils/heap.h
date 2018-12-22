@@ -35,7 +35,8 @@ uint32_t addNode(minHeap * heap_to_operate_on, void * const element_to_add, cons
 uint32_t removeNode(minHeap * _heap, void * * _return_content);
 uint32_t removeNodeAtIndex(minHeap * _heap, uint32_t _index, void * * _return_content); //TODO implement
 uint32_t getIndexOfNodeWithThisContent(minHeap * _heap,  void * const _content_ptr, uint32_t * _return_index);
-
+uint32_t getFirstChildIndex(uint32_t node_index_zero_based);
+uint32_t getSecondChildIndex(uint32_t node_index_zero_based);
 void printHeap(minHeap * heap);
 
 #endif //DOCETOS_HEAP_H

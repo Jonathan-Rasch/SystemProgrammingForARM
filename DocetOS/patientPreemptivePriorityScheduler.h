@@ -2,6 +2,7 @@
 #define DOCETOS_PATIENTPREEMPTIVEPRIORITYSCHEDULER_H
 
 #include "os.h"
+#include "stm32f4xx.h"
 #include "utils/heap.h"
 
 /*  The maximum number of tasks the scheduler can deal with*/
