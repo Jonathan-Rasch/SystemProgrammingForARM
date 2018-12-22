@@ -12,6 +12,5 @@
 #define MAX_TASK_TIME_IN_SYSTICKS 10
 
 extern OS_Scheduler_t const patientPreemptivePriorityScheduler;
-extern volatile uint32_t task_has_exited_flag;
 
 #endif //DOCETOS_PATIENTPREEMPTIVEPRIORITYSCHEDULER_H

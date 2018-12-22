@@ -4,6 +4,7 @@
 #include "task.h"
 #include "sleep.h"
 #include "mutex.h"
+#include "..\utils\heap.h"
 /********************/
 /* Type definitions */
 /********************/
@@ -28,7 +29,7 @@ typedef struct {
 	void (* taskexit_callback)(OS_TCB_t * const task);//ME:called automatically on task func return. DO NOT CALL MANUALLY
 	void (* wait_callback)(void * const reason, uint32_t check_Code);
 	void (* notify_callback)(void * const reason);
-	void(*initialize)(void);//ME:needed for my scheduler to set up underlying heap
+	void (*initialize)(minHeapNode * _heap_node_array,uint32_t _size_of_heap_node_array);//ME:needed for my scheduler to set up underlying heap
 } OS_Scheduler_t;
 
 /***************************/
@@ -69,7 +70,7 @@ volatile uint32_t const OS_checkCode(void);
 void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func)(void const * const), void const * const data);
 
 /* SVC delegate to add a task */
-void __svc(OS_SVC_ADD_TASK) OS_addTask(OS_TCB_t const * const);
+void __svc(OS_SVC_ADD_TASK) OS_addTask(OS_TCB_t const * const,uint32_t task_priority);
 
 /* SVC delegate to allow task to wait for resource*/
 void __svc(OS_SVC_WAIT) OS_wait(void * reason, uint32_t check_Code);

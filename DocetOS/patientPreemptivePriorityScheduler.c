@@ -17,7 +17,7 @@
 //=============================================================================
 
 //static functions, only visible to same translation unit
-static void initialize_scheduler(void);
+static void initialize_scheduler(minHeapNode * _heap_node_array,uint32_t _size_of_heap_node_array);
 static OS_TCB_t const * patientPreemptivePriority_scheduler(void);
 static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task_priority);
 static void patientPreemptivePriority_taskExit(OS_TCB_t * const tcb);
@@ -26,7 +26,7 @@ static void patientPreemptivePriority_notifyCallback(void * const reason);
 static int __getRandForTaskChoice(void);
 
 //things needed for creating the heap used in the scheduler
-static minHeapNode * nodeArray[MAX_HEAP_SIZE];
+static minHeapNode * nodeArray;
 static minHeap heapStruct;
 static OS_mutex_t heapLock;
 
@@ -35,7 +35,7 @@ static OS_mutex_t heapLock;
 //=============================================================================
 
 /*scheduler struct definition*/
-OS_Scheduler_t const patientPreemptiveScheduler = {
+OS_Scheduler_t const patientPreemptivePriorityScheduler = {
         .preemptive = 1,
         .initialize = initialize_scheduler,
         .scheduler_callback = patientPreemptivePriority_scheduler,
@@ -46,8 +46,9 @@ OS_Scheduler_t const patientPreemptiveScheduler = {
 };
 
 /*TODO init scheduler by just passing it pointer to mempool !*/
-static void initialize_scheduler(void){
-    initHeap((minHeapNode *)nodeArray,&heapStruct, sizeof(nodeArray)); //TODO check if correct size is passed down here
+static void initialize_scheduler(minHeapNode * _heap_node_array,uint32_t _size_of_heap_node_array){
+		nodeArray = _heap_node_array;
+    initHeap((minHeapNode *)nodeArray,&heapStruct, _size_of_heap_node_array); //TODO check if correct size is passed down here
 		OS_init_mutex(&heapLock);//TODO: determine if a mutex is needed in the scheduler
 		srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so dont really care
 }
@@ -66,7 +67,7 @@ static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
 		OS_TCB_t * currentTaskTCB = OS_currentTCB();
 	
     /*check if task has yielded or force it to yield if it has exceeded max allowed task time*/
-		{
+		if( currentTaskTCB != OS_idleTCB_p ){
 			uint32_t hasCurrentTaskYielded = currentTaskTCB->state & TASK_STATE_YIELD;
 			ticksSinceLastTaskSwitch += 1;
 			if(!hasCurrentTaskYielded){
