@@ -57,3 +57,5 @@ DocetOS/.idea/
 DocetOS/Flash/
 *uvguix*
 *.txt
+*.uvoptx
+*.uvprojx
