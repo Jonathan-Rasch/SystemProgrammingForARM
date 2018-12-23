@@ -466,14 +466,14 @@
               <FilePath>.\utils\hardfault.c</FilePath>
             </File>
             <File>
-              <FileName>mempool.c</FileName>
+              <FileName>memcluster.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\utils\mempool.c</FilePath>
+              <FilePath>.\utils\memcluster.c</FilePath>
             </File>
             <File>
-              <FileName>mempool.h</FileName>
+              <FileName>memcluster.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\utils\mempool.h</FilePath>
+              <FilePath>.\utils\memcluster.h</FilePath>
             </File>
           </Files>
         </Group>

@@ -1,11 +1,12 @@
 #include "os.h"
-#include "../utils/heap.h"
+#include "utils/heap.h"
 #include <stdio.h>
 #include "utils/serial.h"
 #include "simpleRoundRobin.h"
 #include <stdlib.h>
 #include "sleep.h"
 #include "mutex.h"
+#include "utils/memcluster.h"
 
 static OS_mutex_t testMutex;
 
@@ -56,7 +57,8 @@ int main(void) {
 	static uint32_t stack1[64], stack2[64], stack3[64], stack4[64];
 	static uint32_t mempool[8192]; // 32 kb
 	static OS_TCB_t TCB1, TCB2, TCB3, TCB4;
-	
+	static OS_memcluster memcluster;
+	memory_cluster_init(&memcluster,mempool,8192);
 	OS_init_mutex(&testMutex);
 	
 	
