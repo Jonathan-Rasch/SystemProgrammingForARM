@@ -380,21 +380,6 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>System</GroupName>
-          <Files>
-            <File>
-              <FileName>retarget.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\utils\retarget.c</FilePath>
-            </File>
-            <File>
-              <FileName>serial.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\utils\serial.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Source Files</GroupName>
           <Files>
             <File>

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "sleep.h"
 #include "mutex.h"
+
 static OS_mutex_t testMutex;
 
 void task1(void const *const args) {
@@ -13,6 +14,7 @@ void task1(void const *const args) {
 		OS_mutex_acquire(&testMutex);
 		printf("1\t\t\t\t\t\t\t\tLock held by: %p\r\n",testMutex.tcbPointer);
 		OS_mutex_release(&testMutex);
+		OS_sleep((rand()% 1000) + 1);
 	}
 }
 void task2(void const *const args) {
@@ -20,6 +22,7 @@ void task2(void const *const args) {
 		OS_mutex_acquire(&testMutex);
 		printf("\t\t2\t\t\t\t\t\tLock held by: %p\r\n",testMutex.tcbPointer);
 		OS_mutex_release(&testMutex);
+		OS_sleep((rand()% 1000) + 1);
 	}
 }
 void task3(void const *const args) {
@@ -27,6 +30,7 @@ void task3(void const *const args) {
 		OS_mutex_acquire(&testMutex);
 		printf("\t\t\t\t3\t\t\t\tLock held by: %p\r\n",testMutex.tcbPointer);
 		OS_mutex_release(&testMutex);
+		OS_sleep((rand()% 1000) + 1);
 	}
 }
 void task4(void const *const args) {
@@ -34,6 +38,7 @@ void task4(void const *const args) {
 		OS_mutex_acquire(&testMutex);
 		printf("\t\t\t\t\t\t4\t\tLock held by: %p\r\n",testMutex.tcbPointer);
 		OS_mutex_release(&testMutex);
+		OS_sleep((rand()% 1000) + 1);
 	}
 }
 
@@ -49,6 +54,7 @@ int main(void) {
 	   Remember that stacks must be 8-byte aligned. */
 	__align(8)
 	static uint32_t stack1[64], stack2[64], stack3[64], stack4[64];
+	static uint32_t mempool[8192]; // 32 kb
 	static OS_TCB_t TCB1, TCB2, TCB3, TCB4;
 	
 	OS_init_mutex(&testMutex);
