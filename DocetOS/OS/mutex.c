@@ -42,7 +42,6 @@ void OS_mutex_release(OS_mutex_t * _mutex){
 		_mutex->tcbPointer = NULL;
 		OS_notify(_mutex);
 	}
-	
 }
 
 void OS_init_mutex(OS_mutex_t * mutex){
