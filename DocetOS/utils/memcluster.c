@@ -10,6 +10,7 @@
 /*VARIABLES*/
 static memory_pool pools[5];//array holding memory pools
 static OS_mutex_t pool_locks[5]; //pools get locked when in use
+static OS_mutex_t hashtable_lock;
 static memBlock * allocatedBlocksBuckets[MEMPOOL_HASH_TABLE_BUCKET_NUM];
 
 /*PROTOTYPES*/
@@ -83,6 +84,9 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 	}
 	
 	/*adding function pointers to memcluster struct*/
+	//TODO
+	memory_cluster->allocate = allocate;
+	memory_cluster->deallocate = deallocate;
 }
 //================================================================================
 // MemCluster struct functions
@@ -114,26 +118,50 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 	if(selectedPool == NULL){
 		printf("ERROR: cannot allocate memory of size %d 4byte words, no block large enough.\r\n",required_size_in_4byte_words);
 	}
-	// pool of correct size found, no try to grab a block
-	memBlock * block = NULL;
-	for(int i=selectedPoolIdx;i<=(selectedPoolIdx+LARGER_BLOCK_ALLOCATION_STEP_LIMIT);i++){
-		OS_mutex_t * poolLock = selectedPool->memory_pool_lock;
-		uint32_t freeBlocks = selectedPool->freeBlocks;
-		//TODO: should only use non-blocking aquire when at last index
-		if(i < (selectedPoolIdx+LARGER_BLOCK_ALLOCATION_STEP_LIMIT)){
+	// pool of correct size found, no try to grab a lock on a pool with free blocks
+	uint32_t initialSelectedIdx = selectedPoolIdx;
+	OS_mutex_t * poolLock;
+	uint32_t freeBlocks = 0;
+	for(int i=initialSelectedIdx;i<=(initialSelectedIdx+LARGER_BLOCK_ALLOCATION_STEP_LIMIT);i++){
+		selectedPoolIdx = i % numberOfPools;
+		selectedPool = &pools[i];
+		poolLock = selectedPool->memory_pool_lock;
+		if(i < (initialSelectedIdx+LARGER_BLOCK_ALLOCATION_STEP_LIMIT)){
+				/*try and get a hold of the lock of a pool of adequate size, then check if it has free blocks*/
 				if(OS_mutex_acquire_non_blocking(poolLock)){
-					
+					freeBlocks = selectedPool->freeBlocks;
+					if(freeBlocks){
+						break;
+					}else{
+						/*no free blocks, try next pool*/
+						continue;
+					}
 				}else{
+					/*could not get lock, try next pool*/
 					continue;
 				}
-		}else if(i == (selectedPoolIdx+LARGER_BLOCK_ALLOCATION_STEP_LIMIT)){
-				if(OS_mutex_acquire_non_blocking(poolLock)){
-					
+		}else if(i == (initialSelectedIdx+LARGER_BLOCK_ALLOCATION_STEP_LIMIT)){
+				/*trying to aquire lock of largest allowed pool, if that fails then wait for the original selected pool to get released*/
+				if(!OS_mutex_acquire_non_blocking(poolLock)){
+					/*could not aquire lock of largest allowed pool, now go back to the pool of the smallest size that fits the requested
+					memory and wait for its lock to be released*/
+					OS_mutex_acquire(&pool_locks[initialSelectedIdx]);
+				}
+				/*got the lock, but there is no guarantee that there are free blocks, hence check. If still
+				no blocks are free restart the process of trying to aquire a larger block*/
+				freeBlocks = selectedPool->freeBlocks;
+				if(!freeBlocks){//still nothing free
+					i = initialSelectedIdx; //reset counter, restart process
+					continue;
 				}else{
-					OS_mutex_acquire()//aquire original pool lock
+					break;
 				}
 		}
 	}
+	/*got pool lock on pool with free block(s). store block in hashmap and return */
+	memBlock * block = __removeBlockFromPool(selectedPool);
+	OS_mutex_release(poolLock);
+	return block->headPtr;
 }
 
 /* "deallocate" checks if the given pointer belongs to an allocated memory block and returns it to its corresponding memory pool should 
@@ -148,26 +176,25 @@ static void deallocate(void * memblock_head_ptr){
 
 //for memory pools
 static void __addBlockToPool(memory_pool * _pool,memBlock * _block){
-	OS_mutex_acquire(_pool->memory_pool_lock); //TODO: should I lock here, or only from exported functions ?
 	_block->nextMemblock = (uint32_t *)_pool->firstMemoryBlock;
 	_pool->firstMemoryBlock = _block;
 	_pool->freeBlocks += 1;
 	OS_notify(_pool);//notify any pools waiting on memory pool to have blocks available 
-	OS_mutex_release(_pool->memory_pool_lock);
+	//OS_mutex_release(_pool->memory_pool_lock);
 }
 
+/*assumes pool already locked*/
 static memBlock * __removeBlockFromPool(memory_pool * _pool){
-	OS_mutex_acquire(_pool->memory_pool_lock);
 	/*TODO needs to be implemented:
 	1) get memblock pointer from pool
 	2) extract memory head pointer
 	3) hash head pointer and use it as key to store memblock pointer in hashtable
 	4) give memblock pointer to task*/
-	OS_mutex_release(_pool->memory_pool_lock);
 }
 
 //for hash table
 static void __placeBlockIntoBucket(memBlock * _block){
+	OS_mutex_acquire(&hashtable_lock);
 	//determine into what bucket to place the block
 	uint32_t hash = djb2_hash((uint32_t)_block->headPtr); // hashing the pointer to memory NOT THE BLOCK PTR! (since that is what task passes to deallocate)
 	uint32_t bucketNumber = hash % MEMPOOL_HASH_TABLE_BUCKET_NUM;
@@ -175,9 +202,11 @@ static void __placeBlockIntoBucket(memBlock * _block){
 	memBlock * tmp_block = allocatedBlocksBuckets[bucketNumber];
 	allocatedBlocksBuckets[bucketNumber] = _block;
 	_block->nextMemblock = (uint32_t *)tmp_block;
+	OS_mutex_release(&hashtable_lock);
 }
 
 static memBlock * __recoverBlockFromBucket(uint32_t * memory_pointer){
+	OS_mutex_acquire(&hashtable_lock);
 	//determine what bucket the block corresponding to the memory pointer should be in
 	uint32_t hash = djb2_hash((uint32_t)memory_pointer);
 	uint32_t bucketNumber = hash % MEMPOOL_HASH_TABLE_BUCKET_NUM;
@@ -191,11 +220,13 @@ static memBlock * __recoverBlockFromBucket(uint32_t * memory_pointer){
 		}
 		// match ! now remove the block from the linked list and return it so that it can be readded to one of the pools
 		allocatedBlocksBuckets[bucketNumber] = (memBlock *)blockPtr->nextMemblock;
+		OS_mutex_release(&hashtable_lock);
 		return blockPtr;
 	}
 	// if it gets here then then no block matched (user probably messed up and tried to dealloc a memblock not belonging to the cluster)
 	printf("ERROR: attempt to deallocate memory block that is not part of this memory cluster !\n\r");
 	ASSERT(0);
+	OS_mutex_release(&hashtable_lock);
 	return NULL;
 }
 

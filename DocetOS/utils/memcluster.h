@@ -25,8 +25,8 @@ typedef struct{
 } memory_pool;
 
 typedef struct {
-	const uint32_t(* allocate)	(uint32_t required_size_in_4byte_words,void * return_memory_head);// guarantees returned memory is at least required_size_in_4byte_words large
-	void 					(* deallocate)(void * memblock_head_ptr);
+	uint32_t * (* allocate)	(uint32_t required_size_in_4byte_words);// guarantees returned memory is at least required_size_in_4byte_words large
+	void 						(* deallocate)(void * memblock_head_ptr);
 } OS_memcluster;
 
 void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray, uint32_t memory_Size);
