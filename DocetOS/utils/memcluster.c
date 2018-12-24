@@ -67,14 +67,8 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 		//updating vars keeping track of remaining memory
 		memoryArray = memoryArray+requiredMemoryForBlock;
 		memory_Size_in_4byte_words -= requiredMemoryForBlock;
-		/*inserting block into pool
-		NOTE: the reason why I dont use the __addBlockToPool methode here is twofold:
-		1) 	it uses mutex to lock pool, but during init there should be no tasks fighting for access, so that is just wasting cycles.
-		2) 	the method uses "notify()" func, if I would use __addpool this would require the OS_init to be run before memorycluster init (bus fault otherwise since
-				_scheduler will be a pointer to NULL), but scheduler needs to use memory cluster in its init.*/
-		blockPtr->nextMemblock = (uint32_t *)pool->firstMemoryBlock;
-		pool->firstMemoryBlock = blockPtr;
-		pool->freeBlocks += 1;
+		//place in pool
+		__addBlockToPool(pool,blockPtr);
 		//updating counter so that on next itteration the pool index changes
 		counter++;
 	}
@@ -158,7 +152,7 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 				}
 		}
 	}
-	/*got pool lock on pool with free block(s). store block in hashmap and return */
+	/*got pool lock on pool with free block(s). store block in hashmap and return pointer to usable memory*/
 	memBlock * block = __removeBlockFromPool(selectedPool);
 	OS_mutex_release(poolLock);
 	return block->headPtr;
@@ -167,32 +161,61 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 /* "deallocate" checks if the given pointer belongs to an allocated memory block and returns it to its corresponding memory pool should 
 this be the case. Nothing happens (except error message) when a user tries to return a block to the cluster that does not belong to the cluster*/
 static void deallocate(void * memblock_head_ptr){
+	memBlock * block = __recoverBlockFromBucket(memblock_head_ptr);
+	if(block == NULL){ // NULL pointer returned, provided memory ptr is not valid
+		return;
+	}
+	/*determine in what pool the block belongs:
+	2^(SMALLEST_BLOCK_SIZE + X ) = B
+		B: block_size
+		X: number such that (X + SMALLEST_BLOCK_SIZE <= LARGEST_BLOCK_SIZE)
+	hence:
+	X = (log(B)/log(2)) - SMALLEST_BLOCK_SIZE
 	
+	TODO: implement when FPU is enabled, for now just cycle through pools*/
+	int numberOfPools = (LARGEST_BLOCK_SIZE - SMALLEST_BLOCK_SIZE) + 1;
+	memory_pool * pool = NULL;
+	int poolIdx = 0;
+	for(int i = 0;i<numberOfPools;i++){
+		if(pools[i].blockSize != block->blockSize){
+			continue;
+		}
+		pool = &pools[i];
+		poolIdx = i;
+		break;
+	}
+	OS_mutex_acquire(&pool_locks[poolIdx]);
+	__addBlockToPool(pool,block);
+	OS_mutex_release(&pool_locks[poolIdx]);
 }
 
 //================================================================================
 // Internal Functions
 //================================================================================
 
-//for memory pools
+/*MEMORY POOL RELATED
+these functions assume that a lock for _pool has been obtained PRIOR to them being called!*/
+
 static void __addBlockToPool(memory_pool * _pool,memBlock * _block){
 	_block->nextMemblock = (uint32_t *)_pool->firstMemoryBlock;
 	_pool->firstMemoryBlock = _block;
-	_pool->freeBlocks += 1;
-	OS_notify(_pool);//notify any pools waiting on memory pool to have blocks available 
-	//OS_mutex_release(_pool->memory_pool_lock);
+	_pool->freeBlocks += 1; 
 }
 
-/*assumes pool already locked*/
+
 static memBlock * __removeBlockFromPool(memory_pool * _pool){
-	/*TODO needs to be implemented:
-	1) get memblock pointer from pool
-	2) extract memory head pointer
-	3) hash head pointer and use it as key to store memblock pointer in hashtable
-	4) give memblock pointer to task*/
+	//retrieve block from pool
+	memBlock * block = _pool->firstMemoryBlock;
+	_pool->firstMemoryBlock = (memBlock *) block->nextMemblock;
+	block->nextMemblock = NULL;
+	//place into hashtable that keeps track of allocated blocks
+	__placeBlockIntoBucket(block);
+	return block;
 }
 
-//for hash table
+/* HASH TABLE RELATED
+lock for the hashtable is aquired when function is called (blocking)*/
+
 static void __placeBlockIntoBucket(memBlock * _block){
 	OS_mutex_acquire(&hashtable_lock);
 	//determine into what bucket to place the block
