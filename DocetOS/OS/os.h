@@ -49,7 +49,7 @@ OS_TCB_t * OS_currentTCB(void);
 uint32_t OS_elapsedTicks(void);
 
 /* Returns check code used in OS_wait() to determine if wait is still needed*/
-volatile uint32_t const OS_checkCode(void);
+uint32_t OS_checkCode(void);
 
 /******************************************/
 /* Task creation and management functions */

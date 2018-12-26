@@ -64,7 +64,7 @@ uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _
 	}
 	
 	/* restoring heap property */
-	minHeapNode * node = _heap->nextEmptyElement;
+	volatile minHeapNode * node = _heap->nextEmptyElement;
 	node->ptrToNodeContent = _element_to_add;
 	node->nodeValue = _value_to_order_by;
 	uint32_t currentNodeIndex = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
@@ -134,7 +134,7 @@ uint32_t removeNode(minHeap * _heap, void * * _return_content){
 	_heap->nextEmptyElement--;//node removed, so need to move empty element pointer
 	// restore heap property (heap down)
 	elemIdx = 0;
-	const uint32_t maxValidIdx = (_heap->nextEmptyElement-1) - _heap->ptrToUnderlyingArray;
+	const int maxValidIdx = (_heap->nextEmptyElement-1) - _heap->ptrToUnderlyingArray;
 	while(maxValidIdx != -1 ){// maxValidIdx is -1 when nextEmptyElement == ptrToUnderlyingArray
 		#ifdef HEAP_DEBUG
 		printf("RESTORING HEAP PROPERTY...\r\n");
@@ -177,11 +177,10 @@ uint32_t removeNode(minHeap * _heap, void * * _return_content){
 	return 1;
 }
 
-
-uint32_t getIndexOfNodeWithThisContent(minHeap * _heap,  void * const _content_ptr, uint32_t * _return_index){
-	//TODO need hashmap implementation for improved efficiency
-
-}
+// TODO : determine if this is still needed
+//uint32_t getIndexOfNodeWithThisContent(minHeap * _heap,  void * const _content_ptr, uint32_t * _return_index){
+//	//TODO need hashmap implementation for improved efficiency
+//}
 
 //================================================================================
 // Internal Functions

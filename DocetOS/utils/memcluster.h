@@ -33,3 +33,4 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 uint32_t djb2_hash(uint32_t thing_to_hash);// hash algo by D. J. Bernstein (https://cr.yp.to/djb.html)
 
 #endif /* MEMCLUSTER_H */
+

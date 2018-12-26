@@ -20,7 +20,7 @@ static OS_Scheduler_t const * _scheduler = 0;
 
 /* GLOBAL: check code used by wait() function to determine if wait is still needed or if notify has been called in the interim*/
 static volatile uint32_t  _checkCode = 0;
-volatile uint32_t const OS_checkCode(void){
+uint32_t OS_checkCode(void){
 	return _checkCode;
 }
 

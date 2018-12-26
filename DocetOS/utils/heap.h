@@ -39,3 +39,4 @@ uint32_t getIndexOfNodeWithThisContent(minHeap * _heap,  void * const _content_p
 void printHeap(minHeap * heap);
 
 #endif //DOCETOS_HEAP_H
+

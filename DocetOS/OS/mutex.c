@@ -47,6 +47,7 @@ uint32_t OS_mutex_acquire_non_blocking(OS_mutex_t * _mutex){
 			return 1;//got lock !
 		}
 	}
+	return 0;// other TCB owns lock, continue with execution (since this is nonblocking)
 }
 
 void OS_mutex_release(OS_mutex_t * _mutex){
