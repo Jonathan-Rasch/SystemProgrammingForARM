@@ -166,7 +166,8 @@ void _svc_OS_addTask(_OS_SVC_StackFrame_t const * const stack) {
 	   argument to the SVC pseudo-function.  SVC handlers are called with the stack
 	   pointer in r0 (see os_asm.s) so the stack can be interrogated to find the TCB
 	   pointer. */
-	_scheduler->addtask_callback((OS_TCB_t *)stack->r0);
+	uint32_t task_priority = stack->r1;
+	_scheduler->addtask_callback((OS_TCB_t *)stack->r0,task_priority);
 }
 
 /* SVC handler to invoke the scheduler (via a callback) from PendSV */

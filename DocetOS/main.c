@@ -2,7 +2,7 @@
 #include "utils/heap.h"
 #include <stdio.h>
 #include "utils/serial.h"
-#include "simpleRoundRobin.h"
+#include "patientPreemptivePriorityScheduler.h"
 #include <stdlib.h>
 #include "sleep.h"
 #include "mutex.h"
@@ -214,6 +214,7 @@ int main(void) {
 	   Remember that stacks must be 8-byte aligned. */
 	__align(8)
 	static uint32_t stack1[64], stack2[64], stack3[64], stack4[64];
+	static minHeapNode heapNodeArray[4];
 	static OS_TCB_t TCB1, TCB2, TCB3, TCB4;
 	
 	memory_cluster_init(&memcluster,mempool,MEMCLUSTER_SIZE);
@@ -230,10 +231,13 @@ int main(void) {
 	OS_initialiseTCB(&TCB2, stack2+64, task2, 0);
 	OS_initialiseTCB(&TCB3, stack3+64, task3, 0);
 	OS_initialiseTCB(&TCB4, stack4+64, task4, 0);
-	
-	OS_addTask(&TCB1);
-	OS_addTask(&TCB2);
-	OS_addTask(&TCB3);
-	OS_addTask(&TCB4);
+
+	/* Initialise and start the OS */
+	patientPreemptivePriorityScheduler.initialize(heapNodeArray,4);
+	OS_init(&patientPreemptivePriorityScheduler);
+	OS_addTask(&TCB1,11);
+	OS_addTask(&TCB2,5);
+	OS_addTask(&TCB3,7);
+	OS_addTask(&TCB4,2);
 	OS_start();
 }
