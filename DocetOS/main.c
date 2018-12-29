@@ -220,11 +220,6 @@ int main(void) {
 	memory_cluster_init(&memcluster,mempool,MEMCLUSTER_SIZE);
 	OS_init_mutex(&testMutex);
 	OS_init_mutex(&printLock);
-	/* Initialise and start the OS */
-	OS_init(&simpleRoundRobinScheduler);
-	
-	/*NO CODE ABOVE THIS POINT*/
-	
 	
 	/* Initialise the TCBs using the two functions above */
 	OS_initialiseTCB(&TCB1, stack1+64, task1, 0);
@@ -235,9 +230,13 @@ int main(void) {
 	/* Initialise and start the OS */
 	patientPreemptivePriorityScheduler.initialize(heapNodeArray,4);
 	OS_init(&patientPreemptivePriorityScheduler);
+	
+	/*NO CODE ABOVE THIS POINT*/
 	OS_addTask(&TCB1,11);
 	OS_addTask(&TCB2,5);
 	OS_addTask(&TCB3,7);
 	OS_addTask(&TCB4,2);
+	
+	
 	OS_start();
 }

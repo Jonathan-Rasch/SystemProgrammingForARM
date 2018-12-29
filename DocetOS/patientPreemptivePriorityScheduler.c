@@ -131,8 +131,7 @@ static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task
 	-> this means that the heap needs to be locked. This could be done via mutex.
 	-> But if low priority TaskZ gets the lock, it might take a while for it to "randomly" get cpu time again (chance of being choosen based on task priority).
 	-> all other tasks that need to work with the scheduler heap will be blocked in the meantime.
-	-> hence it is more efficient to just prevent interrupts when heap is being worked on.
-	*/
+	-> hence it is more efficient to just prevent interrupts when heap is being worked on.*/
 	__disable_irq();
     if (addNode(&heapStruct,tcb,task_priority)) {
         #ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
@@ -189,8 +188,12 @@ static void patientPreemptivePriority_taskExit(OS_TCB_t * const tcb){
      * -> or lock heap?*/   
 }
 
+//=============================================================================
+// wait and notify hash table
+//=============================================================================
+#define NUM_BUCKETS_FOR_WAIT_HASHTABLE
 static void patientPreemptivePriority_waitCallback(void * const _reason, uint32_t checkCode){
-	ASSERT(0);// TODO IMPLEMENT
+	
 }
 
 static void patientPreemptivePriority_notifyCallback(void * const reason){

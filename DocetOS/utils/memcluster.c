@@ -291,7 +291,7 @@ static void __printHashtable(void){
 //================================================================================
 // Utility Functions
 //================================================================================
-
+//TODO: move to hashtable file
 /* hash algo by D. J. Bernstein (https://cr.yp.to/djb.html), XOR variant.
 I modified it slightly so that it operates on a single uint32_t only (i dont need to hash strings).
 This hashing algo has a good distribution and colissions are rare, so perfect for my usecase*/
