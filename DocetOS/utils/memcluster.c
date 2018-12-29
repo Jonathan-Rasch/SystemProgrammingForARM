@@ -104,7 +104,7 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 -> the user is responsible for not writing more than the size they requested (even though the block returned COULD be larger).
 -> user is responsible for passing the SAME pointer (not a pointer somewhere in the given memory) back to the deallocate function when no longer needed.*/
 static uint32_t * allocate(uint32_t required_size_in_4byte_words){
-	//input checking
+	/*input checking*/
 	if(required_size_in_4byte_words == 0){
 		printf("ERROR: cannot allocate memory of size 0 words\r\n");
 		return NULL;
@@ -126,14 +126,30 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 	}
 	/* pool of correct size found, no try to grab a lock on a pool with free blocks*/
 	uint32_t initialSelectedIdx = selectedPoolIdx;
+	/*initialSelectedIdx:
+		-> points to the smallest pool that can fit the desired size, this would be the ideal choice*/
 	uint32_t freeBlocks = 0;
 	while(1){
+		/*first step is to attempt to get a lock for the currently selected pool. This is done in blocking mode, since
+		aquiering a block is quick and does not warrant for a task that is blocked moving to the next larger pool*/
+		selectedPool = &pools[selectedPoolIdx];
 		OS_mutex_acquire(selectedPool->memory_pool_lock);
+		/*the lock has been obtained, now check if the pool has any free blocks*/
 		if(selectedPool->freeBlocks){
-			break;
+			/*free block is present. break out of this loop to aquire it (making sure NOT to release lock as that is still needed during the 
+				process of aquiering the lock)*/
+			break; 
+		}
+		/*if we got here then the selected pool did not have any free blocks, now we need to determine what to do next. there are several things to consider:
+			-> 	Attempt to get a block from a pool with a larger block size. this is a bit wastefull (e.g a 256 word block for a 100 item array) but its
+					better than waiting (potentially for a long time) for another task to release a block of appropriate size
+			->	Are there any pools with larger blocks than the pool we just checked? If not lets restart the process at the initial pool*/
+		if(selectedPoolIdx + 1 < NUMBER_OF_POOLS){
+			/*there is a bigger pool to try*/
+			selectedPoolIdx += 1;
 		}else{
-			OS_mutex_release(selectedPool->memory_pool_lock);
-			OS_wait(selectedPool->memory_pool_lock,OS_checkCode());
+			/*no bigger pool to try, reset index to restart the process*/
+			selectedPoolIdx = initialSelectedIdx;
 		}
 	}
 	/*got pool lock on pool with free block(s). store block in hashmap and return pointer to usable memory*/
