@@ -104,17 +104,15 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 -> the user is responsible for not writing more than the size they requested (even though the block returned COULD be larger).
 -> user is responsible for passing the SAME pointer (not a pointer somewhere in the given memory) back to the deallocate function when no longer needed.*/
 static uint32_t * allocate(uint32_t required_size_in_4byte_words){
-	//OS_mutex_acquire(&DEBUG_memclusterLock); //TODO DEBUG
 	//input checking
 	if(required_size_in_4byte_words == 0){
 		printf("ERROR: cannot allocate memory of size 0 words\r\n");
 		return NULL;
 	}
-	//determine the minimum size block required
+	/*determine the minimum size block required*/
 	memory_pool * selectedPool = NULL;
 	int selectedPoolIdx;
-	int numberOfPools = (LARGEST_BLOCK_SIZE - SMALLEST_BLOCK_SIZE) + 1;
-	for(int i=0;i<numberOfPools;i++){
+	for(int i=0;i<NUMBER_OF_POOLS;i++){
 		if(required_size_in_4byte_words > pools[i].blockSize){
 			continue;
 		}
@@ -126,7 +124,7 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 		printf("ERROR: cannot allocate memory of size %d 4byte words, no block large enough.\r\n",required_size_in_4byte_words);
 		return NULL;
 	}
-	// pool of correct size found, no try to grab a lock on a pool with free blocks
+	/* pool of correct size found, no try to grab a lock on a pool with free blocks*/
 	uint32_t initialSelectedIdx = selectedPoolIdx;
 	uint32_t freeBlocks = 0;
 	while(1){
@@ -141,9 +139,10 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 	/*got pool lock on pool with free block(s). store block in hashmap and return pointer to usable memory*/
 	memBlock * block = __removeBlockFromPool(selectedPool);
 	OS_mutex_release(selectedPool->memory_pool_lock);
-	//printf("\tALLOCATED %p[%d] %p -> %p\r\n", block,block->blockSize,block->headPtr,block->headPtr+block->blockSize);
-	//OS_mutex_release(&DEBUG_memclusterLock); //TODO DEBUG
-	//Prevent task A having access to tasks B data
+
+	/*Prevent task A from reading what task B stored in the memblock:
+		-> 	this obviously slows things down, and is far from foolproof (nothing stops TASK A just directly accessing 
+				the memory region before it is reallocated), but it makes it harder*/
 	for(uint32_t i=0;i<block->blockSize;i++){
 			*(block->headPtr+i) = NULL;
 	}
@@ -165,10 +164,9 @@ static void deallocate(void * memblock_head_ptr){
 	X = (log(B)/log(2)) - SMALLEST_BLOCK_SIZE
 	
 	TODO: implement when FPU is enabled, for now just cycle through pools*/
-	int numberOfPools = (LARGEST_BLOCK_SIZE - SMALLEST_BLOCK_SIZE) + 1;
 	memory_pool * pool = NULL;
 	int poolIdx = 0;
-	for(int i = 0;i<numberOfPools;i++){
+	for(int i = 0;i<NUMBER_OF_POOLS;i++){
 		if(pools[i].blockSize != block->blockSize){
 			continue;
 		}
