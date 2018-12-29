@@ -104,7 +104,7 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 -> the user is responsible for not writing more than the size they requested (even though the block returned COULD be larger).
 -> user is responsible for passing the SAME pointer (not a pointer somewhere in the given memory) back to the deallocate function when no longer needed.*/
 static uint32_t * allocate(uint32_t required_size_in_4byte_words){
-	OS_mutex_acquire(&DEBUG_memclusterLock); //TODO DEBUG
+	//OS_mutex_acquire(&DEBUG_memclusterLock); //TODO DEBUG
 	//input checking
 	if(required_size_in_4byte_words == 0){
 		printf("ERROR: cannot allocate memory of size 0 words\r\n");
@@ -142,7 +142,7 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 	memBlock * block = __removeBlockFromPool(selectedPool);
 	OS_mutex_release(selectedPool->memory_pool_lock);
 	//printf("\tALLOCATED %p[%d] %p -> %p\r\n", block,block->blockSize,block->headPtr,block->headPtr+block->blockSize);
-	OS_mutex_release(&DEBUG_memclusterLock); //TODO DEBUG
+	//OS_mutex_release(&DEBUG_memclusterLock); //TODO DEBUG
 	//Prevent task A having access to tasks B data
 	for(uint32_t i=0;i<block->blockSize;i++){
 			*(block->headPtr+i) = NULL;

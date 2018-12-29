@@ -26,10 +26,13 @@ static void DEBUG_printARR(uint32_t * arr,uint32_t size){
 
 void task1(void const *const args) {
 	while(1){
-		OS_mutex_acquire(&printLock);
+		
 		int random =  rand() % 256 + 1;
-		printf("[%d]TASK 1:\r\n",OS_elapsedTicks());
 		uint32_t * mem = memcluster.allocate(random);
+		OS_sleep(rand()%100);
+		////////////////////////////////
+		OS_mutex_acquire(&printLock);
+		printf("[%d]TASK 1:\r\n",OS_elapsedTicks());
 		for(uint32_t i=0;i<random;i++){
 			*(mem+i) = 0x1111;
 			if(*(mem+i) == (0x1111)){
@@ -61,19 +64,23 @@ void task1(void const *const args) {
 			}
 		}
 		//DEBUG_printARR(mem,random);
-		memcluster.deallocate(mem);
-		printf("\tdeallocated %p\r\n",mem);
+		
+		printf("\tdeallocateing.. %p\r\n",mem);
 		OS_mutex_release(&printLock);
+		////////////////////////////
+		OS_sleep(rand()%100);
+		memcluster.deallocate(mem);
 		OS_sleep(rand()%100);
 	}
 }
 
 void task2(void const *const args) {
 	while(1){
-		OS_mutex_acquire(&printLock);
 		int random = rand() % 256 + 1;
-		printf("[%d]TASK 2:\r\n",OS_elapsedTicks());
 		uint32_t * mem = memcluster.allocate(random);
+		//////////////////////////////
+		OS_mutex_acquire(&printLock);
+		printf("[%d]TASK 2:\r\n",OS_elapsedTicks());
 		for(uint32_t i=0;i<random;i++){
 			mem[i] = 0x22222222;
 		}
@@ -100,55 +107,98 @@ void task2(void const *const args) {
 			}
 		}
 		//DEBUG_printARR(mem,random);
-		memcluster.deallocate(mem);
-		printf("\tdeallocated %p\r\n",mem);
+		
+		printf("\tdeallocating... %p\r\n",mem);
 		OS_mutex_release(&printLock);
+		OS_sleep(rand()%100);
+		memcluster.deallocate(mem);
 		OS_sleep(rand()%100);
 	}
 }
 
 void task3(void const *const args) {
 	while(1){
-		OS_mutex_acquire(&printLock);
-		int random = rand() % 256 + 64;
-		printf("TASK 2:\r\n");
+		int random = rand() % 256 + 1;
 		uint32_t * mem = memcluster.allocate(random);
-		printf("\tstoring %d words at %p\r\n",random,mem);
-		for(int i=0;i<random;i++){
-			*(mem+i) = 0x3333;
+		//////////////////////////////
+		OS_mutex_acquire(&printLock);
+		printf("[%d]TASK 3:\r\n",OS_elapsedTicks());
+		for(uint32_t i=0;i<random;i++){
+			mem[i] = 0x22222222;
 		}
+		printf("\tstored %d words at %p -> %p\r\n",random,mem,mem+random);
+		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
+		for(uint32_t i=0;i<random;i++){
+			if(*(mem+i) == (0x22222222)){
+				continue;
+			}else{
+				printf("\tMEMORY ADDR %p NOT INTACT IN TASK3 %#10x\r\n",(mem+i),*(mem+i));
+			}
+		}
+		//DEBUG_printARR(mem,random);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 		OS_mutex_acquire(&printLock);
-		for(int i=0;i<random;i++){
-			if(*(mem+i) == (0x3333)){
+		printf("[%d]TASK 3:\r\n",OS_elapsedTicks());
+		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
+		for(uint32_t i=0;i<random;i++){
+			if(*(mem+i) == (0x22222222)){
 				continue;
 			}else{
-				printf("MEMORY NOT INTACT IN TASK3: %#10x\r\n",*(mem+i));
+				printf("\tMEMORY ADDR %p NOT INTACT IN TASK3 %#10x\r\n",(mem+i),*(mem+i));
 			}
 		}
-		memcluster.deallocate(mem);
-		printf("TASK 3: deallocated %p\r\n",mem);
+		//DEBUG_printARR(mem,random);
+		
+		printf("\tdeallocating... %p\r\n",mem);
 		OS_mutex_release(&printLock);
+		OS_sleep(rand()%100);
+		memcluster.deallocate(mem);
 		OS_sleep(rand()%100);
 	}
 }
 
-//void task4(void const *const args) {
-//	while (1) {
-//		uint32_t * allocated = memcluster.allocate(12);
-//		int numAllocated = 0;
-//		allocatedDebug4[0] = (uint32_t)allocated;
-//		while(numAllocated<16){
-//			allocated = memcluster.allocate(12);
-//			numAllocated += 1;
-//			allocatedDebug4[numAllocated] = (uint32_t)allocated;
-//		}
-//		for(int i= 0;i<=numAllocated;i++){
-//			memcluster.deallocate((uint32_t*)allocatedDebug4[i]);
-//		}
-//	}
-//}
+void task4(void const *const args) {
+	while (1) {
+		int random = rand() % 256 + 1;
+		uint32_t * mem = memcluster.allocate(random);
+		//////////////////////////////
+		OS_mutex_acquire(&printLock);
+		printf("[%d]TASK 4:\r\n",OS_elapsedTicks());
+		for(uint32_t i=0;i<random;i++){
+			mem[i] = 0x22222222;
+		}
+		printf("\tstored %d words at %p -> %p\r\n",random,mem,mem+random);
+		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
+		for(uint32_t i=0;i<random;i++){
+			if(*(mem+i) == (0x22222222)){
+				continue;
+			}else{
+				printf("\tMEMORY ADDR %p NOT INTACT IN TASK4 %#10x\r\n",(mem+i),*(mem+i));
+			}
+		}
+		//DEBUG_printARR(mem,random);
+		OS_mutex_release(&printLock);
+		OS_sleep(rand()%100);
+		OS_mutex_acquire(&printLock);
+		printf("[%d]TASK 4:\r\n",OS_elapsedTicks());
+		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
+		for(uint32_t i=0;i<random;i++){
+			if(*(mem+i) == (0x22222222)){
+				continue;
+			}else{
+				printf("\tMEMORY ADDR %p NOT INTACT IN TASK4 %#10x\r\n",(mem+i),*(mem+i));
+			}
+		}
+		//DEBUG_printARR(mem,random);
+		
+		printf("\tdeallocating... %p\r\n",mem);
+		OS_mutex_release(&printLock);
+		OS_sleep(rand()%100);
+		memcluster.deallocate(mem);
+		OS_sleep(rand()%100);
+	}
+}
 
 /* MAIN FUNCTION */
 
@@ -179,11 +229,11 @@ int main(void) {
 	OS_initialiseTCB(&TCB1, stack1+64, task1, 0);
 	OS_initialiseTCB(&TCB2, stack2+64, task2, 0);
 	OS_initialiseTCB(&TCB3, stack3+64, task3, 0);
-//	OS_initialiseTCB(&TCB4, stack4+64, task4, 0);
+	OS_initialiseTCB(&TCB4, stack4+64, task4, 0);
 	
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
-	//OS_addTask(&TCB3);
-	//OS_addTask(&TCB4);
+	OS_addTask(&TCB3);
+	OS_addTask(&TCB4);
 	OS_start();
 }
