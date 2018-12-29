@@ -28,11 +28,14 @@ static void 				deallocate	(void * memblock_head_ptr);
 
 /* Cluster Init Function
 */
+static OS_mutex_t DEBUG_memclusterLock;
 void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray, uint32_t memory_Size_in_4byte_words){
-	
+	printf("MEMCLUSTER %p -> ",memoryArray);
 	for(int i=0;i<memory_Size_in_4byte_words;i++){
 		memoryArray[i] = NULL;
 	}
+	OS_init_mutex(&DEBUG_memclusterLock);
+	OS_init_mutex(&DEBUG_printHashtableMutex);
 	
 	/*Initializing pools*/
 	for(int i = SMALLEST_BLOCK_SIZE; i <= LARGEST_BLOCK_SIZE; i++){
@@ -40,7 +43,6 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 		memory_pool * pool = &pools[array_idx];
 		OS_mutex_t * pool_lock = &pool_locks[array_idx];
 		OS_init_mutex(pool_lock);
-		OS_init_mutex(&DEBUG_printHashtableMutex);
 		// pool setup
 		pool->freeBlocks = 0;
 		pool->blockSize = pow(2,i);
@@ -56,7 +58,9 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 		int pool_idx = counter % numberOfPools;
 		memory_pool * pool = &pools[pool_idx];
 		//check if block fits into remaining memory
-		uint32_t requiredMemoryForBlock = (sizeof(memBlock)/4) + pool->blockSize;// in 4byte words
+		uint32_t requiredMemoryForBlock = (sizeof(memBlock)/4) + pool->blockSize;
+		/*requiredMemoryForBlock:
+			-> in 4byte words*/
 		if(requiredMemoryForBlock > memory_Size_in_4byte_words){
 			numSkips++;
 			if(numSkips < numberOfPools){
@@ -70,7 +74,7 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 		blockPtr->blockSize = pool->blockSize;
 		blockPtr->nextMemblock = NULL;
 		uint32_t tmp_sizeOfMemblockStruct = (sizeof(memBlock)/4);//TODO: check that i got the size right here, mem should be addressed in 32bit words
-		blockPtr->headPtr = memoryArray + tmp_sizeOfMemblockStruct; // 4bytes for memBlock struct fields
+		blockPtr->headPtr = memoryArray + tmp_sizeOfMemblockStruct; // 3x32bit words for memBlock struct fields
 		//updating vars keeping track of remaining memory
 		memoryArray = memoryArray+requiredMemoryForBlock;
 		memory_Size_in_4byte_words -= requiredMemoryForBlock;
@@ -88,6 +92,7 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 	//TODO
 	memory_cluster->allocate = allocate;
 	memory_cluster->deallocate = deallocate;
+	printf(" %p \r\n",memoryArray);
 }
 //================================================================================
 // MemCluster struct functions
@@ -99,6 +104,7 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 -> the user is responsible for not writing more than the size they requested (even though the block returned COULD be larger).
 -> user is responsible for passing the SAME pointer (not a pointer somewhere in the given memory) back to the deallocate function when no longer needed.*/
 static uint32_t * allocate(uint32_t required_size_in_4byte_words){
+	OS_mutex_acquire(&DEBUG_memclusterLock); //TODO DEBUG
 	//input checking
 	if(required_size_in_4byte_words == 0){
 		printf("ERROR: cannot allocate memory of size 0 words\r\n");
@@ -118,50 +124,29 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 	}
 	if(selectedPool == NULL){
 		printf("ERROR: cannot allocate memory of size %d 4byte words, no block large enough.\r\n",required_size_in_4byte_words);
+		return NULL;
 	}
 	// pool of correct size found, no try to grab a lock on a pool with free blocks
 	uint32_t initialSelectedIdx = selectedPoolIdx;
-	OS_mutex_t * poolLock;
 	uint32_t freeBlocks = 0;
-	for(int i=initialSelectedIdx;i<=numberOfPools;i++){
-		selectedPoolIdx = i;
-		selectedPool = &pools[i];
-		poolLock = selectedPool->memory_pool_lock;
-		if(i < (initialSelectedIdx+LARGER_BLOCK_ALLOCATION_STEP_LIMIT) && i < numberOfPools){
-				/*try and get a hold of the lock of a pool of adequate size, then check if it has free blocks*/
-				if(OS_mutex_acquire_non_blocking(poolLock)){
-					freeBlocks = selectedPool->freeBlocks;
-					if(freeBlocks){
-						break;
-					}else{
-						/*no free blocks, try next pool*/
-						continue;
-					}
-				}else{
-					/*could not get lock, try next pool*/
-					continue;
-				}
+	while(1){
+		OS_mutex_acquire(selectedPool->memory_pool_lock);
+		if(selectedPool->freeBlocks){
+			break;
 		}else{
-				/*trying to aquire lock of largest allowed pool, if that fails then wait for the original selected pool to get released*/
-				if(!OS_mutex_acquire_non_blocking(poolLock)){
-					/*could not aquire lock of largest allowed pool, now go back to the pool of the smallest size that fits the requested
-					memory and wait for its lock to be released*/
-					OS_mutex_acquire(&pool_locks[initialSelectedIdx]);
-				}
-				/*got the lock, but there is no guarantee that there are free blocks, hence check. If still
-				no blocks are free restart the process of trying to aquire a larger block*/
-				freeBlocks = selectedPool->freeBlocks;
-				if(!freeBlocks){//still nothing free
-					i = initialSelectedIdx; //reset counter, restart process
-					continue;
-				}else{
-					break;
-				}
+			OS_mutex_release(selectedPool->memory_pool_lock);
+			OS_wait(selectedPool->memory_pool_lock,OS_checkCode());
 		}
 	}
 	/*got pool lock on pool with free block(s). store block in hashmap and return pointer to usable memory*/
 	memBlock * block = __removeBlockFromPool(selectedPool);
-	OS_mutex_release(poolLock);
+	OS_mutex_release(selectedPool->memory_pool_lock);
+	//printf("\tALLOCATED %p[%d] %p -> %p\r\n", block,block->blockSize,block->headPtr,block->headPtr+block->blockSize);
+	OS_mutex_release(&DEBUG_memclusterLock); //TODO DEBUG
+	//Prevent task A having access to tasks B data
+	for(uint32_t i=0;i<block->blockSize;i++){
+			*(block->headPtr+i) = NULL;
+	}
 	return block->headPtr;
 }
 
@@ -244,38 +229,47 @@ static memBlock * __recoverBlockFromBucket(uint32_t * memory_pointer){
 	uint32_t bucketNumber = hash % MEMPOOL_HASH_TABLE_BUCKET_NUM;
 	//now search for a memblock with the given pointer inside that bucket
 	memBlock * blockPtr = allocatedBlocksBuckets[bucketNumber]; // get ptr to first block
+	memBlock * prevBlock = NULL;
 	while(blockPtr){//stop when NULL ptr (means no more items in linked list)
 		if(blockPtr->headPtr != memory_pointer){
 			//nope, not this block, try next
+			prevBlock = blockPtr;
 			blockPtr = (memBlock *)blockPtr->nextMemblock;
 			continue;
 		}
 		// match ! now remove the block from the linked list and return it so that it can be readded to one of the pools
-		allocatedBlocksBuckets[bucketNumber] = (memBlock *)blockPtr->nextMemblock;
+		if(prevBlock){
+			prevBlock->nextMemblock = blockPtr->nextMemblock;
+		}else{
+			allocatedBlocksBuckets[bucketNumber] = (memBlock *)blockPtr->nextMemblock;
+		}
 		OS_mutex_release(&hashtable_lock);
-		__printHashtable();
+		//__printHashtable();
 		return blockPtr;
 	}
 	// if it gets here then then no block matched (user probably messed up and tried to dealloc a memblock not belonging to the cluster)
 	printf("ERROR: attempt to deallocate memory block that is not part of this memory cluster !\n\r");
 	//ASSERT(0);
 	OS_mutex_release(&hashtable_lock);
-	//__printHashtable();
+	__printHashtable();
 	return NULL;
 }
 
 static OS_mutex_t DEBUG_printHashtableMutex;
 static void __printHashtable(void){
+	return;
 	OS_mutex_acquire(&DEBUG_printHashtableMutex);
-	printf("\r\n");
+	printf("\r\n--------------------------------------------------------------------------\r\n");
 	for(int i =0; i<MEMPOOL_HASH_TABLE_BUCKET_NUM;i++){
 		memBlock * block = allocatedBlocksBuckets[i];
-		printf("BUCKET %d: ",i);
+		printf("BUCKET %d: \r\n",i);
 		while(block){
-			printf("%p[%d] -> ",block,block->blockSize);
+			printf("\t\t--- Block %p ---\r\n",block);
+			printf("\t\tnextMemblock: %p\r\n",block->nextMemblock);
+			printf("\t\tblockSize: %d\r\n",block->blockSize);
+			printf("\t\theadPtr: %p\r\n",block->headPtr);
 			block = (memBlock *)block->nextMemblock;
 		}
-		printf("NULL\r\n");
 	}
 	OS_mutex_release(&DEBUG_printHashtableMutex);
 }
@@ -289,10 +283,10 @@ I modified it slightly so that it operates on a single uint32_t only (i dont nee
 This hashing algo has a good distribution and colissions are rare, so perfect for my usecase*/
 uint32_t djb2_hash(uint32_t thing_to_hash){
 	uint32_t hash = 5381;
-	uint32_t c;
-	for(int i=0;i<4;i++){
-		c = (thing_to_hash >> (i*8)) & 0x000000FF; // essentially pretending that uint32_t is a 4 char string
-		hash = ((hash << 5) + hash) ^ c; /* (hash * 33) ^ c */
+	uint32_t c=0;
+	for(int i=0;i<8;i++){
+		c += (thing_to_hash >> (i*4)) ;
+		hash = ((hash << 5) + hash) ^ c; /* (hash * 33) + c */
 	}
 	return hash;
 }

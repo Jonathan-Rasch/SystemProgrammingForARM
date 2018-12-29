@@ -10,104 +10,180 @@
 
 static OS_mutex_t testMutex;
 static OS_memcluster memcluster;
+#define MEMCLUSTER_SIZE 8192 //8192 = 32 kb
+static uint32_t mempool[MEMCLUSTER_SIZE]; 
+
+static OS_mutex_t printLock;
+
+static void DEBUG_printARR(uint32_t * arr,uint32_t size){
+	printf("\t\t\t Array %p : [",arr);
+	for(int i=0;i<size-1;i++){
+		printf("\r\n\t\t\t\t%#08x, @ %p",arr[i], arr+i);
+	}
+	printf("\r\n\t\t\t\t%#08x] @ %p\r\n",arr[size-1],arr+(size-1));
+	ASSERT(0);
+}
 
 void task1(void const *const args) {
-	while (1) {
-		int somenumber = rand() % 128;
-		uint32_t * someArr = memcluster.allocate(somenumber);
-		for(int i=0;i<somenumber;i++){
-			someArr[i] = rand();
-			OS_mutex_acquire(&testMutex);
-			//printf("1\t\t\t\t\t\t\t\tLock held by: %p\r\n",testMutex.tcbPointer);
-			OS_mutex_release(&testMutex);
-			OS_sleep((rand()% 100) + 1);
+	while(1){
+		OS_mutex_acquire(&printLock);
+		int random =  rand() % 256 + 1;
+		printf("[%d]TASK 1:\r\n",OS_elapsedTicks());
+		uint32_t * mem = memcluster.allocate(random);
+		for(uint32_t i=0;i<random;i++){
+			*(mem+i) = 0x1111;
+			if(*(mem+i) == (0x1111)){
+				continue;
+			}else{
+				printf("\tMEMORY ADDR %p NOT INTACT IN TASK1 %#10x\r\n",(mem+i),*(mem+i));
+			}
 		}
-		memcluster.deallocate(someArr);
-	}
-}
-void task2(void const *const args) {
-	while (1) {
-		int somenumber = rand() % 128;
-		uint32_t * someArr = memcluster.allocate(somenumber);
-		for(int i=0;i<somenumber;i++){
-			someArr[i] = rand();
-			OS_mutex_acquire(&testMutex);
-			//printf("\t\t2\t\t\t\t\t\tLock held by: %p\r\n",testMutex.tcbPointer);
-			OS_mutex_release(&testMutex);
-			OS_sleep((rand()% 100) + 1);
+		printf("\tstored %d words at %p\r\n",random,mem);
+		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
+		for(uint32_t i=0;i<random;i++){
+			if(*(mem+i) == (0x1111)){
+				continue;
+			}else{
+				printf("\tMEMORY ADDR %p NOT INTACT IN TASK1 %#10x\r\n",(mem+i),*(mem+i));
+				DEBUG_printARR(mem,random);
+			}
 		}
-		memcluster.deallocate(someArr);
-	}
-}
-void task3(void const *const args) {
-	while (1) {
-		int somenumber = rand() % 128;
-		uint32_t * someArr = memcluster.allocate(somenumber);
-		for(int i=0;i<somenumber;i++){
-			someArr[i] = rand();
-			OS_mutex_acquire(&testMutex);
-			//printf("\t\t\t\t3\t\t\t\tLock held by: %p\r\n",testMutex.tcbPointer);
-			OS_mutex_release(&testMutex);
-			OS_sleep((rand()% 100) + 1);
+		//DEBUG_printARR(mem,random);
+		OS_mutex_release(&printLock);
+		OS_sleep(rand()%100);
+		OS_mutex_acquire(&printLock);
+		printf("[%d]TASK 1:\r\n",OS_elapsedTicks());
+		for(uint32_t i=0;i<random;i++){
+			if(*(mem+i) == (0x1111)){
+				continue;
+			}else{
+				printf("\tMEMORY ADDR %p NOT INTACT IN TASK1 %#10x\r\n",(mem+i),*(mem+i));
+			}
 		}
-		memcluster.deallocate(someArr);
+		//DEBUG_printARR(mem,random);
+		memcluster.deallocate(mem);
+		printf("\tdeallocated %p\r\n",mem);
+		OS_mutex_release(&printLock);
+		OS_sleep(rand()%100);
 	}
 }
 
-void task4(void const *const args) {
-	while (1) {
-		int somenumber = rand() % 128;
-		uint32_t * someArr = memcluster.allocate(somenumber);
-		for(int i=0;i<somenumber;i++){
-			someArr[i] = rand();
-			OS_mutex_acquire(&testMutex);
-			//printf("\t\t\t\t\t\t4\t\tLock held by: %p\r\n",testMutex.tcbPointer);
-			OS_mutex_release(&testMutex);
-			OS_sleep((rand()% 100) + 1);
+void task2(void const *const args) {
+	while(1){
+		OS_mutex_acquire(&printLock);
+		int random = rand() % 256 + 1;
+		printf("[%d]TASK 2:\r\n",OS_elapsedTicks());
+		uint32_t * mem = memcluster.allocate(random);
+		for(uint32_t i=0;i<random;i++){
+			mem[i] = 0x22222222;
 		}
-		memcluster.deallocate(someArr);
+		printf("\tstored %d words at %p -> %p\r\n",random,mem,mem+random);
+		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
+		for(uint32_t i=0;i<random;i++){
+			if(*(mem+i) == (0x22222222)){
+				continue;
+			}else{
+				printf("\tMEMORY ADDR %p NOT INTACT IN TASK2 %#10x\r\n",(mem+i),*(mem+i));
+			}
+		}
+		//DEBUG_printARR(mem,random);
+		OS_mutex_release(&printLock);
+		OS_sleep(rand()%100);
+		OS_mutex_acquire(&printLock);
+		printf("[%d]TASK 2:\r\n",OS_elapsedTicks());
+		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
+		for(uint32_t i=0;i<random;i++){
+			if(*(mem+i) == (0x22222222)){
+				continue;
+			}else{
+				printf("\tMEMORY ADDR %p NOT INTACT IN TASK2 %#10x\r\n",(mem+i),*(mem+i));
+			}
+		}
+		//DEBUG_printARR(mem,random);
+		memcluster.deallocate(mem);
+		printf("\tdeallocated %p\r\n",mem);
+		OS_mutex_release(&printLock);
+		OS_sleep(rand()%100);
 	}
 }
+
+void task3(void const *const args) {
+	while(1){
+		OS_mutex_acquire(&printLock);
+		int random = rand() % 256 + 64;
+		printf("TASK 2:\r\n");
+		uint32_t * mem = memcluster.allocate(random);
+		printf("\tstoring %d words at %p\r\n",random,mem);
+		for(int i=0;i<random;i++){
+			*(mem+i) = 0x3333;
+		}
+		OS_mutex_release(&printLock);
+		OS_sleep(rand()%100);
+		OS_mutex_acquire(&printLock);
+		for(int i=0;i<random;i++){
+			if(*(mem+i) == (0x3333)){
+				continue;
+			}else{
+				printf("MEMORY NOT INTACT IN TASK3: %#10x\r\n",*(mem+i));
+			}
+		}
+		memcluster.deallocate(mem);
+		printf("TASK 3: deallocated %p\r\n",mem);
+		OS_mutex_release(&printLock);
+		OS_sleep(rand()%100);
+	}
+}
+
+//void task4(void const *const args) {
+//	while (1) {
+//		uint32_t * allocated = memcluster.allocate(12);
+//		int numAllocated = 0;
+//		allocatedDebug4[0] = (uint32_t)allocated;
+//		while(numAllocated<16){
+//			allocated = memcluster.allocate(12);
+//			numAllocated += 1;
+//			allocatedDebug4[numAllocated] = (uint32_t)allocated;
+//		}
+//		for(int i= 0;i<=numAllocated;i++){
+//			memcluster.deallocate((uint32_t*)allocatedDebug4[i]);
+//		}
+//	}
+//}
 
 /* MAIN FUNCTION */
 
 int main(void) {
 	/* Initialise the serial port so printf() works */
 	serial_init();
-
-	printf("\r\nDocetOS Sleep and Mutex\r\n");
+	srand(10);
+	printf("\r\n\t\t\t\t\t\t***************************");
+	printf("\r\n\t\t\t\t\t\t* DocetOS Sleep and Mutex *\r\n");
+	printf("\t\t\t\t\t\t***************************\r\n");
 
 	/* Reserve memory for two stacks and two TCBs.
 	   Remember that stacks must be 8-byte aligned. */
 	__align(8)
-	static uint32_t mempool[8192]; // 32 kb
-	memory_cluster_init(&memcluster,mempool,8192);
+	static uint32_t stack1[64], stack2[64], stack3[64], stack4[64];
+	static OS_TCB_t TCB1, TCB2, TCB3, TCB4;
+	
+	memory_cluster_init(&memcluster,mempool,MEMCLUSTER_SIZE);
 	OS_init_mutex(&testMutex);
-
+	OS_init_mutex(&printLock);
 	/* Initialise and start the OS */
 	OS_init(&simpleRoundRobinScheduler);
 	
 	/*NO CODE ABOVE THIS POINT*/
 	
-	static uint32_t * stack1;
-	static uint32_t * stack2;
-	static uint32_t * stack3;
-	static uint32_t * stack4;
-	static OS_TCB_t TCB1, TCB2, TCB3, TCB4;
-	stack1 = memcluster.allocate(64);
-	stack2 = memcluster.allocate(64);
-	stack3 = memcluster.allocate(64);
-	stack4 = memcluster.allocate(64);
 	
 	/* Initialise the TCBs using the two functions above */
 	OS_initialiseTCB(&TCB1, stack1+64, task1, 0);
 	OS_initialiseTCB(&TCB2, stack2+64, task2, 0);
 	OS_initialiseTCB(&TCB3, stack3+64, task3, 0);
-	OS_initialiseTCB(&TCB4, stack4+64, task4, 0);
+//	OS_initialiseTCB(&TCB4, stack4+64, task4, 0);
 	
 	OS_addTask(&TCB1);
 	OS_addTask(&TCB2);
-	OS_addTask(&TCB3);
-	OS_addTask(&TCB4);
+	//OS_addTask(&TCB3);
+	//OS_addTask(&TCB4);
 	OS_start();
 }
