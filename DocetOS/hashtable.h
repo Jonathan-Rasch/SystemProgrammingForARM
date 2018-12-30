@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "utils/memcluster.h"
+
 //structs
 typedef struct{
 	uint32_t * next_hashtable_value;
@@ -24,3 +25,4 @@ uint32_t hashtable_put(OS_hashtable *,uint32_t key,uint32_t * value);
 uint32_t * hashtable_get(OS_hashtable *, uint32_t key);
 uint32_t * hashtable_remove(OS_hashtable * _hashtable, uint32_t _key);
 #endif
+

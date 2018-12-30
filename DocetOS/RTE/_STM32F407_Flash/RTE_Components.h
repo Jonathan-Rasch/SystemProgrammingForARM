@@ -3,7 +3,7 @@
  * Auto generated Run-Time-Environment Component Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'DocetOS' 
+ * Project: 'DocetOS_sleep_wait' 
  * Target:  'STM32F407 Flash' 
  */
 

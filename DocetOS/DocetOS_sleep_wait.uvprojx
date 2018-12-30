@@ -476,6 +476,16 @@
               <FileType>5</FileType>
               <FilePath>.\utils\memcluster.h</FilePath>
             </File>
+            <File>
+              <FileName>hashtable.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hashtable.c</FilePath>
+            </File>
+            <File>
+              <FileName>hashtable.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hashtable.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

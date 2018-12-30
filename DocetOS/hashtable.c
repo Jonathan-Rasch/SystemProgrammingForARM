@@ -141,6 +141,8 @@ uint32_t * hashtable_remove(OS_hashtable * _hashtable, uint32_t _key){
 			hashtable_value * tmp_hashtable_val = (hashtable_value *)_hashtable->free_hashtable_value_struct_linked_list;
 			_hashtable->free_hashtable_value_struct_linked_list = (uint32_t *)hash_val;
 			hash_val->next_hashtable_value = (uint32_t *)tmp_hashtable_val;
+			//increase remaining capacity since an element just freed up
+			_hashtable->remaining_capacity++;
 			break;
 		}else{
 			prev_hash_val = hash_val;
@@ -154,7 +156,7 @@ uint32_t * hashtable_remove(OS_hashtable * _hashtable, uint32_t _key){
 // UTILITY FUNCTIONS
 //=============================================================================
 
-/* hash algo by D. J. Bernstein (https://cr.yp.to/djb.html), XOR variant.
+/* modified hash algo by D. J. Bernstein (https://cr.yp.to/djb.html), XOR variant.
 I modified it slightly so that it operates on a single uint32_t only (i dont need to hash strings).
 This hashing algo has a good distribution and colissions are rare, so perfect for my usecase*/
 uint32_t djb2_hash(uint32_t thing_to_hash){

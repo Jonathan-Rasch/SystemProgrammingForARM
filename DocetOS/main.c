@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "sleep.h"
 #include "mutex.h"
-#include "hashtable.h"
+#include "../hashtable.h"
 #include "utils/memcluster.h"
 
 static OS_mutex_t testMutex;
