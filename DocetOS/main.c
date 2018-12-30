@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "sleep.h"
 #include "mutex.h"
+#include "hashtable.h"
 #include "utils/memcluster.h"
 
 static OS_mutex_t testMutex;
@@ -232,6 +233,31 @@ int main(void) {
 	OS_init(&patientPreemptivePriorityScheduler);
 	
 	/*NO CODE ABOVE THIS POINT*/
+	
+	/*memcluster test*/
+	OS_hashtable * hasht = new_hashtable(&memcluster,8,4);
+	uint32_t someval[8] = {5,7,9,11,13,15,17,19};
+	for(int i=0;i<8;i++){
+		hashtable_put(hasht,i*5,&someval[i]);
+	}
+	for(int i=0;i<8;i++){
+		printf("value %d\r\n",*hashtable_get(hasht,i*5));
+	}
+	for(int i=0;i<8;i++){
+		printf("value %d\r\n",*hashtable_get(hasht,i*5));
+	}
+	for(int i=0;i<8;i++){
+		printf("value %d\r\n",*hashtable_remove(hasht,i*5));
+	}
+	for(int i=0;i<8;i++){
+		printf("value %d\r\n",*hashtable_get(hasht,i*5));
+	}
+	for(int i=0;i<8;i++){
+		hashtable_put(hasht,i*5,&someval[i]);
+	}
+	for(int i=0;i<8;i++){
+		printf("value %d\r\n",*hashtable_get(hasht,i*5));
+	}
 	OS_addTask(&TCB1,11);
 	OS_addTask(&TCB2,5);
 	OS_addTask(&TCB3,7);

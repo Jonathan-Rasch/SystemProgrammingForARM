@@ -10,7 +10,7 @@
 // INIT
 //=============================================================================
 
-OS_hashtable * init_hashtable(OS_memcluster * memcluster,uint32_t _capacity,uint32_t _number_of_buckets){
+OS_hashtable * new_hashtable(OS_memcluster * memcluster,uint32_t _capacity,uint32_t _number_of_buckets){
 	uint32_t required_size_4ByteWords = sizeof(OS_hashtable)/4;
 	required_size_4ByteWords += _capacity * (sizeof(hashtable_value)/4);
 	required_size_4ByteWords += _number_of_buckets;
@@ -80,9 +80,9 @@ uint32_t hashtable_put(OS_hashtable * _hashtable, uint32_t key,uint32_t * _value
 	if(_hashtable->remaining_capacity == 0){
 		return 0; //hashtable is full
 	}
-	/*obtain hashtable_value struct if one is available*/
-	hashtable_value * hashtable_val = NULL;//TODO
-	ASSERT(0);
+	/*obtain hashtable_value struct from linked list of free structs*/
+	hashtable_value * hashtable_val = (hashtable_value*)_hashtable->free_hashtable_value_struct_linked_list;
+	_hashtable->free_hashtable_value_struct_linked_list = hashtable_val->next_hashtable_value;
 	hashtable_val->underlying_data = _value;
 	hashtable_val->key = key;
 	/*determine bucket*/

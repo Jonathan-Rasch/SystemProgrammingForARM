@@ -197,7 +197,7 @@ static void patientPreemptivePriority_waitCallback(void * const _reason, uint32_
 }
 
 static void patientPreemptivePriority_notifyCallback(void * const reason){
-	ASSERT(0);// TODO IMPLEMENT
+	// TODO IMPLEMENT
 }
 
 //=============================================================================

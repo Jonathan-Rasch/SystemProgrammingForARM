@@ -2,6 +2,7 @@
 #include "math.h"
 #include <stdio.h>
 #include "stm32f4xx.h"
+#include "../hashtable.h"
 
 //================================================================================
 // Vars, Definitions, Prototypes And Init Function
@@ -295,12 +296,12 @@ static void __printHashtable(void){
 /* hash algo by D. J. Bernstein (https://cr.yp.to/djb.html), XOR variant.
 I modified it slightly so that it operates on a single uint32_t only (i dont need to hash strings).
 This hashing algo has a good distribution and colissions are rare, so perfect for my usecase*/
-uint32_t djb2_hash(uint32_t thing_to_hash){
-	uint32_t hash = 5381;
-	uint32_t c=0;
-	for(int i=0;i<8;i++){
-		c += (thing_to_hash >> (i*4)) ;
-		hash = ((hash << 5) + hash) ^ c; /* (hash * 33) + c */
-	}
-	return hash;
-}
+//uint32_t djb2_hash(uint32_t thing_to_hash){
+//	uint32_t hash = 5381;
+//	uint32_t c=0;
+//	for(int i=0;i<8;i++){
+//		c += (thing_to_hash >> (i*4)) ;
+//		hash = ((hash << 5) + hash) ^ c; /* (hash * 33) + c */
+//	}
+//	return hash;
+//}
