@@ -3,8 +3,7 @@
 
 #include "task.h"
 #include "sleep.h"
-#include "mutex.h"
-#include "..\utils\heap.h"
+#include "../structs.h"
 /********************/
 /* Type definitions */
 /********************/
@@ -29,7 +28,6 @@ typedef struct {
 	void (* taskexit_callback)(OS_TCB_t * const task);//ME:called automatically on task func return. DO NOT CALL MANUALLY
 	void (* wait_callback)(void * const reason, uint32_t check_Code);
 	void (* notify_callback)(void * const reason);
-	void (*initialize)(minHeapNode * _heap_node_array,uint32_t _size_of_heap_node_array);//ME:needed for my scheduler to set up underlying heap
 } OS_Scheduler_t;
 
 /***************************/

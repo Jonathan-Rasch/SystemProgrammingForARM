@@ -8,6 +8,7 @@
 #include "mutex.h"
 #include "../hashtable.h"
 #include "utils/memcluster.h"
+#include "structs.h"
 
 static OS_mutex_t testMutex;
 static OS_memcluster memcluster;
@@ -229,7 +230,7 @@ int main(void) {
 	OS_initialiseTCB(&TCB4, stack4+64, task4, 0);
 
 	/* Initialise and start the OS */
-	patientPreemptivePriorityScheduler.initialize(heapNodeArray,4);
+	//patientPreemptivePriorityScheduler.initialize(heapNodeArray,4); //TODO refactor with new init method
 	OS_init(&patientPreemptivePriorityScheduler);
 	
 	/*NO CODE ABOVE THIS POINT*/

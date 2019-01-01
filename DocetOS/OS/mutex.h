@@ -3,12 +3,7 @@
 
 #include "os.h"
 #include "stm32f4xx.h"
-
-typedef struct{
-	uint32_t counter;
-	OS_TCB_t * tcbPointer;//pointer to a pointer to a tcb
-}OS_mutex_t;
-
+#include "../structs.h"
 
 //================================================================================
 // Exported Functions

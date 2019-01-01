@@ -2,21 +2,8 @@
 #define DOCETOS_HASHTABLE_H
 
 #include <stdint.h>
-#include "utils/memcluster.h"
+#include "..\structs.h"
 
-//structs
-typedef struct{
-	uint32_t * next_hashtable_value;
-	uint32_t * underlying_data;
-	uint32_t key;
-}hashtable_value;
-
-typedef struct{
-	uint32_t number_of_buckets;
-	uint32_t maximum_capacity;
-	uint32_t remaining_capacity;
-	uint32_t * free_hashtable_value_struct_linked_list;
-}OS_hashtable;
 
 //prototypes
 OS_hashtable * new_hashtable(OS_memcluster * memcluster,uint32_t _capacity,uint32_t _number_of_buckets);

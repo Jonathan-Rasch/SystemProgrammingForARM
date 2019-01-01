@@ -4,25 +4,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "debug.h"
+#include "..\structs.h"
 
 #define MAX_HEAP_SIZE 63 // 2^N - 1 , where n is the number of desired levels in binary tree
 
-typedef struct __s_node{
-    void * volatile ptrToNodeContent; //ME: leave as volatile for now, ptr changes during swap
-    /* Node value is used when restoring heap*/
-    volatile uint32_t nodeValue;
-}minHeapNode;
 
-typedef struct __s_heap{
-    /* the heap has an underlying array of nodes. each node holds a value that is used during the
-     * restoration of the heap (node->nodeValue). */
-    minHeapNode *   ptrToUnderlyingArray;
-    uint32_t        maxNumberOfNodes;
-    volatile uint32_t        currentNumNodes;
-    volatile minHeapNode *   nextEmptyElement;
-    minHeapNode *   lastArrayElement;
-
-}minHeap;
 
 //=============================================================================
 // Exported Functions
