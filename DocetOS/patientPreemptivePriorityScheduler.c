@@ -29,7 +29,6 @@ static uint32_t __removeIfWaiting(uint32_t _index);
 
 //things needed for creating the heap used in the scheduler
 static minHeap * heapStruct;
-static OS_mutex_t heapLock;
 static OS_hashtable * waitingTasksHashTable;
 
 //=============================================================================
@@ -50,7 +49,6 @@ OS_Scheduler_t const patientPreemptivePriorityScheduler = {
 void initialize_scheduler(OS_memcluster * _memcluster,uint32_t _size_of_heap_node_array){
 		waitingTasksHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
     heapStruct = initHeap(_memcluster,_size_of_heap_node_array); //TODO check if correct size is passed down here
-		OS_init_mutex(&heapLock);//TODO: determine if a mutex is needed in the scheduler
 		srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so dont really care
 }
 
@@ -68,8 +66,9 @@ static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
     /*check if task has yielded or force it to yield if it has exceeded max allowed task time*/
 		if( currentTaskTCB != OS_idleTCB_p ){
 			uint32_t hasCurrentTaskYielded = currentTaskTCB->state & TASK_STATE_YIELD;
+			uint32_t isCurrentTaskWaiting = currentTaskTCB->state & TASK_STATE_WAIT;
 			ticksSinceLastTaskSwitch += 1;
-			if(!hasCurrentTaskYielded){
+			if(!hasCurrentTaskYielded && !isCurrentTaskWaiting){
 					// now check if task has run for more than max allowed time
 					if(ticksSinceLastTaskSwitch <= MAX_TASK_TIME_IN_SYSTICKS){
 							//task is allowed to continue running
@@ -143,25 +142,16 @@ Depending on the given priority the task has a higher or lower probability of be
 NOTE: Schould there be no space on the heap the task is not added.
 */
 static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task_priority){
-	/* DISABELING INTERRUPTS FOR THE DURATION OF THIS FUNCTION. Reason:
-	-> This scheduler is based on probability, so a low priority task (lets say TaskZ) still has a small probability of being run
-	-> If TaskZ runs and calls "addTask" it will result in the heap property needing to be checked/restored.
-	-> if that process gets interrupted by context switch to TaskB, which also calls "addTask" before heap is restored it could mess up the heap
-	-> this means that the heap needs to be locked. This could be done via mutex.
-	-> But if low priority TaskZ gets the lock, it might take a while for it to "randomly" get cpu time again (chance of being choosen based on task priority).
-	-> all other tasks that need to work with the scheduler heap will be blocked in the meantime.
-	-> hence it is more efficient to just prevent interrupts when heap is being worked on.*/
-	__disable_irq();
-    if (addNode(heapStruct,tcb,task_priority)) {
-        #ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
-            printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,heapStruct->currentNumNodes);
-        #endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
-    }else{
-        #ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
-            printf("SCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,heapStruct->currentNumNodes);
-        #endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
-    }
-	__enable_irq();
+	tcb->priority = task_priority;
+	if (addNode(heapStruct,tcb,task_priority)) {
+			#ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
+					printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,heapStruct->currentNumNodes);
+			#endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
+	}else{
+			#ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
+					printf("SCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,heapStruct->currentNumNodes);
+			#endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
+	}
 }
 
 
@@ -212,18 +202,31 @@ static void patientPreemptivePriority_taskExit(OS_TCB_t * const tcb){
 /*Marks the current task as waitin and adds it to the hashtable that keeps track of all waiting tasks. The Task is not
 actually removed from the heap, this is done by the scheduler.*/
 static void patientPreemptivePriority_waitCallback(void * const _reason, uint32_t checkCode){
-	__disable_irq();
+	if (checkCode != OS_checkCode()){
+		return;//checkcode mismatch, notify called during function that uses wait
+	}
+	//printf("\r\nINFO: task %p starting to wait for %p ...\r\n",OS_currentTCB(),_reason);
 	/*add current task to the waiting hash_table*/
 	OS_TCB_t * currentTCB = OS_currentTCB();
 	uint32_t returnCode = hashtable_put(waitingTasksHashTable,(uint32_t)_reason,(uint32_t *)currentTCB);
 	//TODO: if hashtable is full (returnCode = 0) make task sleep instead, for now assume waitinTasksHashTable can hold max number of tasks
 	currentTCB->state |= TASK_STATE_WAIT;
-	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk; //invoke scheduler by setting pendsv bit.
-	__enable_irq();
 }
 
 static void patientPreemptivePriority_notifyCallback(void * const reason){
-	// TODO IMPLEMENT
+	/*add all the tasks that are waiting for the given reason back to the scheduler heap*/
+	//printf("\r\n>>>>>>NOTIFY: %p <<<<<<\r\n",reason);
+	if(waitingTasksHashTable == NULL){
+		return;//during initialisation locks are released calling notify, but hash table is not created yet
+	}
+	while(1){
+		OS_TCB_t * task = (OS_TCB_t*)hashtable_remove(waitingTasksHashTable,(uint32_t)reason);
+		if(task == NULL){
+			break;
+		}
+		//printf("\r\nNOTIFY %p: woke up %p \r\n",reason,task);
+		addNode(heapStruct,task,task->priority);
+	}
 }
 
 //=============================================================================
@@ -243,12 +246,12 @@ heap used by the scheduler (heap property restored in the process).
 
 returns: 1 if the task at_index was waiting and has been removed, 0 otherwise.
 */
+static void * waitingNode;
 static uint32_t __removeIfWaiting(uint32_t _index){
 	OS_TCB_t * task = heapStruct->ptrToUnderlyingArray[_index].ptrToNodeContent;
 	if(task->state &= TASK_STATE_WAIT){
-		void * waitingNode;//irrelevant what gets placed in here, result is not used
-		removeNodeAt(heapStruct,_index,waitingNode);
-		printf("INFO: scheduler removed node (%p) at index %d in heap because it is waiting\r\n",waitingNode,_index);
+		removeNodeAt(heapStruct,_index,&waitingNode);
+		task->state &= ~TASK_STATE_WAIT; //clear wait state, node removed from scheduler heap
 		return 1;
 	}else{
 		return 0;

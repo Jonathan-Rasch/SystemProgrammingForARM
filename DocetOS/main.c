@@ -205,6 +205,7 @@ void task4(void const *const args) {
 /* MAIN FUNCTION */
 
 int main(void) {
+	SCnSCB->ACTLR = SCnSCB_ACTLR_DISDEFWBUF_Msk; //DEBUG, converting IMPRECISERR into PRECISERR
 	/* Initialise the serial port so printf() works */
 	serial_init();
 	srand(10);

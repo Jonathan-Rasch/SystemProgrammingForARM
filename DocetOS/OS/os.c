@@ -144,6 +144,7 @@ void _svc_OS_wait(_OS_SVC_StackFrame_t const * const stack){
 	void * reason = (void *)stack->r0;
 	uint32_t checkCode = (uint32_t)stack->r1;
 	_scheduler->wait_callback(reason, checkCode);
+	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
 
 /* SVC handler for OS_notify()*/
