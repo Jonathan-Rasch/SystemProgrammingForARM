@@ -2,7 +2,7 @@
 #include "../utils/heap.h"
 #include "mutex.h"
 #include <stdlib.h>
-
+#include "hashtable.h"
 /*
  * The scheduler has the following features:
  * -> Task priority:
@@ -25,10 +25,12 @@ static void patientPreemptivePriority_taskExit(OS_TCB_t * const tcb);
 static void patientPreemptivePriority_waitCallback(void * const _reason, uint32_t checkCode);
 static void patientPreemptivePriority_notifyCallback(void * const reason);
 static int __getRandForTaskChoice(void);
+static uint32_t __removeIfWaiting(uint32_t _index);
 
 //things needed for creating the heap used in the scheduler
 static minHeap * heapStruct;
 static OS_mutex_t heapLock;
+static OS_hashtable * waitingTasksHashTable;
 
 //=============================================================================
 // Scheduler struct definition and init function
@@ -46,6 +48,7 @@ OS_Scheduler_t const patientPreemptivePriorityScheduler = {
 
 /*TODO init scheduler by just passing it pointer to mempool !*/
 void initialize_scheduler(OS_memcluster * _memcluster,uint32_t _size_of_heap_node_array){
+		waitingTasksHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
     heapStruct = initHeap(_memcluster,_size_of_heap_node_array); //TODO check if correct size is passed down here
 		OS_init_mutex(&heapLock);//TODO: determine if a mutex is needed in the scheduler
 		srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so dont really care
@@ -57,8 +60,6 @@ void initialize_scheduler(OS_memcluster * _memcluster,uint32_t _size_of_heap_nod
 /* Determines which of the AWAKE and NOT WAITING tasks should be executed. The choice of task is RANDOM,
 but the probability of each task being selected corresponds to its position in the heap. So tasks with a low priority 
 (low down in the heap) will have a small but non-zero chance of getting cpu time.
-
-TODO: Need default task to run for when heap is empty.(round robin scheduler has one I think)
 */
 static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
     static int ticksSinceLastTaskSwitch = 0;// used to force task to yield after MAX_TASK_TIME_IN_SYSTICKS
@@ -90,7 +91,16 @@ static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
 		{
 			int randNodeSelection = __getRandForTaskChoice(); // please see function definition for info on return values
 			int nodeIndex = 0; //starting with highest priority node
-			const int maxValidHeapIdx = heapStruct->currentNumNodes - 1;
+			int maxValidHeapIdx = heapStruct->currentNumNodes - 1;
+			/*check if highest node is waiting, remove if it is, repeat until top node is not waiting*/
+			while(__removeIfWaiting(0)){
+				if(heapStruct->currentNumNodes == 0){
+					/*after removing the top node from the heap it turns out that the heap is empty (all tasks waiting or asleep)
+					hence return idle task*/
+					return OS_idleTCB_p;
+				}
+			}
+			int lastNotWaitingNodeIndex = nodeIndex;
 			while(randNodeSelection){
 				/*current node not selected, one of its children has been selected. check if node has valid child node*/
 				int nextNodeIdx;
@@ -99,6 +109,17 @@ static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
 				}else{//right child
 					nextNodeIdx = getSecondChildIndex(nodeIndex);
 				}
+				/*remove the current node if the task is waiting*/
+				while(__removeIfWaiting(nodeIndex)){
+					//waiting node removed
+					maxValidHeapIdx = heapStruct->currentNumNodes - 1;
+					if(nodeIndex > maxValidHeapIdx){
+						/*after removing a waiting node at this index it turns out that this index no longer
+						lies within the valid heap, return the last not sleeping task encountered in the heap*/
+						return heapStruct->ptrToUnderlyingArray[lastNotWaitingNodeIndex].ptrToNodeContent;
+					}
+				}
+				lastNotWaitingNodeIndex = nodeIndex;
 				//check if selected child is valid node, if not, select parent
 				if (nextNodeIdx <= maxValidHeapIdx){
 					nodeIndex = nextNodeIdx;
@@ -187,9 +208,18 @@ static void patientPreemptivePriority_taskExit(OS_TCB_t * const tcb){
 //=============================================================================
 // wait and notify hash table
 //=============================================================================
-#define NUM_BUCKETS_FOR_WAIT_HASHTABLE
+
+/*Marks the current task as waitin and adds it to the hashtable that keeps track of all waiting tasks. The Task is not
+actually removed from the heap, this is done by the scheduler.*/
 static void patientPreemptivePriority_waitCallback(void * const _reason, uint32_t checkCode){
-	
+	__disable_irq();
+	/*add current task to the waiting hash_table*/
+	OS_TCB_t * currentTCB = OS_currentTCB();
+	uint32_t returnCode = hashtable_put(waitingTasksHashTable,(uint32_t)_reason,(uint32_t *)currentTCB);
+	//TODO: if hashtable is full (returnCode = 0) make task sleep instead, for now assume waitinTasksHashTable can hold max number of tasks
+	currentTCB->state |= TASK_STATE_WAIT;
+	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk; //invoke scheduler by setting pendsv bit.
+	__enable_irq();
 }
 
 static void patientPreemptivePriority_notifyCallback(void * const reason){
@@ -204,6 +234,23 @@ static void patientPreemptivePriority_notifyCallback(void * const reason){
 1: go to left child of current node in the heap
 2: go to right child of current node
 */
-int __getRandForTaskChoice(void){
+static int __getRandForTaskChoice(void){
 	return rand() % 3;
+}
+
+/* Checks if a given task is currently waiting. If task is waiting it is removed from the 
+heap used by the scheduler (heap property restored in the process).
+
+returns: 1 if the task at_index was waiting and has been removed, 0 otherwise.
+*/
+static uint32_t __removeIfWaiting(uint32_t _index){
+	OS_TCB_t * task = heapStruct->ptrToUnderlyingArray[_index].ptrToNodeContent;
+	if(task->state &= TASK_STATE_WAIT){
+		void * waitingNode;//irrelevant what gets placed in here, result is not used
+		removeNodeAt(heapStruct,_index,waitingNode);
+		printf("INFO: scheduler removed node (%p) at index %d in heap because it is waiting\r\n",waitingNode,_index);
+		return 1;
+	}else{
+		return 0;
+	}
 }

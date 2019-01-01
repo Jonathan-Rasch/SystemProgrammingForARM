@@ -6,7 +6,7 @@
 void printHeap(minHeap * heap);
 static uint32_t __getParentIndex(uint32_t node_index_zero_based);
 static minHeapNode * __getPointerToItemAtIndex(minHeap * heap, uint32_t node_index_zero_based);
-
+static void __heapDown(minHeap * _heap,uint32_t _index_of_node_to_remove);
 //================================================================================
 // Exported Functions
 //================================================================================
@@ -133,12 +133,68 @@ uint32_t removeNode(minHeap * _heap, void * * _return_content){
 	
 	/* return content pointer of element 0 (via _return_content) and restore heap property*/
 	const minHeapNode nodeToReturn = _heap->ptrToUnderlyingArray[0];
-	//swapping inserting lowest node at index 0
-	uint32_t elemIdx = (_heap->nextEmptyElement-1) - _heap->ptrToUnderlyingArray;
-	_heap->ptrToUnderlyingArray[0] = _heap->ptrToUnderlyingArray[elemIdx];
+	__heapDown(_heap,0);
+	
+	/* returning values*/
+	#ifdef HEAP_DEBUG
+	printf("*** FINAL STATE ***\r\n");
+	printHeap(_heap);
+  #endif /*HEAP_DEBUG*/
+	*_return_content = nodeToReturn.ptrToNodeContent;
+	return 1;
+}
+
+/* Removes the node at the given index from the heap and places its content into _return_content
+
+PARAMETERS:
+-> _heap: heap from which to extract the pointer contained in node at index _index
+-> _return_content:  pointer to pointer pointing to some data structure, pointer to data structure
+										that the node at _index has is place in here. (WILL ONLY BE MODIFIED IF SUCCESSFULL,
+										RETAINS VALUE OTHERWISE)
+
+RETURNS:
+->  status_code: 1 if element removed succssfully, 0 if not*/
+uint32_t removeNodeAt(minHeap * _heap,uint32_t _index, void * * _return_content){
+	/*is the provided index within the range of valid nodes?*/
+	if(_index > _heap->currentNumNodes-1){
+		printf("ERROR: the provided index %d is outside of the heap (max index %d)",_index,_heap->currentNumNodes-1);
+		return 0;
+	}
+	const minHeapNode nodeToReturn = _heap->ptrToUnderlyingArray[_index];
+	__heapDown(_heap,_index);
+	*_return_content = nodeToReturn.ptrToNodeContent;
+	return 1;
+}
+
+/* Obtain the index of the first child of the given node
+(Note: the index for nodes in this min heap is ZERO BASED!)*/
+uint32_t getFirstChildIndex(uint32_t node_index_zero_based){
+	return 2*node_index_zero_based + 1;
+}
+
+/* Obtain the index of the second child of the given node
+(Note: the index for nodes in this min heap is ZERO BASED!)*/
+uint32_t getSecondChildIndex(uint32_t node_index_zero_based){
+	return 2*(node_index_zero_based+1);
+}
+
+//================================================================================
+// Internal Functions
+//================================================================================
+
+static void __heapDown(minHeap * _heap,uint32_t _index_of_node_to_remove){
+	//swapping, inserting lowest node at index _index_of_node_to_remove
+	uint32_t elemIdx = (_heap->nextEmptyElement-1) - _heap->ptrToUnderlyingArray; // index of lowest heap node
+	_heap->ptrToUnderlyingArray[_index_of_node_to_remove] = _heap->ptrToUnderlyingArray[elemIdx];
+	//updating number of nodes counter and empty node pointer (one less node now)
 	_heap->nextEmptyElement--;//node removed, so need to move empty element pointer
+	_heap->currentNumNodes = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
+	//if the removed node was the lowest node in heap then the heap property is intact.
+	if(elemIdx == _index_of_node_to_remove){
+		return;
+	}
 	// restore heap property (heap down)
-	elemIdx = 0;
+	elemIdx = _index_of_node_to_remove; //index where node was removed
 	const int maxValidIdx = (_heap->nextEmptyElement-1) - _heap->ptrToUnderlyingArray;
 	while(maxValidIdx != -1 ){// maxValidIdx is -1 when nextEmptyElement == ptrToUnderlyingArray
 		#ifdef HEAP_DEBUG
@@ -171,37 +227,7 @@ uint32_t removeNode(minHeap * _heap, void * * _return_content){
 			break;
 		}
 	}
-	
-	/* returning values*/
-	#ifdef HEAP_DEBUG
-	printf("*** FINAL STATE ***\r\n");
-	printHeap(_heap);
-    #endif /*HEAP_DEBUG*/
-	_heap->currentNumNodes = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
-	*_return_content = nodeToReturn.ptrToNodeContent;
-	return 1;
 }
-
-// TODO : determine if this is still needed
-//uint32_t getIndexOfNodeWithThisContent(minHeap * _heap,  void * const _content_ptr, uint32_t * _return_index){
-//	//TODO need hashmap implementation for improved efficiency
-//}
-
-/* Obtain the index of the first child of the given node
-(Note: the index for nodes in this min heap is ZERO BASED!)*/
-uint32_t getFirstChildIndex(uint32_t node_index_zero_based){
-	return 2*node_index_zero_based + 1;
-}
-
-/* Obtain the index of the second child of the given node
-(Note: the index for nodes in this min heap is ZERO BASED!)*/
-uint32_t getSecondChildIndex(uint32_t node_index_zero_based){
-	return 2*(node_index_zero_based+1);
-}
-
-//================================================================================
-// Internal Functions
-//================================================================================
 
 /* Get the index of the parent of node C
 (Note: the index for nodes in this min heap is ZERO BASED!)*/
