@@ -230,8 +230,8 @@ int main(void) {
 	OS_initialiseTCB(&TCB4, stack4+64, task4, 0);
 
 	/* Initialise and start the OS */
-	//patientPreemptivePriorityScheduler.initialize(heapNodeArray,4); //TODO refactor with new init method
 	OS_init(&patientPreemptivePriorityScheduler);
+	initialize_scheduler(&memcluster,8);
 	
 	/*NO CODE ABOVE THIS POINT*/
 	

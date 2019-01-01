@@ -1,4 +1,6 @@
 #include "patientPreemptivePriorityScheduler.h"
+#include "../utils/heap.h"
+#include "mutex.h"
 #include <stdlib.h>
 
 /*
@@ -25,7 +27,7 @@ static void patientPreemptivePriority_notifyCallback(void * const reason);
 static int __getRandForTaskChoice(void);
 
 //things needed for creating the heap used in the scheduler
-static minHeap heapStruct;
+static minHeap * heapStruct;
 static OS_mutex_t heapLock;
 
 //=============================================================================
@@ -43,8 +45,8 @@ OS_Scheduler_t const patientPreemptivePriorityScheduler = {
 };
 
 /*TODO init scheduler by just passing it pointer to mempool !*/
-static void initialize_scheduler(OS_memcluster * _memcluster,uint32_t _size_of_heap_node_array){
-    initHeap(_memcluster,&heapStruct, _size_of_heap_node_array); //TODO check if correct size is passed down here
+void initialize_scheduler(OS_memcluster * _memcluster,uint32_t _size_of_heap_node_array){
+    heapStruct = initHeap(_memcluster,_size_of_heap_node_array); //TODO check if correct size is passed down here
 		OS_init_mutex(&heapLock);//TODO: determine if a mutex is needed in the scheduler
 		srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so dont really care
 }
@@ -81,14 +83,14 @@ static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
     ticksSinceLastTaskSwitch = 0; //set to 0 so that next task can run for MAX_TASK_TIME_IN_SYSTICKS
 		
 		/*Select random task to give cpu time to (probability of each task being selected based on its position in heap)*/
-		if(heapStruct.currentNumNodes == 0){
+		if(heapStruct->currentNumNodes == 0){
 			return OS_idleTCB_p;// no active tasks currently (maybe all sleeping).
 		}
 		OS_TCB_t * selectedTCB = currentTaskTCB;
 		{
 			int randNodeSelection = __getRandForTaskChoice(); // please see function definition for info on return values
 			int nodeIndex = 0; //starting with highest priority node
-			const int maxValidHeapIdx = heapStruct.currentNumNodes - 1;
+			const int maxValidHeapIdx = heapStruct->currentNumNodes - 1;
 			while(randNodeSelection){
 				/*current node not selected, one of its children has been selected. check if node has valid child node*/
 				int nextNodeIdx;
@@ -106,7 +108,7 @@ static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
 					break;//nodeIndex not updated, so current node is selected for cpu time
 				}
 			}
-			selectedTCB = heapStruct.ptrToUnderlyingArray[nodeIndex].ptrToNodeContent;
+			selectedTCB = heapStruct->ptrToUnderlyingArray[nodeIndex].ptrToNodeContent;
 		}
 		return selectedTCB;
 }
@@ -129,15 +131,13 @@ static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task
 	-> all other tasks that need to work with the scheduler heap will be blocked in the meantime.
 	-> hence it is more efficient to just prevent interrupts when heap is being worked on.*/
 	__disable_irq();
-    if (addNode(&heapStruct,tcb,task_priority)) {
+    if (addNode(heapStruct,tcb,task_priority)) {
         #ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
-            printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d/%d)\r\n",tcb,task_priority,heapStruct.currentNumNodes,
-                   sizeof(nodeArray));
+            printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,heapStruct->currentNumNodes);
         #endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
     }else{
         #ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
-            printf("SCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d/%d)\r\n",tcb,task_priority,heapStruct.currentNumNodes,
-               sizeof(nodeArray));
+            printf("SCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,heapStruct->currentNumNodes);
         #endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
     }
 	__enable_irq();

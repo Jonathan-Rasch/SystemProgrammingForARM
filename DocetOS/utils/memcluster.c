@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "stm32f4xx.h"
 #include "../hashtable.h"
+#include "mutex.h"
 
 //================================================================================
 // Vars, Definitions, Prototypes And Init Function
@@ -12,7 +13,6 @@
 static memory_pool pools[5];//array holding memory pools
 static OS_mutex_t pool_locks[5]; //pools get locked when in use
 static OS_mutex_t hashtable_lock;
-static OS_mutex_t DEBUG_printHashtableMutex;
 static memBlock * allocatedBlocksBuckets[MEMPOOL_HASH_TABLE_BUCKET_NUM];
 
 /*PROTOTYPES*/
@@ -22,7 +22,6 @@ static memBlock * __removeBlockFromPool(memory_pool *);
 //for hashtable
 static void __placeBlockIntoBucket(memBlock *);
 static memBlock * __recoverBlockFromBucket(uint32_t * memory_pointer);
-static void __printHashtable(void);
 //for memcluster struct
 static uint32_t * 	allocate		(uint32_t required_size_in_4byte_words);
 static void 				deallocate	(void * memblock_head_ptr);
@@ -36,7 +35,6 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 		memoryArray[i] = NULL;
 	}
 	OS_init_mutex(&DEBUG_memclusterLock);
-	OS_init_mutex(&DEBUG_printHashtableMutex);
 	
 	/*Initializing pools*/
 	for(int i = SMALLEST_BLOCK_SIZE; i <= LARGEST_BLOCK_SIZE; i++){
@@ -129,7 +127,6 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 	uint32_t initialSelectedIdx = selectedPoolIdx;
 	/*initialSelectedIdx:
 		-> points to the smallest pool that can fit the desired size, this would be the ideal choice*/
-	uint32_t freeBlocks = 0;
 	while(1){
 		/*first step is to attempt to get a lock for the currently selected pool. This is done in blocking mode, since
 		aquiering a block is quick and does not warrant for a task that is blocked moving to the next larger pool*/
@@ -233,7 +230,6 @@ static void __placeBlockIntoBucket(memBlock * _block){
 	memBlock * tmp_block = allocatedBlocksBuckets[bucketNumber];
 	allocatedBlocksBuckets[bucketNumber] = _block;
 	_block->nextMemblock = (uint32_t *)tmp_block;
-	__printHashtable();
 	OS_mutex_release(&hashtable_lock);
 }
 
@@ -266,28 +262,27 @@ static memBlock * __recoverBlockFromBucket(uint32_t * memory_pointer){
 	printf("ERROR: attempt to deallocate memory block that is not part of this memory cluster !\n\r");
 	//ASSERT(0);
 	OS_mutex_release(&hashtable_lock);
-	__printHashtable();
 	return NULL;
 }
 
-static OS_mutex_t DEBUG_printHashtableMutex;
-static void __printHashtable(void){
-	return;
-	OS_mutex_acquire(&DEBUG_printHashtableMutex);
-	printf("\r\n--------------------------------------------------------------------------\r\n");
-	for(int i =0; i<MEMPOOL_HASH_TABLE_BUCKET_NUM;i++){
-		memBlock * block = allocatedBlocksBuckets[i];
-		printf("BUCKET %d: \r\n",i);
-		while(block){
-			printf("\t\t--- Block %p ---\r\n",block);
-			printf("\t\tnextMemblock: %p\r\n",block->nextMemblock);
-			printf("\t\tblockSize: %d\r\n",block->blockSize);
-			printf("\t\theadPtr: %p\r\n",block->headPtr);
-			block = (memBlock *)block->nextMemblock;
-		}
-	}
-	OS_mutex_release(&DEBUG_printHashtableMutex);
-}
+//static OS_mutex_t DEBUG_printHashtableMutex;
+//static void __printHashtable(void){
+//	return;
+//	OS_mutex_acquire(&DEBUG_printHashtableMutex);
+//	printf("\r\n--------------------------------------------------------------------------\r\n");
+//	for(int i =0; i<MEMPOOL_HASH_TABLE_BUCKET_NUM;i++){
+//		memBlock * block = allocatedBlocksBuckets[i];
+//		printf("BUCKET %d: \r\n",i);
+//		while(block){
+//			printf("\t\t--- Block %p ---\r\n",block);
+//			printf("\t\tnextMemblock: %p\r\n",block->nextMemblock);
+//			printf("\t\tblockSize: %d\r\n",block->blockSize);
+//			printf("\t\theadPtr: %p\r\n",block->headPtr);
+//			block = (memBlock *)block->nextMemblock;
+//		}
+//	}
+//	OS_mutex_release(&DEBUG_printHashtableMutex);
+//}
 
 //================================================================================
 // Utility Functions

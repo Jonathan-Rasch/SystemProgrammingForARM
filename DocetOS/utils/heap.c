@@ -18,7 +18,12 @@ the heap os a MIN_HEAP, meaning tha t the element with the lowest value is on to
 the minimum ensures that empty nodes are never the parent of nodes that actyally point to something
 usefull.
 */
-void initHeap(minHeapNode * node_Array, minHeap * heap_struct, int max_number_of_heap_nodes){
+minHeap * initHeap(OS_memcluster * memcluster, int max_number_of_heap_nodes){
+	
+	//allocating memory
+	minHeap * heap_struct = (minHeap *)memcluster->allocate(sizeof(minHeap)/4);
+	minHeapNode * node_Array = (minHeapNode *)memcluster->allocate(max_number_of_heap_nodes*sizeof(minHeapNode)/4);
+	
 	/*assertions for debugging*/
 	ASSERT(max_number_of_heap_nodes > 0);
 	
@@ -34,6 +39,8 @@ void initHeap(minHeapNode * node_Array, minHeap * heap_struct, int max_number_of
 			heap_struct->ptrToUnderlyingArray[i].ptrToNodeContent = NULL;
 			heap_struct->ptrToUnderlyingArray[i].nodeValue = UINT32_MAX;
 	};
+	
+	return heap_struct;
 }
 
 /* 	adding a Node (containing a pointer) to the heap. The heap property is then restored automatically.

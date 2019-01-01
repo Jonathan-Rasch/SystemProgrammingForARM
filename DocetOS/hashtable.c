@@ -1,5 +1,6 @@
 #include "hashtable.h"
 #include <stdint.h>
+#include <stdio.h>
 #include "utils/memcluster.h"
 
 /*possible feature list
@@ -94,6 +95,7 @@ uint32_t hashtable_put(OS_hashtable * _hashtable, uint32_t key,uint32_t * _value
 	hashtable_val->next_hashtable_value = (uint32_t *)tmp_hashtable_value;
 	/*update capacity*/
 	_hashtable->remaining_capacity -= 1;
+	return 1;
 }
 
 /* retrives the value at given key, if no value present in table NULL is returned*/
