@@ -265,38 +265,3 @@ static memBlock * __recoverBlockFromBucket(uint32_t * memory_pointer){
 	return NULL;
 }
 
-//static OS_mutex_t DEBUG_printHashtableMutex;
-//static void __printHashtable(void){
-//	return;
-//	OS_mutex_acquire(&DEBUG_printHashtableMutex);
-//	printf("\r\n--------------------------------------------------------------------------\r\n");
-//	for(int i =0; i<MEMPOOL_HASH_TABLE_BUCKET_NUM;i++){
-//		memBlock * block = allocatedBlocksBuckets[i];
-//		printf("BUCKET %d: \r\n",i);
-//		while(block){
-//			printf("\t\t--- Block %p ---\r\n",block);
-//			printf("\t\tnextMemblock: %p\r\n",block->nextMemblock);
-//			printf("\t\tblockSize: %d\r\n",block->blockSize);
-//			printf("\t\theadPtr: %p\r\n",block->headPtr);
-//			block = (memBlock *)block->nextMemblock;
-//		}
-//	}
-//	OS_mutex_release(&DEBUG_printHashtableMutex);
-//}
-
-//================================================================================
-// Utility Functions
-//================================================================================
-//TODO: move to hashtable file
-/* hash algo by D. J. Bernstein (https://cr.yp.to/djb.html), XOR variant.
-I modified it slightly so that it operates on a single uint32_t only (i dont need to hash strings).
-This hashing algo has a good distribution and colissions are rare, so perfect for my usecase*/
-//uint32_t djb2_hash(uint32_t thing_to_hash){
-//	uint32_t hash = 5381;
-//	uint32_t c=0;
-//	for(int i=0;i<8;i++){
-//		c += (thing_to_hash >> (i*4)) ;
-//		hash = ((hash << 5) + hash) ^ c; /* (hash * 33) + c */
-//	}
-//	return hash;
-//}

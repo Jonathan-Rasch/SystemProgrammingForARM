@@ -17,25 +17,16 @@ __align(8)
 static uint32_t mempool[MEMCLUSTER_SIZE]; 
 
 static OS_mutex_t printLock;
-
-static void DEBUG_printARR(uint32_t * arr,uint32_t size){
-	printf("\t\t\t Array %p : [",arr);
-	for(int i=0;i<size-1;i++){
-		printf("\r\n\t\t\t\t%#08x, @ %p",arr[i], arr+i);
-	}
-	printf("\r\n\t\t\t\t%#08x] @ %p\r\n",arr[size-1],arr+(size-1));
-	ASSERT(0);
-}
-
+static uint32_t taskcounter1,taskcounter2,taskcounter3,taskcounter4 = 0;
 void task1(void const *const args) {
 	while(1){
-		
 		int random =  rand() % 256 + 1;
 		uint32_t * mem = memcluster.allocate(random);
 		OS_sleep(rand()%100);
 		////////////////////////////////
 		OS_mutex_acquire(&printLock);
-		printf("[%d]TASK 1:\r\n",OS_elapsedTicks());
+		taskcounter1++;
+		printf("\t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
 		for(uint32_t i=0;i<random;i++){
 			*(mem+i) = random;
 			if(*(mem+i) == random){
@@ -44,21 +35,19 @@ void task1(void const *const args) {
 				printf("\tMEMORY ADDR %p NOT INTACT IN TASK1 %#10x\r\n",(mem+i),*(mem+i));
 			}
 		}
-		printf("\tstored %d words at %p\r\n",random,mem);
-		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
 		for(uint32_t i=0;i<random;i++){
 			if(*(mem+i) == random){
 				continue;
 			}else{
 				printf("\tMEMORY ADDR %p NOT INTACT IN TASK1 %#10x\r\n",(mem+i),*(mem+i));
-				DEBUG_printARR(mem,random);
 			}
 		}
 		//DEBUG_printARR(mem,random);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 		OS_mutex_acquire(&printLock);
-		printf("[%d]TASK 1:\r\n",OS_elapsedTicks());
+		taskcounter1++;
+		printf("\t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
 		for(uint32_t i=0;i<random;i++){
 			if(*(mem+i) == random){
 				continue;
@@ -66,9 +55,6 @@ void task1(void const *const args) {
 				printf("\tMEMORY ADDR %p NOT INTACT IN TASK1 %#10x\r\n",(mem+i),*(mem+i));
 			}
 		}
-		//DEBUG_printARR(mem,random);
-		
-		printf("\tdeallocateing.. %p\r\n",mem);
 		OS_mutex_release(&printLock);
 		////////////////////////////
 		OS_sleep(rand()%100);
@@ -83,12 +69,11 @@ void task2(void const *const args) {
 		uint32_t * mem = memcluster.allocate(random);
 		//////////////////////////////
 		OS_mutex_acquire(&printLock);
-		printf("[%d]TASK 2:\r\n",OS_elapsedTicks());
+		taskcounter2++;
+		printf("\t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
 		for(uint32_t i=0;i<random;i++){
 			mem[i] = random;
 		}
-		printf("\tstored %d words at %p -> %p\r\n",random,mem,mem+random);
-		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
 		for(uint32_t i=0;i<random;i++){
 			if(*(mem+i) == random){
 				continue;
@@ -100,8 +85,8 @@ void task2(void const *const args) {
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 		OS_mutex_acquire(&printLock);
-		printf("[%d]TASK 2:\r\n",OS_elapsedTicks());
-		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
+		taskcounter2++;
+		printf("\t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
 		for(uint32_t i=0;i<random;i++){
 			if(*(mem+i) == random){
 				continue;
@@ -109,9 +94,6 @@ void task2(void const *const args) {
 				printf("\tMEMORY ADDR %p NOT INTACT IN TASK2 %#10x\r\n",(mem+i),*(mem+i));
 			}
 		}
-		//DEBUG_printARR(mem,random);
-		
-		printf("\tdeallocating... %p\r\n",mem);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 		memcluster.deallocate(mem);
@@ -125,12 +107,11 @@ void task3(void const *const args) {
 		uint32_t * mem = memcluster.allocate(random);
 		//////////////////////////////
 		OS_mutex_acquire(&printLock);
-		printf("[%d]TASK 3:\r\n",OS_elapsedTicks());
+		taskcounter3++;
+		printf("\t\t %04d \t\t %04d \t\t[%04d]\t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
 		for(uint32_t i=0;i<random;i++){
 			mem[i] = random;
 		}
-		printf("\tstored %d words at %p -> %p\r\n",random,mem,mem+random);
-		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
 		for(uint32_t i=0;i<random;i++){
 			if(*(mem+i) == random){
 				continue;
@@ -138,12 +119,11 @@ void task3(void const *const args) {
 				printf("\tMEMORY ADDR %p NOT INTACT IN TASK3 %#10x\r\n",(mem+i),*(mem+i));
 			}
 		}
-		//DEBUG_printARR(mem,random);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 		OS_mutex_acquire(&printLock);
-		printf("[%d]TASK 3:\r\n",OS_elapsedTicks());
-		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
+		taskcounter3++;
+		printf("\t\t %04d \t\t %04d \t\t[%04d]\t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
 		for(uint32_t i=0;i<random;i++){
 			if(*(mem+i) == random){
 				continue;
@@ -151,9 +131,6 @@ void task3(void const *const args) {
 				printf("\tMEMORY ADDR %p NOT INTACT IN TASK3 %#10x\r\n",(mem+i),*(mem+i));
 			}
 		}
-		//DEBUG_printARR(mem,random);
-		
-		printf("\tdeallocating... %p\r\n",mem);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 		memcluster.deallocate(mem);
@@ -167,12 +144,11 @@ void task4(void const *const args) {
 		uint32_t * mem = memcluster.allocate(random);
 		//////////////////////////////
 		OS_mutex_acquire(&printLock);
-		printf("[%d]TASK 4:\r\n",OS_elapsedTicks());
+		taskcounter4++;
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t[%04d]\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
 		for(uint32_t i=0;i<random;i++){
 			mem[i] = random;
 		}
-		printf("\tstored %d words at %p -> %p\r\n",random,mem,mem+random);
-		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
 		for(uint32_t i=0;i<random;i++){
 			if(*(mem+i) == random){
 				continue;
@@ -180,12 +156,11 @@ void task4(void const *const args) {
 				printf("\tMEMORY ADDR %p NOT INTACT IN TASK4 %#10x\r\n",(mem+i),*(mem+i));
 			}
 		}
-		//DEBUG_printARR(mem,random);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 		OS_mutex_acquire(&printLock);
-		printf("[%d]TASK 4:\r\n",OS_elapsedTicks());
-		printf("\tchecking memory %p -> %p\r\n",mem,mem+random);
+		taskcounter4++;
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t[%04d]\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
 		for(uint32_t i=0;i<random;i++){
 			if(*(mem+i) == random){
 				continue;
@@ -193,8 +168,6 @@ void task4(void const *const args) {
 				printf("\tMEMORY ADDR %p NOT INTACT IN TASK4 %#10x\r\n",(mem+i),*(mem+i));
 			}
 		}
-		//DEBUG_printARR(mem,random);
-		printf("\tdeallocating... %p\r\n",mem);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 		memcluster.deallocate(mem);
@@ -208,7 +181,6 @@ int main(void) {
 	SCnSCB->ACTLR = SCnSCB_ACTLR_DISDEFWBUF_Msk; //DEBUG, converting IMPRECISERR into PRECISERR
 	/* Initialise the serial port so printf() works */
 	serial_init();
-	srand(10);
 	printf("\r\n\t\t\t\t\t\t***************************");
 	printf("\r\n\t\t\t\t\t\t* DocetOS Sleep and Mutex *\r\n");
 	printf("\t\t\t\t\t\t***************************\r\n");
@@ -238,9 +210,9 @@ int main(void) {
 	
 	/*memcluster test*/
 	OS_hashtable * hasht = new_hashtable(&memcluster,8,4);
-	uint32_t someval[8] = {5,7,9,11,13,15,17,19};
+	uint32_t someval[9] = {5,7,9,11,13,15,17,19,19};
 	for(int i=0;i<8;i++){
-		hashtable_put(hasht,i*5,&someval[i]);
+		hashtable_put(hasht,i*5,&someval[i],HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 	}
 	for(int i=0;i<8;i++){
 		printf("value %d\r\n",*hashtable_get(hasht,i*5));
@@ -254,8 +226,8 @@ int main(void) {
 	for(int i=0;i<8;i++){
 		printf("value %d\r\n",*hashtable_get(hasht,i*5));
 	}
-	for(int i=0;i<8;i++){
-		hashtable_put(hasht,i*5,&someval[i]);
+	for(int i=0;i<9;i++){
+		hashtable_put(hasht,i*5,&someval[i],HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 	}
 	for(int i=0;i<8;i++){
 		printf("value %d\r\n",*hashtable_get(hasht,i*5));

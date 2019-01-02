@@ -30,6 +30,7 @@ static uint32_t __removeIfWaiting(uint32_t _index);
 //things needed for creating the heap used in the scheduler
 static minHeap * heapStruct;
 static OS_hashtable * waitingTasksHashTable;
+static OS_hashtable * activeTasksHashTable;
 
 //=============================================================================
 // Scheduler struct definition and init function
@@ -48,6 +49,7 @@ OS_Scheduler_t const patientPreemptivePriorityScheduler = {
 /*TODO init scheduler by just passing it pointer to mempool !*/
 void initialize_scheduler(OS_memcluster * _memcluster,uint32_t _size_of_heap_node_array){
 		waitingTasksHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
+		activeTasksHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
     heapStruct = initHeap(_memcluster,_size_of_heap_node_array); //TODO check if correct size is passed down here
 		srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so dont really care
 }
@@ -142,15 +144,23 @@ Depending on the given priority the task has a higher or lower probability of be
 NOTE: Schould there be no space on the heap the task is not added.
 */
 static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task_priority){
+	#ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
+	printf("\r\nACTIVE TASK HASH TABLE:\r\n");
+	DEBUG_printHashtable(activeTasksHashTable);
+	#endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
 	tcb->priority = task_priority;
-	if (addNode(heapStruct,tcb,task_priority)) {
-			#ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
-					printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,heapStruct->currentNumNodes);
-			#endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
+	uint32_t isTcbWaiting = tcb->state & TASK_STATE_WAIT;
+	if ( !isTcbWaiting && hashtable_put(activeTasksHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)) {
+		addNode(heapStruct,tcb,task_priority);
+		/*HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY prevent the same task (TCB=key) being added multiple times to the scheduler */
+		#ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
+			printf("TASK ADDED: %p %d\r\n",tcb,task_priority);
+			printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,heapStruct->currentNumNodes);
+		#endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
 	}else{
-			#ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
-					printf("SCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,heapStruct->currentNumNodes);
-			#endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
+		#ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
+				printf("SCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,heapStruct->currentNumNodes);
+		#endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
 	}
 }
 
@@ -208,7 +218,16 @@ static void patientPreemptivePriority_waitCallback(void * const _reason, uint32_
 	//printf("\r\nINFO: task %p starting to wait for %p ...\r\n",OS_currentTCB(),_reason);
 	/*add current task to the waiting hash_table*/
 	OS_TCB_t * currentTCB = OS_currentTCB();
-	uint32_t returnCode = hashtable_put(waitingTasksHashTable,(uint32_t)_reason,(uint32_t *)currentTCB);
+	hashtable_remove(activeTasksHashTable,(uint32_t)currentTCB);
+	hashtable_put(waitingTasksHashTable,(uint32_t)_reason,(uint32_t *)currentTCB,HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY);
+	/*HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY because mutex is used as key, and the same task is allowed to wait on more than one mutex in theory,
+	but the same task cannot wait multiple times on the same mutex*/
+	#ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
+	printf("\r\nACTIVE TASK HASH TABLE:\r\n");
+	DEBUG_printHashtable(activeTasksHashTable);
+	printf("\r\nWAITING TASK HASH TABLE:\r\n");
+	DEBUG_printHashtable(waitingTasksHashTable);
+	#endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
 	//TODO: if hashtable is full (returnCode = 0) make task sleep instead, for now assume waitinTasksHashTable can hold max number of tasks
 	currentTCB->state |= TASK_STATE_WAIT;
 }
@@ -224,8 +243,8 @@ static void patientPreemptivePriority_notifyCallback(void * const reason){
 		if(task == NULL){
 			break;
 		}
-		//printf("\r\nNOTIFY %p: woke up %p \r\n",reason,task);
-		addNode(heapStruct,task,task->priority);
+		task->state &= ~TASK_STATE_WAIT;
+		patientPreemptivePriority_addTask(task,task->priority);
 	}
 }
 
@@ -249,9 +268,9 @@ returns: 1 if the task at_index was waiting and has been removed, 0 otherwise.
 static void * waitingNode;
 static uint32_t __removeIfWaiting(uint32_t _index){
 	OS_TCB_t * task = heapStruct->ptrToUnderlyingArray[_index].ptrToNodeContent;
-	if(task->state &= TASK_STATE_WAIT){
+	if(task->state & TASK_STATE_WAIT){
 		removeNodeAt(heapStruct,_index,&waitingNode);
-		task->state &= ~TASK_STATE_WAIT; //clear wait state, node removed from scheduler heap
+		//TODO: schould i clear wait state here ?
 		return 1;
 	}else{
 		return 0;

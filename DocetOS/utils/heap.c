@@ -55,7 +55,7 @@ RETURNS:
 -> status_code: 1 if element added succssfully, 0 if not (for example if the heap is full)*/
 uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _value_to_order_by){
 	#ifdef HEAP_DEBUG
-	printf("\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG ADD NODE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\r\n");
+	printf("\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG ADD NODE priority %d <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\r\n",_value_to_order_by);
 	printf("*** INITIAL STATE ***\r\n");
 	printHeap(_heap);
 	#endif /*HEAP_DEBUG*/
@@ -63,7 +63,6 @@ uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _
 	if (_heap->lastArrayElement < _heap->nextEmptyElement){
 		#ifdef HEAP_DEBUG
 		printf("INFO: [utils/heap.c addNode(...)]\r\nAttempt to add node to minHeap that is full, returning 0.\r\n");
-		printHeap(_heap); //DEBUG
 		#endif /*HEAP_DEBUG*/
 		return 0; // cant add node, no space
 	}
@@ -74,10 +73,6 @@ uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _
 	node->nodeValue = _value_to_order_by;
 	uint32_t currentNodeIndex = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
 	while(currentNodeIndex){
-		#ifdef HEAP_DEBUG
-		printf("RESTORING HEAP PROPERTY...\r\n");
-		printHeap(_heap);
-		#endif /*HEAP_DEBUG*/
 		uint32_t parentNodeIndex = __getParentIndex(currentNodeIndex);
 		minHeapNode * parentNode = __getPointerToItemAtIndex(_heap,parentNodeIndex);
 		// compare and swap
@@ -119,15 +114,11 @@ uint32_t removeNode(minHeap * _heap, void * * _return_content){
 	#ifdef HEAP_DEBUG
 	printf("\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG REMOVE NODE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\r\n");
 	printf("*** INITIAL STATE ***\r\n");
-	printHeap(_heap); //DEBUG
+	printHeap(_heap);
 	#endif /*HEAP_DEBUG*/
 	
 	/* checks */
 	if(_heap->ptrToUnderlyingArray == _heap->nextEmptyElement){
-		#ifdef HEAP_DEBUG
-		printf("INFO: [utils/heap.c removeNode(...)]\r\nHeap is empty, cannot remove node.\r\n");
-		printHeap(_heap); //DEBUG
-		#endif /*HEAP_DEBUG*/
 		return 0; // cant remove node, heap empty
 	}
 	
@@ -155,6 +146,11 @@ PARAMETERS:
 RETURNS:
 ->  status_code: 1 if element removed succssfully, 0 if not*/
 uint32_t removeNodeAt(minHeap * _heap,uint32_t _index, void * * _return_content){
+	#ifdef HEAP_DEBUG
+	printf("\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG REMOVE NODE AT %d <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\r\n",_index);
+	printf("*** INITIAL STATE ***\r\n");
+	printHeap(_heap);
+	#endif /*HEAP_DEBUG*/
 	/*is the provided index within the range of valid nodes?*/
 	if(_index > _heap->currentNumNodes-1){
 		printf("ERROR: the provided index %d is outside of the heap (max index %d)",_index,_heap->currentNumNodes-1);
@@ -162,6 +158,10 @@ uint32_t removeNodeAt(minHeap * _heap,uint32_t _index, void * * _return_content)
 	}
 	const minHeapNode nodeToReturn = _heap->ptrToUnderlyingArray[_index];
 	__heapDown(_heap,_index);
+	#ifdef HEAP_DEBUG
+	printf("*** FINAL STATE ***\r\n");
+	printHeap(_heap);
+  #endif /*HEAP_DEBUG*/
 	*_return_content = nodeToReturn.ptrToNodeContent;
 	return 1;
 }
@@ -186,6 +186,9 @@ static void __heapDown(minHeap * _heap,uint32_t _index_of_node_to_remove){
 	//swapping, inserting lowest node at index _index_of_node_to_remove
 	uint32_t elemIdx = (_heap->nextEmptyElement-1) - _heap->ptrToUnderlyingArray; // index of lowest heap node
 	_heap->ptrToUnderlyingArray[_index_of_node_to_remove] = _heap->ptrToUnderlyingArray[elemIdx];
+	//erasing data from node (this is not strictly necessary)
+	_heap->ptrToUnderlyingArray[elemIdx].nodeValue = UINT32_MAX;
+	_heap->ptrToUnderlyingArray[elemIdx].ptrToNodeContent = NULL;
 	//updating number of nodes counter and empty node pointer (one less node now)
 	_heap->nextEmptyElement--;//node removed, so need to move empty element pointer
 	_heap->currentNumNodes = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
@@ -197,10 +200,6 @@ static void __heapDown(minHeap * _heap,uint32_t _index_of_node_to_remove){
 	elemIdx = _index_of_node_to_remove; //index where node was removed
 	const int maxValidIdx = (_heap->nextEmptyElement-1) - _heap->ptrToUnderlyingArray;
 	while(maxValidIdx != -1 ){// maxValidIdx is -1 when nextEmptyElement == ptrToUnderlyingArray
-		#ifdef HEAP_DEBUG
-		printf("RESTORING HEAP PROPERTY...\r\n");
-		printHeap(_heap);
-		#endif /*HEAP_DEBUG*/
 		uint32_t firstChildIdx = getFirstChildIndex(elemIdx);
 		uint32_t secondChildIdx = getSecondChildIndex(elemIdx);
 		minHeapNode firstChild = _heap->ptrToUnderlyingArray[firstChildIdx];
@@ -234,9 +233,6 @@ static void __heapDown(minHeap * _heap,uint32_t _index_of_node_to_remove){
 static uint32_t __getParentIndex(uint32_t node_index_zero_based){
 	/* checks: */
 	if (node_index_zero_based == 0){
-		#ifdef HEAP_DEBUG
-		printf("WARNING: [utils/heap.c __getParentIndex(...)]\r\nAttempt to get parent of minHeap node index 0 (topmost node)\r\n");
-		#endif /*HEAP_DEBUG*/
 		return 0;
 	}
 	/* get index: */
@@ -286,7 +282,6 @@ HEAP CONTENTS:
 ----------------------------------------------------------------------------------------------------------------
 */
 void printHeap(minHeap * heap){
-	return;
 	printf("----------------------------------------------------------------------------------------------------------------\r\n");
 	printf("GENERAL INFO:\r\n");
 	printf("capacity:%-40d\r\n",heap->maxNumberOfNodes);
