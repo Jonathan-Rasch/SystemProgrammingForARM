@@ -20,157 +20,41 @@ static OS_mutex_t printLock;
 static uint32_t taskcounter1,taskcounter2,taskcounter3,taskcounter4 = 0;
 void task1(void const *const args) {
 	while(1){
-		int random =  rand() % 256 + 1;
-		uint32_t * mem = memcluster.allocate(random);
-		OS_sleep(rand()%100);
-		////////////////////////////////
 		OS_mutex_acquire(&printLock);
 		taskcounter1++;
 		printf("\t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
-		for(uint32_t i=0;i<random;i++){
-			*(mem+i) = random;
-			if(*(mem+i) == random){
-				continue;
-			}else{
-				printf("\tMEMORY ADDR %p NOT INTACT IN TASK1 %#10x\r\n",(mem+i),*(mem+i));
-			}
-		}
-		for(uint32_t i=0;i<random;i++){
-			if(*(mem+i) == random){
-				continue;
-			}else{
-				printf("\tMEMORY ADDR %p NOT INTACT IN TASK1 %#10x\r\n",(mem+i),*(mem+i));
-			}
-		}
-		//DEBUG_printARR(mem,random);
-		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
-		OS_mutex_acquire(&printLock);
-		taskcounter1++;
-		printf("\t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
-		for(uint32_t i=0;i<random;i++){
-			if(*(mem+i) == random){
-				continue;
-			}else{
-				printf("\tMEMORY ADDR %p NOT INTACT IN TASK1 %#10x\r\n",(mem+i),*(mem+i));
-			}
-		}
 		OS_mutex_release(&printLock);
 		////////////////////////////
-		OS_sleep(rand()%100);
-		memcluster.deallocate(mem);
 		OS_sleep(rand()%100);
 	}
 }
 
 void task2(void const *const args) {
 	while(1){
-		int random = rand() % 256 + 1;
-		uint32_t * mem = memcluster.allocate(random);
-		//////////////////////////////
 		OS_mutex_acquire(&printLock);
 		taskcounter2++;
 		printf("\t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
-		for(uint32_t i=0;i<random;i++){
-			mem[i] = random;
-		}
-		for(uint32_t i=0;i<random;i++){
-			if(*(mem+i) == random){
-				continue;
-			}else{
-				printf("\tMEMORY ADDR %p NOT INTACT IN TASK2 %#10x\r\n",(mem+i),*(mem+i));
-			}
-		}
-		//DEBUG_printARR(mem,random);
 		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
-		OS_mutex_acquire(&printLock);
-		taskcounter2++;
-		printf("\t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
-		for(uint32_t i=0;i<random;i++){
-			if(*(mem+i) == random){
-				continue;
-			}else{
-				printf("\tMEMORY ADDR %p NOT INTACT IN TASK2 %#10x\r\n",(mem+i),*(mem+i));
-			}
-		}
-		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
-		memcluster.deallocate(mem);
 		OS_sleep(rand()%100);
 	}
 }
 
 void task3(void const *const args) {
 	while(1){
-		int random = rand() % 256 + 1;
-		uint32_t * mem = memcluster.allocate(random);
-		//////////////////////////////
 		OS_mutex_acquire(&printLock);
 		taskcounter3++;
 		printf("\t\t %04d \t\t %04d \t\t[%04d]\t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
-		for(uint32_t i=0;i<random;i++){
-			mem[i] = random;
-		}
-		for(uint32_t i=0;i<random;i++){
-			if(*(mem+i) == random){
-				continue;
-			}else{
-				printf("\tMEMORY ADDR %p NOT INTACT IN TASK3 %#10x\r\n",(mem+i),*(mem+i));
-			}
-		}
 		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
-		OS_mutex_acquire(&printLock);
-		taskcounter3++;
-		printf("\t\t %04d \t\t %04d \t\t[%04d]\t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
-		for(uint32_t i=0;i<random;i++){
-			if(*(mem+i) == random){
-				continue;
-			}else{
-				printf("\tMEMORY ADDR %p NOT INTACT IN TASK3 %#10x\r\n",(mem+i),*(mem+i));
-			}
-		}
-		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
-		memcluster.deallocate(mem);
 		OS_sleep(rand()%100);
 	}
 }
 
 void task4(void const *const args) {
 	while (1) {
-		int random = rand() % 256 + 1;
-		uint32_t * mem = memcluster.allocate(random);
-		//////////////////////////////
 		OS_mutex_acquire(&printLock);
 		taskcounter4++;
 		printf("\t\t %04d \t\t %04d \t\t %04d \t\t[%04d]\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
-		for(uint32_t i=0;i<random;i++){
-			mem[i] = random;
-		}
-		for(uint32_t i=0;i<random;i++){
-			if(*(mem+i) == random){
-				continue;
-			}else{
-				printf("\tMEMORY ADDR %p NOT INTACT IN TASK4 %#10x\r\n",(mem+i),*(mem+i));
-			}
-		}
 		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
-		OS_mutex_acquire(&printLock);
-		taskcounter4++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t[%04d]\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4);
-		for(uint32_t i=0;i<random;i++){
-			if(*(mem+i) == random){
-				continue;
-			}else{
-				printf("\tMEMORY ADDR %p NOT INTACT IN TASK4 %#10x\r\n",(mem+i),*(mem+i));
-			}
-		}
-		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
-		memcluster.deallocate(mem);
 		OS_sleep(rand()%100);
 	}
 }

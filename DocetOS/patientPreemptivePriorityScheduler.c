@@ -132,6 +132,12 @@ static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
 			}
 			selectedTCB = heapStruct->ptrToUnderlyingArray[nodeIndex].ptrToNodeContent;
 		}
+		printf("\r\n\r\n#####################################################################\r\n");
+		printf("\r\nACTIVE TASK HASH TABLE:\r\n");
+		DEBUG_printHashtable(activeTasksHashTable);
+		printf("\r\nWAITING TASK HASH TABLE:\r\n");
+		DEBUG_printHashtable(waitingTasksHashTable);
+		printHeap(heapStruct);
 		return selectedTCB;
 }
 
@@ -149,9 +155,8 @@ static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task
 	DEBUG_printHashtable(activeTasksHashTable);
 	#endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
 	tcb->priority = task_priority;
-	uint32_t isTcbWaiting = tcb->state & TASK_STATE_WAIT;
-	if ( !isTcbWaiting && hashtable_put(activeTasksHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)) {
-		addNode(heapStruct,tcb,task_priority);
+	hashtable_put(activeTasksHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+	if ( addNode(heapStruct,tcb,task_priority)) {
 		/*HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY prevent the same task (TCB=key) being added multiple times to the scheduler */
 		#ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
 			printf("TASK ADDED: %p %d\r\n",tcb,task_priority);
@@ -243,8 +248,9 @@ static void patientPreemptivePriority_notifyCallback(void * const reason){
 		if(task == NULL){
 			break;
 		}
+		hashtable_put(activeTasksHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 		task->state &= ~TASK_STATE_WAIT;
-		patientPreemptivePriority_addTask(task,task->priority);
+		addNode(heapStruct,task,task->priority);
 	}
 }
 
