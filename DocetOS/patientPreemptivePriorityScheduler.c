@@ -29,8 +29,20 @@ static uint32_t __removeIfWaiting(uint32_t _index);
 
 //things needed for creating the heap used in the scheduler
 static minHeap * heapStruct;
+/*waitingTasksHashTable
+holds the TCB of all tasks that have entered the waiting state.
+NOTE: a task being in this hashtable does not mean it is not present in the heap !! the scheduler only removes waiting tasks from the 
+heap if it attemps to select them during task switch. This is to save cycles that would otherwise be wasted removing every single task from the 
+heap that is waiting and restoring the heap property. As long as task is not selected it is ok for it to be in the heap, it might wake up before the
+the heap gets around to removing it.*/
 static OS_hashtable * waitingTasksHashTable;
+/*activeTasksHashTable
+holds the TCB of all tasks that are currently active and can be selected by the scheduler*/
 static OS_hashtable * activeTasksHashTable;
+/*tasksInHeapHashTable
+keeps track of all tasks that are in the heap, active or otherwise. This is needed to prevent a task that exits the waiting state getting
+added to the heap even though it was never removed in the first place.*/
+static OS_hashtable * tasksInHeapHashTable;
 
 //=============================================================================
 // Scheduler struct definition and init function
@@ -50,6 +62,7 @@ OS_Scheduler_t const patientPreemptivePriorityScheduler = {
 void initialize_scheduler(OS_memcluster * _memcluster,uint32_t _size_of_heap_node_array){
 		waitingTasksHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 		activeTasksHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
+		tasksInHeapHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
     heapStruct = initHeap(_memcluster,_size_of_heap_node_array); //TODO check if correct size is passed down here
 		srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so dont really care
 }
@@ -132,12 +145,14 @@ static OS_TCB_t const * patientPreemptivePriority_scheduler(void){
 			}
 			selectedTCB = heapStruct->ptrToUnderlyingArray[nodeIndex].ptrToNodeContent;
 		}
-		printf("\r\n\r\n#####################################################################\r\n");
-		printf("\r\nACTIVE TASK HASH TABLE:\r\n");
-		DEBUG_printHashtable(activeTasksHashTable);
-		printf("\r\nWAITING TASK HASH TABLE:\r\n");
-		DEBUG_printHashtable(waitingTasksHashTable);
-		printHeap(heapStruct);
+//		printf("\r\n\r\n#####################################################################\r\n");
+//		printf("\r\nACTIVE TASK HASH TABLE:\r\n");
+//		DEBUG_printHashtable(activeTasksHashTable);
+//		printf("\r\nWAITING TASK HASH TABLE:\r\n");
+//		DEBUG_printHashtable(waitingTasksHashTable);
+//		printf("\r\nTASKS IN HEAP HASH TABLE:\r\n");
+//		DEBUG_printHashtable(tasksInHeapHashTable);
+//		printHeap(heapStruct);
 		return selectedTCB;
 }
 
@@ -156,6 +171,7 @@ static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task
 	#endif /*PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG*/
 	tcb->priority = task_priority;
 	hashtable_put(activeTasksHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+	hashtable_put(tasksInHeapHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 	if ( addNode(heapStruct,tcb,task_priority)) {
 		/*HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY prevent the same task (TCB=key) being added multiple times to the scheduler */
 		#ifdef PATIENTPREEMPTIVEPRIORITYSCHEDULER_DEBUG
@@ -179,7 +195,7 @@ static void patientPreemptivePriority_addTask(OS_TCB_t * const tcb,uint32_t task
  * NOTE: this function should NEVER be called manually
  * */
 static void patientPreemptivePriority_taskExit(OS_TCB_t * const tcb){
-
+		printf("test\r\n");
     /*TODO: I need an efficient way to search for a task inside the heap in order to remove it. I dont
      * just want to linear search through the node array and compare stack pointers. I could do this by
      * searching via the priority value, I could store node index inside heap array inside a hashmap
@@ -250,7 +266,11 @@ static void patientPreemptivePriority_notifyCallback(void * const reason){
 		}
 		hashtable_put(activeTasksHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 		task->state &= ~TASK_STATE_WAIT;
-		addNode(heapStruct,task,task->priority);
+		if(hashtable_put(tasksInHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
+			/*tcb was added to "tasksInHeapHashTable" meaning that it currently is not in the heap (if it had never been removed from the heap
+			the hashtable_put operation would have returned 0 when attempting to add it again), hence add it*/
+			addNode(heapStruct,task,task->priority);
+		}
 	}
 }
 
@@ -276,7 +296,7 @@ static uint32_t __removeIfWaiting(uint32_t _index){
 	OS_TCB_t * task = heapStruct->ptrToUnderlyingArray[_index].ptrToNodeContent;
 	if(task->state & TASK_STATE_WAIT){
 		removeNodeAt(heapStruct,_index,&waitingNode);
-		//TODO: schould i clear wait state here ?
+		hashtable_remove(tasksInHeapHashTable,(uint32_t)task);
 		return 1;
 	}else{
 		return 0;
