@@ -162,41 +162,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>457</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134219792</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\stochasticScheduler.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\DocetOS_sleep_wait\stochasticScheduler.c\457</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>103</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134219932</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\stochasticScheduler.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\DocetOS_sleep_wait\stochasticScheduler.c\103</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
           <LineNumber>70</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134221574</Address>
+          <Address>134221682</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
