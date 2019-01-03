@@ -26,7 +26,7 @@ void task1(void const *const args) {
 		printf("\t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		////////////////////////////
-		OS_sleep(rand()%100);
+		OS_sleep(rand()%10);
 	}
 }
 

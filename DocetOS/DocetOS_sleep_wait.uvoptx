@@ -162,9 +162,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>431</LineNumber>
+          <LineNumber>457</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134219824</Address>
+          <Address>134219792</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -173,23 +173,39 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>.\stochasticScheduler.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\DocetOS_sleep_wait\stochasticScheduler.c\431</Expression>
+          <Expression>\\DocetOS_sleep_wait\stochasticScheduler.c\457</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>432</LineNumber>
+          <LineNumber>103</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
+          <Address>134219932</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
+          <BreakIfRCount>1</BreakIfRCount>
           <Filename>.\stochasticScheduler.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\DocetOS_sleep_wait\stochasticScheduler.c\103</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>70</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134221574</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>.\OS\mutex.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\DocetOS_sleep_wait\OS/mutex.c\70</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>

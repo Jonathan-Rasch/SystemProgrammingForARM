@@ -135,6 +135,15 @@ uint32_t removeNode(minHeap * _heap, void * * _return_content){
 	return 1;
 }
 
+/*return content of node at _index in the heap without removing it, or NULL if _index is not valid*/
+uint32_t * peek(minHeap * _heap,uint32_t _index){
+	if(_index >= _heap->currentNumNodes){
+		return NULL;
+	}
+	const minHeapNode nodeToReturn = _heap->ptrToUnderlyingArray[_index];
+	return nodeToReturn.ptrToNodeContent;
+}
+
 /* Removes the node at the given index from the heap and places its content into _return_content
 
 PARAMETERS:

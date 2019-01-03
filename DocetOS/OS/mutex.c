@@ -13,7 +13,7 @@ void OS_mutex_acquire(OS_mutex_t * _mutex){
 	while(1){
 		uint32_t checkCode = OS_checkCode();
 		mutexTcbPtr = (uint32_t)__LDREXW((uint32_t*) &(_mutex->tcbPointer));
-		if(mutexTcbPtr == NULL){
+		if(mutexTcbPtr == NULL || mutexTcbPtr == (uint32_t)OS_currentTCB()){
 			//no tcb has locked the mutex, try and aquire lock
 			//OS_TCB_t * currentTCB = OS_currentTCB();
 			lockNotObtained = __STREXW((uint32_t)currentTCB,(uint32_t*) &(_mutex->tcbPointer)); // returns 0 on success !
@@ -64,6 +64,10 @@ void OS_mutex_release(OS_mutex_t * _mutex){
 		//releasing lock fully
 		_mutex->tcbPointer = NULL;
 		OS_notify(_mutex);
+		if(OS_currentTCB() == NULL){
+			return;//not a task, dont try and sleep !!
+		}
+		OS_sleep(1);//give other tasks a chance to get lock
 	}
 }
 

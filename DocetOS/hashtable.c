@@ -87,6 +87,9 @@ uint32_t hashtable_put(OS_hashtable * _hashtable, uint32_t _key,uint32_t * _valu
 	if(_hashtable->remaining_capacity == 0){
 		return 0; //hashtable is full
 	}
+	if(_value == NULL){
+		return 0; //NULL is not a valid value
+	}
 	/*determine bucket*/
 	uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable)/4;
@@ -186,6 +189,22 @@ uint32_t * hashtable_remove(OS_hashtable * _hashtable, uint32_t _key){
 		}
 	}
 	return value;
+}
+
+/*Returns the content of the first element in the Nth bucket, might be NULL if bucket is empty or
+	if n is larger than the largest bucket index of the hashtable. this function helps 
+	to access all elements stored in the hashtable*/
+const hashtable_value * hashtable_getFirstElementOfNthBucket(OS_hashtable * _hashtable, uint32_t _n){
+	if(_n > _hashtable->number_of_buckets-1){
+		return NULL;
+	}
+	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable)/4;
+	hashtable_value * val = (hashtable_value *)bucket_array[_n];
+	if(val){
+		return val;
+	}else{
+		return NULL;
+	}
 }
 
 //=============================================================================

@@ -103,7 +103,7 @@ void _OS_task_end(void) {
 void _svc_OS_enable_systick(void) {
 	if (_scheduler->preemptive) {
 		SystemCoreClockUpdate();
-		SysTick_Config(SystemCoreClock / 10); //changed this from 1000
+		SysTick_Config(SystemCoreClock / 1000); //changed this from 1000
 		NVIC_SetPriority(SysTick_IRQn, 0x10);
 	}
 }
@@ -176,7 +176,7 @@ actual time the task sleeps might be longer. Sleep just guarantees that the task
 min_requested_sleep_duration ticks*/
 void _svc_OS_sleep(_OS_SVC_StackFrame_t const * const stack){
 	OS_TCB_t * task = _currentTCB;
-	uint32_t min_requested_sleep_duration = stack->r1;
+	uint32_t min_requested_sleep_duration = stack->r0;
 	_scheduler->sleep_callback(task,min_requested_sleep_duration);
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk; // dont want to continue execution of task after sleep call
 }
