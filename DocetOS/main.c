@@ -2,7 +2,7 @@
 #include "utils/heap.h"
 #include <stdio.h>
 #include "utils/serial.h"
-#include "patientPreemptivePriorityScheduler.h"
+#include "stochasticScheduler.h"
 #include <stdlib.h>
 #include "sleep.h"
 #include "mutex.h"
@@ -23,7 +23,7 @@ void task1(void const *const args) {
 	while(1){
 		OS_mutex_acquire(&printLock);
 		taskcounter1++;
-		printf("\t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		////////////////////////////
 		OS_sleep(rand()%100);
@@ -34,7 +34,7 @@ void task2(void const *const args) {
 	while(1){
 		OS_mutex_acquire(&printLock);
 		taskcounter2++;
-		printf("\t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 	}
@@ -44,7 +44,7 @@ void task3(void const *const args) {
 	while(1){
 		OS_mutex_acquire(&printLock);
 		taskcounter3++;
-		printf("\t\t %04d \t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 	}
@@ -54,7 +54,7 @@ void task4(void const *const args) {
 	while (1) {
 		OS_mutex_acquire(&printLock);
 		taskcounter4++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 	}
@@ -64,7 +64,7 @@ void task5(void const *const args) {
 	while(1){
 		OS_mutex_acquire(&printLock);
 		taskcounter5++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		////////////////////////////
 		OS_sleep(rand()%100);
@@ -75,7 +75,7 @@ void task6(void const *const args) {
 	while(1){
 		OS_mutex_acquire(&printLock);
 		taskcounter6++;
-		printf("\t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 	}
@@ -85,7 +85,7 @@ void task7(void const *const args) {
 	while(1){
 		OS_mutex_acquire(&printLock);
 		taskcounter7++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t[%04d]\t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 	}
@@ -95,7 +95,7 @@ void task8(void const *const args) {
 	while (1) {
 		OS_mutex_acquire(&printLock);
 		taskcounter8++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t[%04d]\t\t %04d \t\t %04d \t\t %04d \t\t[%04d]\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		OS_sleep(rand()%100);
 	}
@@ -133,7 +133,7 @@ int main(void) {
 	OS_initialiseTCB(&TCB8, stack8+64, task8, 0);
 	
 	/* Initialise and start the OS */
-	OS_init(&patientPreemptivePriorityScheduler);
+	OS_init(&stochasticScheduler);
 	initialize_scheduler(&memcluster,8);
 	
 	/*NO CODE ABOVE THIS POINT*/

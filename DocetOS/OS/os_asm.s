@@ -19,6 +19,7 @@
     IMPORT _svc_OS_schedule
 	IMPORT _svc_OS_wait
 	IMPORT _svc_OS_notify
+	IMPORT _svc_OS_sleep
     
 SVC_Handler
     ; Link register contains special 'exit handler mode' code
@@ -50,6 +51,7 @@ SVC_tableStart
     DCD _svc_OS_schedule
 	DCD _svc_OS_wait
 	DCD _svc_OS_notify
+	DCD _svc_OS_sleep
 SVC_tableEnd
 
     ALIGN

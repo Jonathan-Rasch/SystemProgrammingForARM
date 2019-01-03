@@ -394,14 +394,9 @@
               <FilePath>.\simpleRoundRobin.c</FilePath>
             </File>
             <File>
-              <FileName>patientPreemptivePriorityScheduler.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\patientPreemptivePriorityScheduler.h</FilePath>
-            </File>
-            <File>
-              <FileName>patientPreemptivePriorityScheduler.c</FileName>
+              <FileName>stochasticScheduler.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\patientPreemptivePriorityScheduler.c</FilePath>
+              <FilePath>.\stochasticScheduler.c</FilePath>
             </File>
           </Files>
         </Group>

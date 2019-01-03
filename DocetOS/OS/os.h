@@ -17,7 +17,8 @@ enum OS_SVC_e {
 	OS_SVC_YIELD,
 	OS_SVC_SCHEDULE,
 	OS_SVC_WAIT,
-	OS_SVC_NOTIFY
+	OS_SVC_NOTIFY,
+	OS_SVC_SLEEP
 };
 
 /* A structure to hold callbacks for a scheduler, plus a 'preemptive' flag */
@@ -28,6 +29,7 @@ typedef struct {
 	void (* taskexit_callback)(OS_TCB_t * const task);//ME:called automatically on task func return. DO NOT CALL MANUALLY
 	void (* wait_callback)(void * const reason, uint32_t check_Code);
 	void (* notify_callback)(void * const reason);
+	void (* sleep_callback)(OS_TCB_t * const task,uint32_t min_duration);
 } OS_Scheduler_t;
 
 /***************************/
@@ -75,6 +77,8 @@ void __svc(OS_SVC_WAIT) OS_wait(void * reason, uint32_t check_Code);
 
 /* SVC delegate to allow task to notify that a resource has been released*/
 void __svc(OS_SVC_NOTIFY) OS_notify(void * reason);
+
+void __svc(OS_SVC_SLEEP) OS_sleep(uint32_t min_sleep_duration);
 
 /************************/
 /* Scheduling functions */

@@ -103,7 +103,7 @@ void _OS_task_end(void) {
 void _svc_OS_enable_systick(void) {
 	if (_scheduler->preemptive) {
 		SystemCoreClockUpdate();
-		SysTick_Config(SystemCoreClock / 100); //changed this from 1000
+		SysTick_Config(SystemCoreClock / 10); //changed this from 1000
 		NVIC_SetPriority(SysTick_IRQn, 0x10);
 	}
 }
@@ -169,6 +169,16 @@ void _svc_OS_addTask(_OS_SVC_StackFrame_t const * const stack) {
 	   pointer. */
 	uint32_t task_priority = stack->r1;
 	_scheduler->addtask_callback((OS_TCB_t *)stack->r0,task_priority);
+}
+
+/*notifies the scheduler that the task is requesting sleep for AT LEAST min_requested_sleep_duration but the
+actual time the task sleeps might be longer. Sleep just guarantees that the task wont be executed for at least
+min_requested_sleep_duration ticks*/
+void _svc_OS_sleep(_OS_SVC_StackFrame_t const * const stack){
+	OS_TCB_t * task = _currentTCB;
+	uint32_t min_requested_sleep_duration = stack->r1;
+	_scheduler->sleep_callback(task,min_requested_sleep_duration);
+	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk; // dont want to continue execution of task after sleep call
 }
 
 /* SVC handler to invoke the scheduler (via a callback) from PendSV */
