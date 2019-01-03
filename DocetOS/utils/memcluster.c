@@ -28,13 +28,11 @@ static void 				deallocate	(void * memblock_head_ptr);
 
 /* Cluster Init Function
 */
-static OS_mutex_t DEBUG_memclusterLock;
 void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray, uint32_t memory_Size_in_4byte_words){
 	printf("MEMCLUSTER %p -> ",memoryArray);
 	for(int i=0;i<memory_Size_in_4byte_words;i++){
 		memoryArray[i] = NULL;
 	}
-	OS_init_mutex(&DEBUG_memclusterLock);
 	
 	/*Initializing pools*/
 	for(int i = SMALLEST_BLOCK_SIZE; i <= LARGEST_BLOCK_SIZE; i++){
@@ -177,7 +175,8 @@ static void deallocate(void * memblock_head_ptr){
 	hence:
 	X = (log(B)/log(2)) - SMALLEST_BLOCK_SIZE
 	
-	TODO: implement when FPU is enabled, for now just cycle through pools*/
+	TODO: implement when FPU is enabled, for now just cycle through pools
+	TODO: depending on number of pools simply cycling through them might actually be faster (depends on math log implmentation)*/
 	memory_pool * pool = NULL;
 	int poolIdx = 0;
 	for(int i = 0;i<NUMBER_OF_POOLS;i++){
