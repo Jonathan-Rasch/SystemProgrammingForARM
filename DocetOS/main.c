@@ -10,11 +10,9 @@
 #include "utils/memcluster.h"
 #include "structs.h"
 
-static OS_mutex_t testMutex;
-static OS_memcluster memcluster;
-#define MEMCLUSTER_SIZE 8192 //8192 = 32 kb
+#define MEMPOOL_SIZE 16384 //
 __align(8)
-static uint32_t mempool[MEMCLUSTER_SIZE]; 
+static uint32_t memory[MEMPOOL_SIZE]; 
 
 static OS_mutex_t printLock;
 static uint32_t taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8 = 0;
@@ -51,13 +49,11 @@ void task3(void const *const args) {
 }
 
 void task4(void const *const args) {
-	uint32_t counter = 500;
-	while (counter) {
+	while (1) {
 		OS_mutex_acquire(&printLock);
 		taskcounter4++;
-		//printf("\t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
-		counter--;
 		//OS_sleep(rand()%100);
 	}
 }
@@ -74,13 +70,11 @@ void task5(void const *const args) {
 }
 
 void task6(void const *const args) {
-	uint32_t exitCounter = 500;
-	while(exitCounter){
+	while(1){
 		OS_mutex_acquire(&printLock);
 		taskcounter6++;
-		//printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
-		exitCounter--;
 		//OS_sleep(rand()%100);
 	}
 }
@@ -115,42 +109,50 @@ int main(void) {
 	printf("\r\n* DocetOS *");
 	printf("\r\n***********\r\n");
 
-	/* Reserve memory for two stacks and two TCBs.
-	   Remember that stacks must be 8-byte aligned. */
-	__align(8)
-	static uint32_t stack1[64], stack2[64], stack3[64], stack4[64], stack5[64], stack6[64], stack7[64], stack8[64];
-	static minHeapNode heapNodeArray[4];
-	static OS_TCB_t TCB1, TCB2, TCB3, TCB4, TCB5, TCB6, TCB7, TCB8;
+	/* Initialise the OS */
 	
-	memory_cluster_init(&memcluster,mempool,MEMCLUSTER_SIZE);
-	OS_init_mutex(&testMutex);
+	OS_init(&stochasticScheduler,memory,MEMPOOL_SIZE);
+	
+	OS_TCB_t * TCB1 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB2 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB3 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB4 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB5 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB6 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB7 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB8 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	uint32_t * stack1 = OS_alloc(64);
+	uint32_t * stack2 = OS_alloc(64);
+	uint32_t * stack3 = OS_alloc(64);
+	uint32_t * stack4 = OS_alloc(64);
+	uint32_t * stack5 = OS_alloc(64);
+	uint32_t * stack6 = OS_alloc(64);
+	uint32_t * stack7 = OS_alloc(64);
+	uint32_t * stack8 = OS_alloc(64);
 	OS_init_mutex(&printLock);
 	
 	/* Initialise the TCBs using the two functions above */
-	OS_initialiseTCB(&TCB1, stack1+64, task1, 0);
-	OS_initialiseTCB(&TCB2, stack2+64, task2, 0);
-	OS_initialiseTCB(&TCB3, stack3+64, task3, 0);
-	OS_initialiseTCB(&TCB4, stack4+64, task4, 0);
-	OS_initialiseTCB(&TCB5, stack5+64, task5, 0);
-	OS_initialiseTCB(&TCB6, stack6+64, task6, 0);
-	OS_initialiseTCB(&TCB7, stack7+64, task7, 0);
-	OS_initialiseTCB(&TCB8, stack8+64, task8, 0);
+	OS_initialiseTCB(TCB1, stack1+64, task1, 0);
+	OS_initialiseTCB(TCB2, stack2+64, task2, 0);
+	OS_initialiseTCB(TCB3, stack3+64, task3, 0);
+	OS_initialiseTCB(TCB4, stack4+64, task4, 0);
+	OS_initialiseTCB(TCB5, stack5+64, task5, 0);
+	OS_initialiseTCB(TCB6, stack6+64, task6, 0);
+	OS_initialiseTCB(TCB7, stack7+64, task7, 0);
+	OS_initialiseTCB(TCB8, stack8+64, task8, 0);
 	
-	/* Initialise and start the OS */
-	OS_init(&stochasticScheduler);
-	initialize_scheduler(&memcluster,8);
 	
 	/*NO CODE ABOVE THIS POINT*/
 	
 
-	OS_addTask(&TCB1,11);
-	OS_addTask(&TCB2,5);
-	OS_addTask(&TCB3,7);
-	OS_addTask(&TCB4,2);
-	OS_addTask(&TCB5,21);
-	OS_addTask(&TCB6,1);
-	OS_addTask(&TCB7,13);
-	OS_addTask(&TCB8,3);
+	OS_addTask(TCB1,1);
+	OS_addTask(TCB2,2);
+	OS_addTask(TCB3,3);
+	OS_addTask(TCB4,4);
+	OS_addTask(TCB5,5);
+	OS_addTask(TCB6,6);
+	OS_addTask(TCB7,7);
+	OS_addTask(TCB8,8);
 	
 	
 	OS_start();

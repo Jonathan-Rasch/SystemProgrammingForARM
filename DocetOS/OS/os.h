@@ -38,7 +38,7 @@ typedef struct {
 
 /* Initialises the OS.  Must be called before OS_start().  The argument is a pointer to an
    OS_Scheduler_t structure (see above). */
-void OS_init(OS_Scheduler_t const * scheduler);
+void OS_init(OS_Scheduler_t const * scheduler,uint32_t * memory,uint32_t memory_size);
 
 /* Starts the OS kernel.  Never returns. */
 void OS_start(void);
@@ -52,6 +52,10 @@ uint32_t OS_elapsedTicks(void);
 /* Returns check code used in OS_wait() to determine if wait is still needed*/
 uint32_t OS_checkCode(void);
 
+/*functions to allow the user to allocate and deallocate memory through
+the memory cluster of the OS*/
+void * OS_alloc(uint32_t num_32bit_words);
+void OS_free(void * head_ptr);
 /******************************************/
 /* Task creation and management functions */
 /******************************************/

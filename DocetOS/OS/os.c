@@ -1,6 +1,8 @@
 #include "os.h"
 #include "os_internal.h"
 #include "stm32f4xx.h"
+#include "../utils/memcluster.h"
+#include "../stochasticScheduler.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -56,7 +58,8 @@ void _svc_OS_schedule(void) {
 
 /* Sets up the OS by storing a pointer to the structure containing all the callbacks.
    Also establishes the system tick timer and interrupt if preemption is enabled. */
-void OS_init(OS_Scheduler_t const * scheduler) {
+static OS_memcluster _memcluster;
+void OS_init(OS_Scheduler_t const * scheduler,uint32_t * memory,uint32_t memory_size) {
 	_scheduler = scheduler;
     *((uint32_t volatile *)0xE000ED14) |= (1 << 9); // Set STKALIGN
 	ASSERT(_scheduler->scheduler_callback);
@@ -64,6 +67,16 @@ void OS_init(OS_Scheduler_t const * scheduler) {
 	ASSERT(_scheduler->taskexit_callback);
 	ASSERT(_scheduler->wait_callback);
 	ASSERT(_scheduler->notify_callback);
+	memory_cluster_init(&_memcluster,memory,memory_size);
+	initialize_scheduler(&_memcluster,8);
+}
+
+void * OS_alloc(uint32_t num_32bit_words){
+	return _memcluster.allocate(num_32bit_words);
+}
+
+void OS_free(void * head_ptr){
+	_memcluster.deallocate((uint32_t*)head_ptr);
 }
 
 /* Starts the OS and never returns. */

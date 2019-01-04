@@ -33,7 +33,12 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 	for(int i=0;i<memory_Size_in_4byte_words;i++){
 		memoryArray[i] = NULL;
 	}
-	
+	/*ensuring that the headPtr address of the memblock is 8byte aligned so
+		that the memcluster can be used to allocate memory for task stacks.*/
+	if(((uint32_t)memoryArray + sizeof(memBlock) % 8 != 0)){
+		memoryArray++;//skip 32bit to ensure alignment
+		memory_Size_in_4byte_words--;
+	}
 	/*Initializing pools*/
 	for(int i = SMALLEST_BLOCK_SIZE; i <= LARGEST_BLOCK_SIZE; i++){
 		int array_idx = i-SMALLEST_BLOCK_SIZE;
@@ -61,6 +66,7 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 		if(requiredMemoryForBlock > memory_Size_in_4byte_words){
 			numSkips++;
 			if(numSkips < numberOfPools){
+				counter++;
 				continue;// try allocating a different size block
 			}else{
 				break;//no block fits
@@ -70,9 +76,9 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 		memBlock * blockPtr = (memBlock *)memoryArray;
 		blockPtr->blockSize = pool->blockSize;
 		blockPtr->nextMemblock = NULL;
-		uint32_t tmp_sizeOfMemblockStruct = (sizeof(memBlock)/4);//TODO: check that i got the size right here, mem should be addressed in 32bit words
+		uint32_t tmp_sizeOfMemblockStruct = (sizeof(memBlock)/4);
 		blockPtr->headPtr = memoryArray + tmp_sizeOfMemblockStruct; // 3x32bit words for memBlock struct fields
-		//updating vars keeping track of remaining memory
+		/*updating vars keeping track of remaining memory*/
 		memoryArray = memoryArray+requiredMemoryForBlock;
 		memory_Size_in_4byte_words -= requiredMemoryForBlock;
 		//place in pool
@@ -86,7 +92,6 @@ void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray,
 	}
 	
 	/*adding function pointers to memcluster struct*/
-	//TODO
 	memory_cluster->allocate = allocate;
 	memory_cluster->deallocate = deallocate;
 	printf(" %p \r\n",memoryArray);
