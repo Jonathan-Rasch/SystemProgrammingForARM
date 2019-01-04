@@ -61,6 +61,7 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 static int __getRandForTaskChoice(void);
 static uint32_t __removeIfWaiting(uint32_t _index);
 static uint32_t __removeIfSleeping(uint32_t _index);
+static uint32_t __removeIfExit(uint32_t _index);
 static uint32_t __updateSleepState(OS_TCB_t * task);
 
 //debug
@@ -108,24 +109,22 @@ but the probability of each task being selected corresponds to its position in t
 static OS_TCB_t const * stochasticScheduler_scheduler(void){
     static int ticksSinceLastTaskSwitch = 0;// used to force task to yield after MAX_TASK_TIME_IN_SYSTICKS
 		OS_TCB_t * currentTaskTCB = OS_currentTCB();
-	
-    /*check if task has yielded, is waiting or sleeping. If not then force it to yield if it has exceeded max allowed task time*/
+		
+		/*check if task has yielded, is waiting, sleeping or has exited. If not then force it to yield if it has exceeded max allowed task time.
+		Otherwise allow it to continue running.*/
 		if( currentTaskTCB != OS_idleTCB_p ){
-			uint32_t hasCurrentTaskYielded = currentTaskTCB->state & TASK_STATE_YIELD;
-			uint32_t isCurrentTaskWaiting = currentTaskTCB->state & TASK_STATE_WAIT;
-			uint32_t isCurrentTaskSleeping = currentTaskTCB->state & TASK_STATE_SLEEP;
+			uint32_t isCurrentTaskDone = currentTaskTCB->state & TASK_STATE_EXIT;
+			uint32_t hasTaskStateChanged = currentTaskTCB->state & (TASK_STATE_YIELD | TASK_STATE_WAIT | TASK_STATE_SLEEP);
+			uint32_t hasRemainingExecutionTime = ticksSinceLastTaskSwitch < MAX_TASK_TIME_IN_SYSTICKS;
 			ticksSinceLastTaskSwitch += 1;
-			if(!hasCurrentTaskYielded && !isCurrentTaskWaiting && !isCurrentTaskSleeping){
-					// now check if task has run for more than max allowed time
-					if(ticksSinceLastTaskSwitch <= MAX_TASK_TIME_IN_SYSTICKS){
-							//task is allowed to continue running
-							return currentTaskTCB;
-					}
+			if(!isCurrentTaskDone && !hasTaskStateChanged && hasRemainingExecutionTime){
+				//task is allowed to continue running
+				return currentTaskTCB;
 			}
 		}
 		
-    /*Task has either yielded (or sleeping/waiting) or it exceeded its maximum allowed time, switch task*/
-		//reset task state and task switch counter
+    /*Task has either yielded, exited or is sleeping/waiting or it exceeded its maximum allowed time, switch task*/
+		//reset YIELD state and task switch counter
     currentTaskTCB->state &= ~TASK_STATE_YIELD;// reset so task has chance of running after next task switch
 		/*not resetting TASK_STATE_SLEEP or TASK_STATE_WAIT, these are reset elswhere upon certain conditions (i.e a lock getting released)
 		occuring*/
@@ -186,7 +185,7 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 			int lastActiveNodeIndex = 0;
 			while(1){
 				/*remove the current node if the task is waiting or sleeping*/
-				if(__removeIfWaiting(nodeIndex) || __removeIfSleeping(nodeIndex) ){
+				if(__removeIfExit(nodeIndex) || __removeIfWaiting(nodeIndex) || __removeIfSleeping(nodeIndex) ){
 					//waiting/sleeping node removed
 					maxValidHeapIdx = taskHeap->currentNumNodes - 1;
 					/*after removal of node there might be none left in which case we need to stop and return idle task*/
@@ -277,35 +276,7 @@ static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_prior
  * NOTE: this function should NEVER be called manually
  * */
 static void stochasticScheduler_taskExit(OS_TCB_t * const tcb){
-		printf("test\r\n");
-    /*TODO: I need an efficient way to search for a task inside the heap in order to remove it. I dont
-     * just want to linear search through the node array and compare stack pointers. I could do this by
-     * searching via the priority value, I could store node index inside heap array inside a hashmap
-     *
-     * key: Node priority
-     * values: linked list of nodes with that priority value
-     * node at each value: index of its current position in heap array (updated during swap)
-     *
-     * to remove a node:
-     * 1) put node priority as key into hashmap, this returns a linked list of nodes
-     * 2) traverse linked list comparing stack pointers until a match is found
-     * 3) obtain the index of that node inside the heap (stored in linked list node)
-     * 4) using the index remove the node directly from the heap
-     *
-     * this approach has a lower complexity than simple array traversal. It will result in larger time
-     * needed if only a few tasks are present, but it has better complexity than O(n) of linear array
-     * search
-     * */
-    //TODO INVESTIGATE: at what number of tasks does this method become more efficient than linear search ?
-    /*^
-     * cannot just use the number of nodes from the heap itself because this function is not called in PENDSV, and hence
-     * could be interrupted, which could lead to the node size changing, resulting in the task not getting removed from
-     * the heap!, hence the need to search through all elements
-     *
-     * TODO INVESTIGATE: this could still be a problem even when searching through entire array
-     * -> should i disable interrupts during task exit?
-     * -> set a flag in task TCB and let scheduler in handler mode sort this out?
-     * -> or lock heap?*/   
+		tcb->state |= TASK_STATE_EXIT;
 }
 
 //=============================================================================
@@ -425,6 +396,36 @@ static uint32_t __removeIfWaiting(uint32_t _index){
 	if(task->state & TASK_STATE_WAIT){
 		removeNodeAt(taskHeap,_index,&removedWaitingNode);
 		hashtable_remove(tasksInHeapHashTable,(uint32_t)task);
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+/*
+Checks if a task is still running, if remove it from all scheduler hashtables and heaps that keep track of tasks
+
+returns: 1 if the task at_index exited and has therefore been removed, 0 otherwise.
+*/
+static void * removedNode;
+static uint32_t __removeIfExit(uint32_t _index){
+	OS_TCB_t * task = taskHeap->ptrToUnderlyingArray[_index].ptrToNodeContent;
+	if(task->state & (TASK_STATE_EXIT) && task->state & (TASK_STATE_SLEEP | TASK_STATE_WAIT)){
+		/*cannot remove task since if SLEEP or WAITING states are set it might be in a hashtables other than tasksInHeapHashTable
+		and activeTasksHashTable. A waiting task should never be able to terminate before it has been woken (same goes for waiting)
+		so something must be really wrong.*/
+		printf("\u001b[31m\r\nSCHEDULER: ERROR task %p has state TASK_STATE_EXIT set whilst being asleep or waiting!\r\n",task);
+		DEBUG_hashTableState();
+		DEBUG_heapState();
+		printf("\u001b[0m");
+		ASSERT(0);
+		return 0;
+	}else if(task->state & (TASK_STATE_EXIT)){
+		/*task tcb pointer will only be present in taskHeap, tasksInHeapHashTable, activeTasksHashTable. Removing
+		it there will cause the task to vanish*/
+		removeNodeAt(taskHeap,_index,&removedNode);
+		hashtable_remove(tasksInHeapHashTable,(uint32_t)task);
+		hashtable_remove(activeTasksHashTable,(uint32_t)task);
 		return 1;
 	}else{
 		return 0;

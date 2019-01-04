@@ -72,11 +72,13 @@ void task5(void const *const args) {
 }
 
 void task6(void const *const args) {
-	while(1){
+	uint32_t exitCounter = 1000;
+	while(exitCounter){
 		OS_mutex_acquire(&printLock);
 		taskcounter6++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		//printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
+		exitCounter--;
 		//OS_sleep(rand()%100);
 	}
 }

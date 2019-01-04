@@ -33,5 +33,6 @@ typedef struct s_StackFrame {
 #define TASK_STATE_YIELD    (1UL << 0) // Bit zero is the 'yield' flag
 #define TASK_STATE_SLEEP		(1UL << 1) // sleep flag
 #define TASK_STATE_WAIT			(1UL << 2) // wait flag
+#define TASK_STATE_EXIT			(1UL << 3) // tells the scheduler to remove this task from all hashtables and heaps
 
 #endif /* _TASK_H_ */
