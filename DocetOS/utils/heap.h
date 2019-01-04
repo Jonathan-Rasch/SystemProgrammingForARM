@@ -13,7 +13,7 @@
 //=============================================================================
 // Exported Functions
 //=============================================================================
-minHeap * initHeap(OS_memcluster * memcluster, int max_number_of_heap_nodes);
+minHeap * new_heap(uint32_t max_number_of_heap_nodes);
 /*NOTE:
  * the return value (uint32_t) in these functions ALWAYS indicates a status code (success/failure) of
  * the operation. Other returns (e.g index of a node) are obtained */

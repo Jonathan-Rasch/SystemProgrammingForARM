@@ -83,19 +83,19 @@ OS_Scheduler_t const stochasticScheduler = {
 				.sleep_callback = stochasticScheduler_sleepCallback
 };
 
-void initialize_scheduler(OS_memcluster * _memcluster,uint32_t _size_of_heap_node_array){
+void initialize_scheduler(uint32_t _size_of_heap_node_array){
 	/* initializing heaps needed to keep track of tasks in various states. Carefull consideration needs to be taken
 	when deciding on the capacity of these hashtables since if they are too small it might prevent wait() and sleep() from working
 	(task cant be removed from heap if there is no space in waitingTasksHashTable since the pointer to the TCB would be lost)
 	
 	choosing the bucket size is not as important, but fewer buckets lead to increased item access time*/
-	waitingTasksHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
-	activeTasksHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
-	tasksInHeapHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
-	sleepingTasksHashTable = new_hashtable(_memcluster,WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
+	waitingTasksHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
+	activeTasksHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
+	tasksInHeapHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
+	sleepingTasksHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	//other init stuff
-	taskHeap = initHeap(_memcluster,_size_of_heap_node_array);
-	sleepHeap = initHeap(_memcluster,_size_of_heap_node_array);
+	taskHeap = new_heap(_size_of_heap_node_array);
+	sleepHeap = new_heap(_size_of_heap_node_array);
 	srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so dont really care
 }
 

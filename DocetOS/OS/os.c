@@ -68,7 +68,7 @@ void OS_init(OS_Scheduler_t const * scheduler,uint32_t * memory,uint32_t memory_
 	ASSERT(_scheduler->wait_callback);
 	ASSERT(_scheduler->notify_callback);
 	memory_cluster_init(&_memcluster,memory,memory_size);
-	initialize_scheduler(&_memcluster,8);
+	initialize_scheduler(8);
 }
 
 void * OS_alloc(uint32_t num_32bit_words){

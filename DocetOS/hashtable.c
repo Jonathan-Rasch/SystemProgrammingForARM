@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "utils/memcluster.h"
+#include "os.h"
 #include "../utils/debug.h"
 /*possible feature list
 -> dont have a fixed size, rehash once X% is filled
@@ -11,11 +12,11 @@
 // INIT
 //=============================================================================
 
-OS_hashtable * new_hashtable(OS_memcluster * memcluster,uint32_t _capacity,uint32_t _number_of_buckets){
+OS_hashtable * new_hashtable(uint32_t _capacity,uint32_t _number_of_buckets){
 	uint32_t required_size_4ByteWords = sizeof(OS_hashtable)/4;
 	required_size_4ByteWords += _capacity * (sizeof(hashtable_value)/4);
 	required_size_4ByteWords += _number_of_buckets;
-	uint32_t * memory = memcluster->allocate(required_size_4ByteWords);
+	uint32_t * memory = OS_alloc(required_size_4ByteWords);
 	if(memory == NULL){
 		printf("Cannot create hashtable, could not obtain valid memory!\r\n");
 		return NULL;

@@ -1,5 +1,5 @@
 #include "heap.h"
-
+#include "os.h"
 //================================================================================
 // Internal Function Prototypes
 //================================================================================
@@ -18,11 +18,11 @@ the heap os a MIN_HEAP, meaning tha t the element with the lowest value is on to
 the minimum ensures that empty nodes are never the parent of nodes that actyally point to something
 usefull.
 */
-minHeap * initHeap(OS_memcluster * memcluster, int max_number_of_heap_nodes){
+minHeap * new_heap(uint32_t max_number_of_heap_nodes){
 	
 	//allocating memory
-	minHeap * heap_struct = (minHeap *)memcluster->allocate(sizeof(minHeap)/4);
-	minHeapNode * node_Array = (minHeapNode *)memcluster->allocate(max_number_of_heap_nodes*sizeof(minHeapNode)/4);
+	minHeap * heap_struct = (minHeap *)OS_alloc(sizeof(minHeap)/4);
+	minHeapNode * node_Array = (minHeapNode *)OS_alloc(max_number_of_heap_nodes*sizeof(minHeapNode)/4);
 	
 	/*assertions for debugging*/
 	ASSERT(max_number_of_heap_nodes > 0);

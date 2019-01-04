@@ -13,7 +13,7 @@
 
 #define NUM_BUCKETS_FOR_WAIT_HASHTABLE 8
 #define WAIT_HASHTABLE_CAPACITY 32
-void initialize_scheduler(OS_memcluster * _memcluster,uint32_t _size_of_heap_node_array);
+void initialize_scheduler(uint32_t _size_of_heap_node_array);
 extern OS_Scheduler_t const stochasticScheduler;
 
 #endif //DOCETOS_stochasticScheduler_H
