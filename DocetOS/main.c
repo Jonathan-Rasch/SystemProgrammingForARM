@@ -26,7 +26,7 @@ void task1(void const *const args) {
 		printf("\t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		////////////////////////////
-		OS_sleep(rand()%10);
+		//OS_sleep(rand()%100);
 	}
 }
 
@@ -36,7 +36,7 @@ void task2(void const *const args) {
 		taskcounter2++;
 		printf("\t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
+		//OS_sleep(rand()%100);
 	}
 }
 
@@ -46,7 +46,7 @@ void task3(void const *const args) {
 		taskcounter3++;
 		printf("\t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
+		//OS_sleep(rand()%100);
 	}
 }
 
@@ -56,7 +56,7 @@ void task4(void const *const args) {
 		taskcounter4++;
 		printf("\t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
+		//OS_sleep(rand()%100);
 	}
 }
 
@@ -67,7 +67,7 @@ void task5(void const *const args) {
 		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		////////////////////////////
-		OS_sleep(rand()%100);
+		//OS_sleep(rand()%100);
 	}
 }
 
@@ -77,7 +77,7 @@ void task6(void const *const args) {
 		taskcounter6++;
 		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
+		//OS_sleep(rand()%100);
 	}
 }
 
@@ -107,9 +107,9 @@ int main(void) {
 	//SCnSCB->ACTLR = SCnSCB_ACTLR_DISDEFWBUF_Msk; //DEBUG, converting IMPRECISERR into PRECISERR
 	/* Initialise the serial port so printf() works */
 	serial_init();
-	printf("\r\n\t\t\t\t\t\t***************************");
-	printf("\r\n\t\t\t\t\t\t* DocetOS Sleep and Mutex *\r\n");
-	printf("\t\t\t\t\t\t***************************\r\n");
+	printf("\r\n***********");
+	printf("\r\n* DocetOS *");
+	printf("\r\n***********\r\n");
 
 	/* Reserve memory for two stacks and two TCBs.
 	   Remember that stacks must be 8-byte aligned. */

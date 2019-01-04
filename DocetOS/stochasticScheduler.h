@@ -9,7 +9,7 @@
 #define MAX_TASKS MAX_HEAP_SIZE
 
 /*measured in SysTicks. If any given task has no*/
-#define MAX_TASK_TIME_IN_SYSTICKS 10
+#define MAX_TASK_TIME_IN_SYSTICKS 100
 
 #define NUM_BUCKETS_FOR_WAIT_HASHTABLE 8
 #define WAIT_HASHTABLE_CAPACITY 32

@@ -103,7 +103,7 @@ void _OS_task_end(void) {
 void _svc_OS_enable_systick(void) {
 	if (_scheduler->preemptive) {
 		SystemCoreClockUpdate();
-		SysTick_Config(SystemCoreClock / 100); //TODO changed this from 1000
+		SysTick_Config(SystemCoreClock / 1000); //TODO changed this from 1000
 		NVIC_SetPriority(SysTick_IRQn, 0x10);
 	}
 }

@@ -67,7 +67,7 @@ void OS_mutex_release(OS_mutex_t * _mutex){
 		if(OS_currentTCB() == NULL){
 			return;//not a task, dont try and sleep !!
 		}
-		OS_sleep(1);//give other tasks a chance to get lock
+		OS_yield();//give other tasks a chance to get lock
 	}
 }
 
