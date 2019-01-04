@@ -75,3 +75,11 @@ void OS_init_mutex(OS_mutex_t * mutex){
 	mutex->counter = 0;
 	mutex->tcbPointer = NULL; // NULL is just 0 ofc, but i think this makes it clearer 
 };
+
+/*Allocates and initialises mutex.
+It is the users responsability not to deallocate a mutex that is in use.*/
+OS_mutex_t * new_mutex(){
+	OS_mutex_t * mutex = OS_alloc(sizeof(OS_mutex_t)/4);
+	OS_init_mutex(mutex);
+	return mutex;
+}

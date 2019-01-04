@@ -12,6 +12,7 @@
 void OS_mutex_acquire(OS_mutex_t * mutex);
 void OS_mutex_release(OS_mutex_t * mutex);
 void OS_init_mutex(OS_mutex_t * mutex);
+OS_mutex_t * new_mutex();
 uint32_t OS_mutex_acquire_non_blocking(OS_mutex_t * _mutex);
 
 #endif /*MUTEX_H*/
