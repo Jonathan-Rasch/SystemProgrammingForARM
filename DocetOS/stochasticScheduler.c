@@ -65,6 +65,7 @@ static uint32_t __updateSleepState(OS_TCB_t * task);
 
 //debug
 static void DEBUG_hashTableState();
+static void DEBUG_heapState();
 
 //=============================================================================
 // Scheduler struct definition and init function
@@ -130,14 +131,16 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 		occuring*/
     ticksSinceLastTaskSwitch = 0; //set to 0 so that next task can run for MAX_TASK_TIME_IN_SYSTICKS
 		
-		/*sleep heap update check must remain HERE, before checking if there are any tasks in the taskHeap, some tasks in sleepHeap might need to wake
-		and move over to the taskHeap*/
+		/*A rollover of the systick counter might have happened. If this is the case then the timestamp of when a task started to
+		sleep needs to be adjusted becaus otherwise it might happen that a task has gone to sleep at 513 ticks but the current tick is 11, which means
+		that the elapsed time since the task went to sleep is -502 ticks.
+		
+		The following block UPDATES THE SLEEP STATE OF ALL SLEEPING TASKS, regardless of their location (sleepHeap or taskHeap)*/
 		if(systick_rollover_detected_FLAG){
 			/*cycle through all sleeping tasks and adjust their timestamp and remaining time*/
 			for(int bucketInd=0;bucketInd<sleepingTasksHashTable->number_of_buckets;bucketInd++){
 				const hashtable_value * element = hashtable_getFirstElementOfNthBucket(sleepingTasksHashTable,bucketInd);
 				while(element){
-					//TODO wont work, need to update priority
 					OS_TCB_t * sleepingTask = (OS_TCB_t *)element->underlying_data;
 					__updateSleepState(sleepingTask);
 					element = (hashtable_value *)element->next_hashtable_value;
@@ -145,25 +148,22 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 			}
 			/*reset flag*/
 			systick_rollover_detected_FLAG = 0;
-		}	
+		}
+		/*The following block removes the first node of the sleepHeap and updates its sleep state (remaining time etc), if this node
+		is found to have woken it is removed from the sleepingTasksHashTable and added back to the activeTasksHashTable, tasksInHeapHashTable
+		and the taskHeap. If it has not woken it is simply added back to the sleepHeap and the block exits (if the top node is not awake then 
+		no other node will be awake either).
+		
+		It is important to note that this block ONLY UPDATES SLEEPING TASKS IN THE SLEEP HEAP, nodes that are asleep but have not been
+		removed from the taskHeap (nodes present in sleepingTasksHashTable, tasksInHeapHashTable and taskHeap but not in sleepHeap) are dealt with
+		later in the scheduler function.*/
 		void * sleepingTask;
 		while(1){
-			if(sleepHeap->currentNumNodes == 0){
-				break;//no more nodes to check/update
+			if(!removeNode(sleepHeap,&sleepingTask)){
+				break;/*No nodes on the heap to wake*/
 			}
-			removeNode(sleepHeap,&sleepingTask); //sleepingTask now points to task from sleepHeap with lowest remaining sleep time
-			if(!__updateSleepState((OS_TCB_t*)sleepingTask)){
-				/*task woke up*/
-				if(hashtable_remove(sleepingTasksHashTable,(uint32_t)sleepingTask)){
-					hashtable_put(activeTasksHashTable,(uint32_t)sleepingTask,(uint32_t*)sleepingTask,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-					hashtable_put(tasksInHeapHashTable,(uint32_t)sleepingTask,(uint32_t*)sleepingTask,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-					addNode(taskHeap,sleepingTask,((OS_TCB_t*)sleepingTask)->priority);
-				}else{
-					printf("\u001b[31m\r\nSCHEDULER: ERROR waking task %p failed, task is not in the sleepingTasksHashTable!\r\n",sleepingTask);
-					DEBUG_hashTableState();
-				}
-			}else{
-				//printf("SCHEDULER: task %p still asleep, remaining time %d\r\n",sleepingTask,((OS_TCB_t*)sleepingTask)->data2);
+			//sleepingTask now points to task from sleepHeap with lowest remaining sleep time
+			if(__updateSleepState((OS_TCB_t*)sleepingTask)){
 				/*task still asleep add it back to the sleep heap with updated priority. since the priority in the sleep heap is given
 				by the tasks remaining sleep time we can stop here. If this task (which was at the top of the heap)
 				is still sleeping then all others will also be still asleep*/
@@ -324,10 +324,16 @@ static void stochasticScheduler_waitCallback(void * const _reason, uint32_t chec
 	if(hashtable_remove(activeTasksHashTable,(uint32_t)currentTCB) == NULL){
 		printf("\u001b[31m\r\nSCHEDULER: ERROR, task %p requested wait for %p , but it is not an active task!\r\n",currentTCB,_reason);
 		DEBUG_hashTableState();
+		DEBUG_heapState();
+		printf("\u001b[0m");
+		ASSERT(0);
 	}
 	if(!hashtable_put(waitingTasksHashTable,(uint32_t)_reason,(uint32_t *)currentTCB,HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY)){
 		printf("\u001b[31m\r\nSCHEDULER: ERROR, task %p requested wait for %p , but it could not be added to the waitingTasksHashTable!\r\n",currentTCB,_reason);
 		DEBUG_hashTableState();
+		DEBUG_heapState();
+		printf("\u001b[0m");
+		ASSERT(0);
 	}
 	/*HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY because mutex is used as key, and the same task is allowed to wait on more than one mutex in theory,
 	but the same task cannot wait multiple times on the same mutex*/
@@ -351,6 +357,9 @@ static void stochasticScheduler_notifyCallback(void * const reason){
 		}else{
 			printf("\u001b[31m\r\nSCHEDULER: ERROR, unable to add task %p which was previously waiting back to activeTasksHashTable!\r\n",task);
 			DEBUG_hashTableState();
+			DEBUG_heapState();
+			printf("\u001b[0m");
+			ASSERT(0);
 		}
 		
 		/*if the hashtable_put(tasksInHeapHashTable...) below fails (returns 0) that is expected behaviour. It simply means that a task
@@ -383,6 +392,9 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 		/*hashtable_remove returned NULL meaning that no element with the given key was present*/
 		printf("\u001b[31m\r\nSCHEDULER: ERROR task %p called sleep, but it is not in the activeTasks HashTable!\r\n",tcb);
 		DEBUG_hashTableState();
+		DEBUG_heapState();
+		printf("\u001b[0m");
+		ASSERT(0);
 	}
 	return;
 }
@@ -440,7 +452,7 @@ static uint32_t __updateSleepState(OS_TCB_t * task){
 		/*systick timer has roled over, need to set flag to force scheduler to itterate through
 		all elements in the sleepHeap and adjust the remainingTime and lastSleepStateUpdate timestamps to avoid
 		those tasks from sleeping much MUCH (like up to 2^32 systicks) longer than desired.*/
-		systick_rollover_detected_FLAG = 1;//TODO implement method to do the above mentioned
+		systick_rollover_detected_FLAG = 1;
 		uint32_t delta1 = (UINT32_MAX - lastSleepStateUpdate); /*time between last sleep update to task state and
 			the moment the systick timer rolled over*/
 		deltaTime = currentTime + delta1; // total elapsed time
@@ -450,7 +462,14 @@ static uint32_t __updateSleepState(OS_TCB_t * task){
 	task->data = currentTime;//updating update timestamp
 	/*now determine if the task should wake up*/
 	if(remainingTime <= deltaTime){
-		/*yes update task state*/
+		/*yes update hash tables to reflect its new state*/
+		hashtable_remove(sleepingTasksHashTable,(uint32_t)task);
+		hashtable_put(activeTasksHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+		/*add the task back to the taskHeap should it not already be in there*/
+		if(hashtable_put(tasksInHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
+			addNode(taskHeap,task,task->priority);
+		}
+		/*finally update the TCB*/
 		task->state &= ~TASK_STATE_SLEEP;
 		task->data2 = 0;
 		return 0;
@@ -493,7 +512,7 @@ static uint32_t __removeIfSleeping(uint32_t _index){
 
 static void DEBUG_hashTableState(){
 	printf("\r\n\r\n######################################################################\r\n");
-	printf("DEBUG: DUMPING CONTENT OF SCHEDULER HASH TABLES AND HALTING EXECUTION!\r\n");
+	printf("DEBUG: DUMPING CONTENT OF SCHEDULER HASH TABLES!\r\n");
 	printf("\r\nACTIVE TASK HASH TABLE:");
 	DEBUG_printHashtable(activeTasksHashTable);
 	printf("\r\nTASKS IN SCHEDULER HEAP HASH TABLE:");
@@ -502,6 +521,13 @@ static void DEBUG_hashTableState(){
 	DEBUG_printHashtable(waitingTasksHashTable);
 	printf("\r\nSLEEPING TASK HASH TABLE:");
 	DEBUG_printHashtable(sleepingTasksHashTable);
-	printf("\u001b[0m");
-	ASSERT(0);
+}
+
+static void DEBUG_heapState(){
+	printf("\r\n\r\n######################################################################\r\n");
+	printf("DEBUG: DUMPING CONTENT OF HEAPS!\r\n");
+	printf("\r\nTASK HEAP:\r\n");
+	printHeap(taskHeap);
+	printf("\r\nSLEEP HEAP:\r\n");
+	printHeap(sleepHeap);
 }
