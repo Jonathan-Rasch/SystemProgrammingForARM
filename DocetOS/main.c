@@ -51,11 +51,13 @@ void task3(void const *const args) {
 }
 
 void task4(void const *const args) {
-	while (1) {
+	uint32_t counter = 500;
+	while (counter) {
 		OS_mutex_acquire(&printLock);
 		taskcounter4++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		//printf("\t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
+		counter--;
 		//OS_sleep(rand()%100);
 	}
 }
@@ -72,7 +74,7 @@ void task5(void const *const args) {
 }
 
 void task6(void const *const args) {
-	uint32_t exitCounter = 1000;
+	uint32_t exitCounter = 500;
 	while(exitCounter){
 		OS_mutex_acquire(&printLock);
 		taskcounter6++;
@@ -89,7 +91,7 @@ void task7(void const *const args) {
 		taskcounter7++;
 		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
+		//OS_sleep(rand()%100);
 	}
 }
 
@@ -99,7 +101,7 @@ void task8(void const *const args) {
 		taskcounter8++;
 		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
+		//OS_sleep(rand()%100);
 	}
 }
 

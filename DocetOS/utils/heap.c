@@ -282,12 +282,12 @@ ptr_next_empty_elem:		200009e4
 ptr_last_elem:				200009f4
 
 HEAP CONTENTS:
-[STATUS]            [INDEX]             [RELATION]          [NODE_VALUE]        [NODE_PTR]          [PARENT_PTR]       
+[STATUS]            [INDEX]             [RELATION]          [NODE_VALUE]        [NODE_PTR]          [CONTENT_PTR]       
                     0                   N/A                 41                  200009d4            N/A                 
-                    1                   0.0                 62                  200009dc            200009d4            
--WPtr->             2                   0.1                 -1                  200009e4            200009d4            
-[UNUSED]            3                   1.0                 -1                  200009ec            200009dc            
-[UNUSED]            4                   1.1                 -1                  200009f4            200009dc            
+                    1                   0.0                 62                  200009dc            2000055a            
+-WPtr->             2                   0.1                 -1                  200009e4            200109d4            
+[UNUSED]            3                   1.0                 -1                  200009ec            20220111            
+[UNUSED]            4                   1.1                 -1                  200009f4            20123123            
 ----------------------------------------------------------------------------------------------------------------
 */
 void printHeap(minHeap * heap){
@@ -298,13 +298,13 @@ void printHeap(minHeap * heap){
 	printf("ptr_next_empty_elem:%-40p\r\n",heap->nextEmptyElement);
 	printf("ptr_last_elem:%-40p\r\n",heap->lastArrayElement);
 	printf("\r\nHEAP CONTENTS:\r\n");
-	printf("%-20s%-20s%-20s%-20s%-20s%-20s\r\n","[STATUS]","[INDEX]","[RELATION]","[NODE_VALUE]","[NODE_PTR]","[PARENT_PTR]");
+	printf("%-20s%-20s%-20s%-20s%-20s%-20s\r\n","[STATUS]","[INDEX]","[RELATION]","[NODE_VALUE]","[NODE_PTR]","[CONTENT_PTR]");
 	//zero node
 	minHeapNode * zero_node = heap->ptrToUnderlyingArray;
 	if(heap->ptrToUnderlyingArray == heap->nextEmptyElement){
-		printf("%-20s%-20d%-20s%-20d%-20p%-20s\r\n","-WPtr->",0,"N/A",zero_node->nodeValue,zero_node,"N/A");
+		printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","-WPtr->",0,"N/A",zero_node->nodeValue,zero_node,zero_node->ptrToNodeContent);
 	}else{
-		printf("%-20s%-20d%-20s%-20d%-20p%-20s\r\n","",0,"N/A",zero_node->nodeValue,zero_node,"N/A");
+		printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","",0,"N/A",zero_node->nodeValue,zero_node,zero_node->ptrToNodeContent);
 	}
 	//all other nodes
 	for(int i=1;i<heap->maxNumberOfNodes;i++){
@@ -315,11 +315,11 @@ void printHeap(minHeap * heap){
 		char relation[64];
 		sprintf(relation,"%d.%d",parentIdx,childNum);
 		if(node < heap->nextEmptyElement){
-			printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","",i,relation,node->nodeValue,node,parentNode);
+			printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","",i,relation,node->nodeValue,node,node->ptrToNodeContent);
 		}else if (node == heap->nextEmptyElement){
-			printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","-WPtr->",i,relation,node->nodeValue,node,parentNode);
+			printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","-WPtr->",i,relation,node->nodeValue,node,node->ptrToNodeContent);
 		}else{
-			printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","[UNUSED]",i,relation,node->nodeValue,node,parentNode);
+			printf("%-20s%-20d%-20s%-20d%-20p%-20p\r\n","[UNUSED]",i,relation,node->nodeValue,node,node->ptrToNodeContent);
 		}
 	}
 	printf("----------------------------------------------------------------------------------------------------------------\n\r\n");

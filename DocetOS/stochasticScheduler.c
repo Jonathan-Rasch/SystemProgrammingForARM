@@ -374,12 +374,38 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 // Internal utility functions
 //=============================================================================
 /* Used for picking which task to give cpu time. returns 3 possible values:
-0: pick the task at the current index in heap
-1: go to left child of current node in the heap
-2: go to right child of current node
+0: pick the task at the current index in heap (40% chance)
+1: go to left child of current node in the heap (30% chance)
+2: go to right child of current node (30% chance)
+
+Biased towards picking the current node to favour tasks with higher priority. consider the following
+example illustrating the problem that arises without this bias
+
+																					3
+																				/   \
+																			5       7
+																		 / \     /
+																		13 21   11
+
+->Node with priority 3 has a 1/3 chance of being picked because it has two valid children.
+->Node with priority 7 has a 1/3*2/3 chance of being picked because it has only one valid child, if
+	the scheduler tries to select its right hand child it will go back to the parent node and select
+	it instead. its left hand child has a probability of 1/3*1/3, so higher priority results in better
+	chances of being picked.
+->This breaks down with the Node of priority 5. it has a probability of being picked of 1/3*1/3 because
+	it has 2 valid children and these children have no children of their own, so their chances are also 1/3*1/3.
+	This means that even though the parent has a higher priority it has the same chances of being picked as its
+	children. Hence the need to bias.
 */
 static int __getRandForTaskChoice(void){
-	return rand() % 3;
+	uint32_t value = rand() % 10;
+	if(value <= 3){
+		return 0;//choose parent
+	}else if(value <= 6){
+		return 1;//choose left child
+	}else{
+		return 2;//choose right child
+	}
 }
 
 /* Checks if a given task is currently waiting. If task is waiting it is removed from the 
@@ -426,6 +452,10 @@ static uint32_t __removeIfExit(uint32_t _index){
 		removeNodeAt(taskHeap,_index,&removedNode);
 		hashtable_remove(tasksInHeapHashTable,(uint32_t)task);
 		hashtable_remove(activeTasksHashTable,(uint32_t)task);
+//		DEBUG_hashTableState();
+//		DEBUG_heapState();
+//		printf("\u001b[0m");
+//		ASSERT(0);
 		return 1;
 	}else{
 		return 0;
