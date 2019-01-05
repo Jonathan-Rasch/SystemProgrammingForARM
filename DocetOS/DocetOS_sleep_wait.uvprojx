@@ -481,6 +481,21 @@
               <FileType>5</FileType>
               <FilePath>.\hashtable.h</FilePath>
             </File>
+            <File>
+              <FileName>channel.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\channel.c</FilePath>
+            </File>
+            <File>
+              <FileName>queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>queue.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\queue.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

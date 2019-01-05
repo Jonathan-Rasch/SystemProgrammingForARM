@@ -107,134 +107,134 @@ but the probability of each task being selected corresponds to its position in t
 (low down in the heap) will have a small but non-zero chance of getting cpu time.
 */
 static OS_TCB_t const * stochasticScheduler_scheduler(void){
-    static int ticksSinceLastTaskSwitch = 0;// used to force task to yield after MAX_TASK_TIME_IN_SYSTICKS
-		OS_TCB_t * currentTaskTCB = OS_currentTCB();
-		
-		/*check if task has yielded, is waiting, sleeping or has exited. If not then force it to yield if it has exceeded max allowed task time.
-		Otherwise allow it to continue running.*/
-		if( currentTaskTCB != OS_idleTCB_p ){
-			uint32_t isCurrentTaskDone = currentTaskTCB->state & TASK_STATE_EXIT;
-			uint32_t hasTaskStateChanged = currentTaskTCB->state & (TASK_STATE_YIELD | TASK_STATE_WAIT | TASK_STATE_SLEEP);
-			uint32_t hasRemainingExecutionTime = ticksSinceLastTaskSwitch < MAX_TASK_TIME_IN_SYSTICKS;
-			ticksSinceLastTaskSwitch += 1;
-			if(!isCurrentTaskDone && !hasTaskStateChanged && hasRemainingExecutionTime){
-				//task is allowed to continue running
-				return currentTaskTCB;
+	static int ticksSinceLastTaskSwitch = 0;// used to force task to yield after MAX_TASK_TIME_IN_SYSTICKS
+	OS_TCB_t * currentTaskTCB = OS_currentTCB();
+	
+	/*check if task has yielded, is waiting, sleeping or has exited. If not then force it to yield if it has exceeded max allowed task time.
+	Otherwise allow it to continue running.*/
+	if( currentTaskTCB != OS_idleTCB_p ){
+		uint32_t isCurrentTaskDone = currentTaskTCB->state & TASK_STATE_EXIT;
+		uint32_t hasTaskStateChanged = currentTaskTCB->state & (TASK_STATE_YIELD | TASK_STATE_WAIT | TASK_STATE_SLEEP);
+		uint32_t hasRemainingExecutionTime = ticksSinceLastTaskSwitch < MAX_TASK_TIME_IN_SYSTICKS;
+		ticksSinceLastTaskSwitch += 1;
+		if(!isCurrentTaskDone && !hasTaskStateChanged && hasRemainingExecutionTime){
+			//task is allowed to continue running
+			return currentTaskTCB;
+		}
+	}
+	
+	/*Task has either yielded, exited or is sleeping/waiting or it exceeded its maximum allowed time, switch task*/
+	//reset YIELD state and task switch counter
+	currentTaskTCB->state &= ~TASK_STATE_YIELD;// reset so task has chance of running after next task switch
+	/*not resetting TASK_STATE_SLEEP or TASK_STATE_WAIT, these are reset elswhere upon certain conditions (i.e a lock getting released)
+	occuring*/
+	ticksSinceLastTaskSwitch = 0; //set to 0 so that next task can run for MAX_TASK_TIME_IN_SYSTICKS
+	
+	/*A rollover of the systick counter might have happened. If this is the case then the timestamp of when a task started to
+	sleep needs to be adjusted becaus otherwise it might happen that a task has gone to sleep at 513 ticks but the current tick is 11, which means
+	that the elapsed time since the task went to sleep is -502 ticks.
+	
+	The following block UPDATES THE SLEEP STATE OF ALL SLEEPING TASKS, regardless of their location (sleepHeap or taskHeap)*/
+	if(systick_rollover_detected_FLAG){
+		/*cycle through all sleeping tasks and adjust their timestamp and remaining time*/
+		for(int bucketInd=0;bucketInd<sleepingTasksHashTable->number_of_buckets;bucketInd++){
+			const hashtable_value * element = hashtable_getFirstElementOfNthBucket(sleepingTasksHashTable,bucketInd);
+			while(element){
+				OS_TCB_t * sleepingTask = (OS_TCB_t *)element->underlying_data;
+				__updateSleepState(sleepingTask);
+				element = (hashtable_value *)element->next_hashtable_value;
 			}
 		}
-		
-    /*Task has either yielded, exited or is sleeping/waiting or it exceeded its maximum allowed time, switch task*/
-		//reset YIELD state and task switch counter
-    currentTaskTCB->state &= ~TASK_STATE_YIELD;// reset so task has chance of running after next task switch
-		/*not resetting TASK_STATE_SLEEP or TASK_STATE_WAIT, these are reset elswhere upon certain conditions (i.e a lock getting released)
-		occuring*/
-    ticksSinceLastTaskSwitch = 0; //set to 0 so that next task can run for MAX_TASK_TIME_IN_SYSTICKS
-		
-		/*A rollover of the systick counter might have happened. If this is the case then the timestamp of when a task started to
-		sleep needs to be adjusted becaus otherwise it might happen that a task has gone to sleep at 513 ticks but the current tick is 11, which means
-		that the elapsed time since the task went to sleep is -502 ticks.
-		
-		The following block UPDATES THE SLEEP STATE OF ALL SLEEPING TASKS, regardless of their location (sleepHeap or taskHeap)*/
-		if(systick_rollover_detected_FLAG){
-			/*cycle through all sleeping tasks and adjust their timestamp and remaining time*/
-			for(int bucketInd=0;bucketInd<sleepingTasksHashTable->number_of_buckets;bucketInd++){
-				const hashtable_value * element = hashtable_getFirstElementOfNthBucket(sleepingTasksHashTable,bucketInd);
-				while(element){
-					OS_TCB_t * sleepingTask = (OS_TCB_t *)element->underlying_data;
-					__updateSleepState(sleepingTask);
-					element = (hashtable_value *)element->next_hashtable_value;
-				}
-			}
-			/*reset flag*/
-			systick_rollover_detected_FLAG = 0;
+		/*reset flag*/
+		systick_rollover_detected_FLAG = 0;
+	}
+	/*The following block removes the first node of the sleepHeap and updates its sleep state (remaining time etc), if this node
+	is found to have woken it is removed from the sleepingTasksHashTable and added back to the activeTasksHashTable, tasksInHeapHashTable
+	and the taskHeap. If it has not woken it is simply added back to the sleepHeap and the block exits (if the top node is not awake then 
+	no other node will be awake either).
+	
+	It is important to note that this block ONLY UPDATES SLEEPING TASKS IN THE SLEEP HEAP, nodes that are asleep but have not been
+	removed from the taskHeap (nodes present in sleepingTasksHashTable, tasksInHeapHashTable and taskHeap but not in sleepHeap) are dealt with
+	later in the scheduler function.*/
+	void * sleepingTask;
+	while(1){
+		if(!removeNode(sleepHeap,&sleepingTask)){
+			break;/*No nodes on the heap to wake*/
 		}
-		/*The following block removes the first node of the sleepHeap and updates its sleep state (remaining time etc), if this node
-		is found to have woken it is removed from the sleepingTasksHashTable and added back to the activeTasksHashTable, tasksInHeapHashTable
-		and the taskHeap. If it has not woken it is simply added back to the sleepHeap and the block exits (if the top node is not awake then 
-		no other node will be awake either).
-		
-		It is important to note that this block ONLY UPDATES SLEEPING TASKS IN THE SLEEP HEAP, nodes that are asleep but have not been
-		removed from the taskHeap (nodes present in sleepingTasksHashTable, tasksInHeapHashTable and taskHeap but not in sleepHeap) are dealt with
-		later in the scheduler function.*/
-		void * sleepingTask;
+		//sleepingTask now points to task from sleepHeap with lowest remaining sleep time
+		if(__updateSleepState((OS_TCB_t*)sleepingTask)){
+			/*task still asleep add it back to the sleep heap with updated priority. since the priority in the sleep heap is given
+			by the tasks remaining sleep time we can stop here. If this task (which was at the top of the heap)
+			is still sleeping then all others will also be still asleep*/
+			addNode(sleepHeap,sleepingTask,((OS_TCB_t*)sleepingTask)->data2);
+			break;
+		}
+	}	
+	
+	
+	/*Is there any active task to run in the heap (THIS MUST RUN AFTER UPDATING SLEEP STATE! DONT MOVE THIS!)?*/
+	if(taskHeap->currentNumNodes == 0){
+		return OS_idleTCB_p;// no active tasks currently (maybe all sleeping).
+	}
+	/*Select random task to give cpu time to (probability of each task being selected based on its position in heap)*/
+	OS_TCB_t * selectedTCB = NULL;
+	{
+		int randNodeSelection;
+		int nodeIndex = 0; //starting with highest priority node
+		int maxValidHeapIdx = taskHeap->currentNumNodes - 1;
+		int lastActiveNodeIndex = 0;
 		while(1){
-			if(!removeNode(sleepHeap,&sleepingTask)){
-				break;/*No nodes on the heap to wake*/
+			/*remove the current node if the task is waiting or sleeping*/
+			if(__removeIfExit(nodeIndex) || __removeIfWaiting(nodeIndex) || __removeIfSleeping(nodeIndex) ){
+				//waiting/sleeping node removed
+				maxValidHeapIdx = taskHeap->currentNumNodes - 1;
+				/*after removal of node there might be none left in which case we need to stop and return idle task*/
+				if(taskHeap->currentNumNodes == 0){
+					return OS_idleTCB_p;// no active tasks currently (maybe all sleeping).
+				}
+				/*after removing a waiting/sleeping node at this index it turns out that this index no longer
+					lies within the valid heap, return the last not sleeping task encountered in the heap*/
+				if(nodeIndex > maxValidHeapIdx){
+					return taskHeap->ptrToUnderlyingArray[lastActiveNodeIndex].ptrToNodeContent;
+				}
+				/*sleeping or waiting node has been removed and the heap has been restored, this means that we need to
+				rerun for the same index to check if the new node at the current index is sleeping or waiting*/
+				continue;
+			}else{
+				/*we know the node at this index is neither sleeping or waiting, we can use it as a fallback for selection in case
+				all of its children are sleeping or waiting*/
+				lastActiveNodeIndex = nodeIndex;
 			}
-			//sleepingTask now points to task from sleepHeap with lowest remaining sleep time
-			if(__updateSleepState((OS_TCB_t*)sleepingTask)){
-				/*task still asleep add it back to the sleep heap with updated priority. since the priority in the sleep heap is given
-				by the tasks remaining sleep time we can stop here. If this task (which was at the top of the heap)
-				is still sleeping then all others will also be still asleep*/
-				addNode(sleepHeap,sleepingTask,((OS_TCB_t*)sleepingTask)->data2);
+			/*Making the choice if the current node should be selected or if we should try and select one if its children (if the child
+			is valid and not waiting or sleeping)*/
+			randNodeSelection = __getRandForTaskChoice();
+			if(!randNodeSelection){
+				/*Current node selected (randNodeSelection==0). We previously checked that node at nodeIndex is not sleeping or waiting
+				so we can be sure that current node is valid and stop the search here*/
 				break;
 			}
-		}	
-		
-		
-		/*Is there any active task to run in the heap (THIS MUST RUN AFTER UPDATING SLEEP STATE! DONT MOVE THIS!)?*/
-		if(taskHeap->currentNumNodes == 0){
-			return OS_idleTCB_p;// no active tasks currently (maybe all sleeping).
-		}
-		/*Select random task to give cpu time to (probability of each task being selected based on its position in heap)*/
-		OS_TCB_t * selectedTCB = NULL;
-		{
-			int randNodeSelection;
-			int nodeIndex = 0; //starting with highest priority node
-			int maxValidHeapIdx = taskHeap->currentNumNodes - 1;
-			int lastActiveNodeIndex = 0;
-			while(1){
-				/*remove the current node if the task is waiting or sleeping*/
-				if(__removeIfExit(nodeIndex) || __removeIfWaiting(nodeIndex) || __removeIfSleeping(nodeIndex) ){
-					//waiting/sleeping node removed
-					maxValidHeapIdx = taskHeap->currentNumNodes - 1;
-					/*after removal of node there might be none left in which case we need to stop and return idle task*/
-					if(taskHeap->currentNumNodes == 0){
-						return OS_idleTCB_p;// no active tasks currently (maybe all sleeping).
-					}
-					/*after removing a waiting/sleeping node at this index it turns out that this index no longer
-						lies within the valid heap, return the last not sleeping task encountered in the heap*/
-					if(nodeIndex > maxValidHeapIdx){
-						return taskHeap->ptrToUnderlyingArray[lastActiveNodeIndex].ptrToNodeContent;
-					}
-					/*sleeping or waiting node has been removed and the heap has been restored, this means that we need to
-					rerun for the same index to check if the new node at the current index is sleeping or waiting*/
-					continue;
-				}else{
-					/*we know the node at this index is neither sleeping or waiting, we can use it as a fallback for selection in case
-					all of its children are sleeping or waiting*/
-					lastActiveNodeIndex = nodeIndex;
-				}
-				/*Making the choice if the current node should be selected or if we should try and select one if its children (if the child
-				is valid and not waiting or sleeping)*/
-				randNodeSelection = __getRandForTaskChoice();
-				if(!randNodeSelection){
-					/*Current node selected (randNodeSelection==0). We previously checked that node at nodeIndex is not sleeping or waiting
-					so we can be sure that current node is valid and stop the search here*/
-					break;
-				}
-				/*current node not selected (randNodeSelection != 0), one of its children has been selected. check if node has valid child node*/
-				int nextNodeIdx;
-				if(randNodeSelection == 1){//left child
-					nextNodeIdx = getFirstChildIndex(nodeIndex);
-				}else{//right child
-					nextNodeIdx = getSecondChildIndex(nodeIndex);
-				}
-				//check if selected child is valid node
-				if (nextNodeIdx <= maxValidHeapIdx){
-					nodeIndex = nextNodeIdx;
-					continue;
-				}else{
-					break;//nodeIndex not updated, so current node is selected for cpu time
-				}
+			/*current node not selected (randNodeSelection != 0), one of its children has been selected. check if node has valid child node*/
+			int nextNodeIdx;
+			if(randNodeSelection == 1){//left child
+				nextNodeIdx = getFirstChildIndex(nodeIndex);
+			}else{//right child
+				nextNodeIdx = getSecondChildIndex(nodeIndex);
 			}
-			selectedTCB = taskHeap->ptrToUnderlyingArray[nodeIndex].ptrToNodeContent;
+			//check if selected child is valid node
+			if (nextNodeIdx <= maxValidHeapIdx){
+				nodeIndex = nextNodeIdx;
+				continue;
+			}else{
+				break;//nodeIndex not updated, so current node is selected for cpu time
+			}
 		}
-		if(selectedTCB == NULL){
-			return OS_idleTCB_p;
-		}else{
-			return selectedTCB;
-		}
+		selectedTCB = taskHeap->ptrToUnderlyingArray[nodeIndex].ptrToNodeContent;
+	}
+	if(selectedTCB == NULL){
+		return OS_idleTCB_p;
+	}else{
+		return selectedTCB;
+	}
 }
 
 //=============================================================================

@@ -28,18 +28,17 @@ typedef struct __s_node{
 }minHeapNode;
 
 typedef struct __s_heap{
-    /* the heap has an underlying array of nodes. each node holds a value that is used during the
-     * restoration of the heap (node->nodeValue). */
-    minHeapNode *   ptrToUnderlyingArray;
-    uint32_t        maxNumberOfNodes;
-    volatile uint32_t        currentNumNodes;
-    volatile minHeapNode *   nextEmptyElement;
-    minHeapNode *   lastArrayElement;
-
-}minHeap;
+	/* the heap has an underlying array of nodes. each node holds a value that is used during the
+	 * restoration of the heap (node->nodeValue). */
+	minHeapNode *   ptrToUnderlyingArray;
+	uint32_t        maxNumberOfNodes;
+	volatile uint32_t        currentNumNodes;
+	volatile minHeapNode *   nextEmptyElement;
+	minHeapNode *   lastArrayElement;
+} minHeap;
 
 //=============================================================================
-// structs for os.c and 
+// structs for os.c
 //=============================================================================
 typedef struct {
 	/* Task stack pointer.  It's important that this is the first entry in the structure,
@@ -64,7 +63,7 @@ typedef struct {
 typedef struct{
 	uint32_t counter;
 	OS_TCB_t * tcbPointer;//pointer to a pointer to a tcb
-}OS_mutex_t;
+} OS_mutex_t;
 
 //=============================================================================
 // structs for memcluster.c
@@ -77,15 +76,26 @@ typedef struct{
 } memBlock;
 
 typedef struct{
-		uint32_t 		volatile  freeBlocks;
-		uint32_t 							blockSize; // does not include ID field and blockSize field, so actual size is blockSize+2 !
-		OS_mutex_t 	* 				memory_pool_lock;
-		memBlock 		* 				firstMemoryBlock;
+	volatile uint32_t 			freeBlocks;
+	uint32_t 								blockSize; // does not include ID field and blockSize field, so actual size is blockSize+2 !
+	OS_mutex_t 	* 					memory_pool_lock;
+	memBlock 		* volatile 	firstMemoryBlock;
 } memory_pool;
 
 typedef struct {
 	uint32_t * (* allocate)	(uint32_t required_size_in_4byte_words);// guarantees returned memory is at least required_size_in_4byte_words large
 	void 						(* deallocate)(void * memblock_head_ptr);
 } OS_memcluster;
+
+//=============================================================================
+// structs for queue.c 
+//=============================================================================
+
+typedef struct{
+	volatile uint32_t * writePointer;
+	volatile uint32_t * readPointer;
+	const uint32_t * memoryStart;
+	const uint32_t * memoryEnd;
+} OS_queue_t;
 
 #endif /*STRUCTS_H*/
