@@ -94,9 +94,9 @@ typedef struct {
 typedef struct{
 	volatile uint32_t * writePointer;
 	volatile uint32_t * readPointer;
-	const uint32_t maxCapacity;
-	const uint32_t * memoryStart;
-	const uint32_t * memoryEnd;
+	uint32_t maxCapacity;
+	uint32_t * memoryStart;
+	uint32_t * memoryEnd;
 } OS_queue_t;
 
 #endif /*STRUCTS_H*/

@@ -6,7 +6,7 @@
 #include "structs.h"
 #include "os.h"
 	//alloc/init
-	OS_queue_t * new_queue(uint32_t capacity)
+	OS_queue_t * new_queue(uint32_t capacity);
 	//data access functions
 	uint32_t queue_write(OS_queue_t * queue, uint32_t data);
 	uint32_t queue_read(OS_queue_t * queue, uint32_t * _return);

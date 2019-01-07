@@ -1,5 +1,7 @@
 #include "../queue.h"
 #include "os.h"
+#include <stdio.h>
+#include "utils/debug.h"
 
 /* Allocates and initializes a queue of size _capacity*/
 OS_queue_t * new_queue(uint32_t _capacity){
@@ -15,7 +17,7 @@ OS_queue_t * new_queue(uint32_t _capacity){
     queue->memoryEnd = memory + (_capacity);
     queue->maxCapacity = _capacity;
     queue->readPointer = queue->memoryStart;
-    queue->writePointer = queue->memoryEnd;
+    queue->writePointer = queue->memoryStart;
     return queue;
 }
 
@@ -28,7 +30,7 @@ OS_queue_t * new_queue(uint32_t _capacity){
  *
  * NOTE: queue is LIFO*/
 uint32_t queue_write(OS_queue_t * queue, uint32_t _data){
-    if(queue_isFull() || queue == NULL){
+    if(queue_isFull(queue) || queue == NULL){
         return 0;
     }
     /*getting here means there is space in the queue */
@@ -84,9 +86,11 @@ uint32_t queue_peekAt(OS_queue_t * queue, uint32_t _n, uint32_t * _return){
     uint32_t wordsTillArrayEnd = queue->memoryEnd - queue->readPointer;
     if(_n > wordsTillArrayEnd){
         _n = _n - wordsTillArrayEnd; //steps remaining after reaching array end
-        *_return = *(queue->memoryStart + (_n - 1));
+				uint32_t val = *(queue->memoryStart + (_n - 1));
+        *_return = val;
     }else{
-        *_return = *(queue->readPointer + _n)
+				uint32_t val = *(queue->readPointer + _n);
+        *_return = val;
     }
     return 1;
 }

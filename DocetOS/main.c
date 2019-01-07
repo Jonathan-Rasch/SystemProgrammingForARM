@@ -9,6 +9,7 @@
 #include "../hashtable.h"
 #include "utils/memcluster.h"
 #include "structs.h"
+#include "queue.h"
 
 #define MEMPOOL_SIZE 16384 //
 __align(8)
@@ -100,7 +101,6 @@ void task8(void const *const args) {
 }
 
 /* MAIN FUNCTION */
-
 int main(void) {
 	//SCnSCB->ACTLR = SCnSCB_ACTLR_DISDEFWBUF_Msk; //DEBUG, converting IMPRECISERR into PRECISERR
 	/* Initialise the serial port so printf() works */
@@ -141,10 +141,57 @@ int main(void) {
 	OS_initialiseTCB(TCB7, stack7+64, task7, 0);
 	OS_initialiseTCB(TCB8, stack8+64, task8, 0);
 	
+	/*TESTING QUEUE*/
+	OS_queue_t * queue = new_queue(8);
+	ASSERT(queue_isEmpty(queue));
+	ASSERT(!queue_isFull(queue));
+	ASSERT(queue_write(queue,42));
+	ASSERT(!queue_isEmpty(queue));
+	ASSERT(!queue_isFull(queue));
+	ASSERT(queue_write(queue,43));
+	ASSERT(queue_write(queue,44));
+	ASSERT(queue_write(queue,45));
+	ASSERT(queue_write(queue,46));
+	ASSERT(queue_write(queue,47));
+	ASSERT(queue_write(queue,48));
+	ASSERT(!queue_isEmpty(queue));
+	ASSERT(!queue_isFull(queue));
+	ASSERT(queue_write(queue,49));
+	ASSERT(!queue_isEmpty(queue));
+	ASSERT(queue_isFull(queue));
+	ASSERT(!queue_write(queue,50));
 	
-	/*NO CODE ABOVE THIS POINT*/
 	
+	static uint32_t _return;
+	_return = 40;
+	ASSERT(queue_peekAt(queue,0,&_return) && _return == 42);
+	ASSERT(queue_peekAt(queue,1,&_return) && _return == 43);
+	ASSERT(queue_peekAt(queue,2,&_return) && _return == 44);
+	ASSERT(queue_peekAt(queue,3,&_return) && _return == 45);
+	ASSERT(queue_peekAt(queue,4,&_return) && _return == 46);
+	ASSERT(queue_peekAt(queue,5,&_return) && _return == 47);
+	ASSERT(queue_peekAt(queue,6,&_return) && _return == 48);
+	ASSERT(queue_peekAt(queue,7,&_return) && _return == 49);
+	ASSERT(!queue_peekAt(queue,8,&_return) && _return == 49);
 
+	ASSERT(queue_read(queue,&_return) && _return == 42);
+	ASSERT(!queue_isEmpty(queue));
+	ASSERT(!queue_isFull(queue));
+	ASSERT(queue_peekAt(queue,0,&_return) && _return == 43);
+	ASSERT(queue_read(queue,&_return) && _return == 43);
+	ASSERT(queue_peekAt(queue,1,&_return) && _return == 45);
+	ASSERT(queue_read(queue,&_return) && _return == 44);
+	ASSERT(queue_read(queue,&_return) && _return == 45);
+	ASSERT(queue_read(queue,&_return) && _return == 46);
+	ASSERT(queue_read(queue,&_return) && _return == 47);
+	ASSERT(queue_read(queue,&_return) && _return == 48);
+	ASSERT(!queue_isEmpty(queue));
+	ASSERT(!queue_isFull(queue));
+	ASSERT(queue_read(queue,&_return) && _return == 49);
+	ASSERT(queue_isEmpty(queue));
+	ASSERT(!queue_isFull(queue));
+	ASSERT(!queue_read(queue,&_return) && _return == 49);
+	
 	OS_addTask(TCB1,1);
 	OS_addTask(TCB2,2);
 	OS_addTask(TCB3,3);
