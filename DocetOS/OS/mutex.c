@@ -1,6 +1,31 @@
 #include "mutex.h"
 #include <stdio.h>
 #include "os_internal.h"
+#include "os.h"
+
+//================================================================================
+// init, new and destroy
+//================================================================================
+
+void OS_init_mutex(OS_mutex_t * mutex){
+	mutex->counter = 0;
+	mutex->tcbPointer = NULL; // NULL is just 0 ofc, but i think this makes it clearer
+};
+
+/*Allocates and initialises mutex.
+It is the users responsability not to deallocate a mutex that is in use.*/
+OS_mutex_t * new_mutex(){
+	OS_mutex_t * mutex = OS_alloc(sizeof(OS_mutex_t)/4);
+	OS_init_mutex(mutex);
+	return mutex;
+}
+
+/*releases all resources associated with this mutex*/
+uint32_t destroy_mutex(OS_mutex_t * _mutex){
+	OS_free((uint32_t*)_mutex);
+	return 1;
+}
+
 //================================================================================
 // Exported Functions
 //================================================================================
@@ -71,15 +96,4 @@ void OS_mutex_release(OS_mutex_t * _mutex){
 	}
 }
 
-void OS_init_mutex(OS_mutex_t * mutex){
-	mutex->counter = 0;
-	mutex->tcbPointer = NULL; // NULL is just 0 ofc, but i think this makes it clearer 
-};
 
-/*Allocates and initialises mutex.
-It is the users responsability not to deallocate a mutex that is in use.*/
-OS_mutex_t * new_mutex(){
-	OS_mutex_t * mutex = OS_alloc(sizeof(OS_mutex_t)/4);
-	OS_init_mutex(mutex);
-	return mutex;
-}

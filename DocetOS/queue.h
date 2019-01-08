@@ -7,6 +7,7 @@
 #include "os.h"
 	//alloc/init
 	OS_queue_t * new_queue(uint32_t capacity);
+	uint32_t destroy_queue(OS_queue_t * _queue);
 	//data access functions
 	uint32_t queue_write(OS_queue_t * queue, uint32_t data);
 	uint32_t queue_read(OS_queue_t * queue, uint32_t * _return);

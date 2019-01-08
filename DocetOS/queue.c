@@ -2,6 +2,10 @@
 #include "os.h"
 #include <stdio.h>
 #include "utils/debug.h"
+#include "os.h"
+//=============================================================================
+//  new and destroy
+//=============================================================================
 
 /* Allocates and initializes a queue of size _capacity*/
 OS_queue_t * new_queue(uint32_t _capacity){
@@ -11,6 +15,11 @@ OS_queue_t * new_queue(uint32_t _capacity){
         return NULL;
     }
     uint32_t * memory = OS_alloc((sizeof(OS_queue_t)/4)+(_capacity+1));
+    if(memory == NULL){
+        printf("\r\nQUEUE: ERROR cannot allocated required memory!\r\n");
+        ASSERT(0);
+        return NULL;
+    }
     OS_queue_t * queue = (OS_queue_t*)memory;
     memory += sizeof(OS_queue_t)/4;//move memory pointer along to start of memory for queue items
     queue->memoryStart = memory;
@@ -19,6 +28,11 @@ OS_queue_t * new_queue(uint32_t _capacity){
     queue->readPointer = queue->memoryStart;
     queue->writePointer = queue->memoryStart;
     return queue;
+}
+
+uint32_t destroy_queue(OS_queue_t * _queue){
+    OS_free((uint32_t*)_queue);
+    return 1;
 }
 
 //=============================================================================

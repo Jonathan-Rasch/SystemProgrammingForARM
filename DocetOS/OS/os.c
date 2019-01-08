@@ -1,6 +1,7 @@
 #include "os.h"
 #include "os_internal.h"
 #include "stm32f4xx.h"
+#include "channelManger.h"
 #include "../utils/memcluster.h"
 #include "../stochasticScheduler.h"
 #include <stdlib.h>
@@ -19,6 +20,12 @@ static volatile uint32_t _ticks = 0;
 
 /* Pointer to the 'scheduler' struct containing callback pointers */
 static OS_Scheduler_t const * _scheduler = 0;
+
+/* Pointer to the memcluster. used for allocating memory */
+static OS_memcluster_t const * _memcluster = 0;
+
+/* pointer to channel manager struct. Manages channels used for inter task communication*/
+static OS_channelManager_t const *_channelManager = 0;
 
 /* GLOBAL: check code used by wait() function to determine if wait is still needed or if notify has been called in the interim*/
 static volatile uint32_t  _checkCode = 0;
@@ -45,12 +52,6 @@ void SysTick_Handler(void) {
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
 
-/* SVC handler for OS_yield().  Sets the TASK_STATE_YIELD flag and schedules PendSV */
-void _svc_OS_yield(void) {
-	_currentTCB->state |= TASK_STATE_YIELD;
-	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
-}
-
 /* SVC handler for OS_schedule().  Simply schedules PendSV */
 void _svc_OS_schedule(void) {
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
@@ -58,24 +59,28 @@ void _svc_OS_schedule(void) {
 
 /* Sets up the OS by storing a pointer to the structure containing all the callbacks.
    Also establishes the system tick timer and interrupt if preemption is enabled. */
-static OS_memcluster _memcluster;
 void OS_init(OS_Scheduler_t const * scheduler,uint32_t * memory,uint32_t memory_size) {
 	_scheduler = scheduler;
+	_channelManager = channelManager;
     *((uint32_t volatile *)0xE000ED14) |= (1 << 9); // Set STKALIGN
 	ASSERT(_scheduler->scheduler_callback);
 	ASSERT(_scheduler->addtask_callback);
 	ASSERT(_scheduler->taskexit_callback);
 	ASSERT(_scheduler->wait_callback);
 	ASSERT(_scheduler->notify_callback);
-	memory_cluster_init(&_memcluster,memory,memory_size);
+	memory_cluster_init(&_memcluster,memory,memory_size); //TODO why &_memcluster ?
+	initialize_channelManager(64);
 	initialize_scheduler(8);
 }
 
+/* OS_alloc allocates num_32bit_words words of memory if possible.
+ *
+ * RETURNS: pointer to the allocated memory if successful, else it returns NULL*/
 void * OS_alloc(uint32_t num_32bit_words){
 	return _memcluster.allocate(num_32bit_words);
 }
 
-void OS_free(void * head_ptr){
+void OS_free(uint32_t* head_ptr){
 	_memcluster.deallocate((uint32_t*)head_ptr);
 }
 
@@ -116,7 +121,7 @@ void _OS_task_end(void) {
 void _svc_OS_enable_systick(void) {
 	if (_scheduler->preemptive) {
 		SystemCoreClockUpdate();
-		SysTick_Config(SystemCoreClock / 1000); //TODO changed this from 1000
+		SysTick_Config(SystemCoreClock / 1000);
 		NVIC_SetPriority(SysTick_IRQn, 0x10);
 	}
 }
@@ -151,6 +156,10 @@ NOTE: this is all esentially because the current task "called" the interrupt and
 	we are able to access this value. from this we can then access the rest of the stack too (r0 points at first stacked element (Full descending stack)).
 
 */
+
+//=============================================================================
+// scheduler svc
+//=============================================================================
 
 /* SVC handler for OS_wait()*/
 void _svc_OS_wait(_OS_SVC_StackFrame_t const * const stack){
@@ -206,3 +215,30 @@ void _svc_OS_task_exit(void) {
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
 
+/* SVC handler for OS_yield().  Sets the TASK_STATE_YIELD flag and schedules PendSV */
+void _svc_OS_yield(void) {
+	_currentTCB->state |= TASK_STATE_YIELD;
+	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+}
+
+//=============================================================================
+// channel manager svc
+//=============================================================================
+
+OS_channel_t * _svc_OS_channelManager_connect(_OS_SVC_StackFrame_t const * const stack){
+	uint32_t channelID = stack->r0;
+	OS_channel_t * channel = _channelManager->connect_callback(channelID);
+	return channel;
+}
+
+uint32_t _svc_OS_channelManager_disconnect(_OS_SVC_StackFrame_t const * const stack){
+	uint32_t channelID = stack->r0;
+	uint32_t return_val = _channelManager->disconnect_callback(channelID);
+	return return_val;
+}
+
+uint32_t _svc_OS_channelManager_checkAlive(_OS_SVC_StackFrame_t const * const stack){
+	uint32_t channelID = stack->r0;
+	uint32_t return_val = _channelManager->isAlive_callback(channelID);
+	return return_val;
+}

@@ -3,6 +3,18 @@
 #include <stdint.h>
 
 //=============================================================================
+// structs for queue.c
+//=============================================================================
+
+typedef struct{
+	volatile uint32_t * writePointer;
+	volatile uint32_t * readPointer;
+	uint32_t maxCapacity;
+	uint32_t * memoryStart;
+	uint32_t * memoryEnd;
+} OS_queue_t;
+
+//=============================================================================
 // structs for hashtable.c
 //=============================================================================
 typedef struct{
@@ -16,7 +28,7 @@ typedef struct{
 	uint32_t maximum_capacity;
 	uint32_t remaining_capacity;
 	uint32_t * free_hashtable_value_struct_linked_list;
-}OS_hashtable;
+}OS_hashtable_t;
 
 //=============================================================================
 // structs for heap.c
@@ -66,37 +78,57 @@ typedef struct{
 } OS_mutex_t;
 
 //=============================================================================
+// structs for semaphore.c
+//=============================================================================
+
+typedef struct{
+    uint32_t availableTokens;
+    uint32_t maxTokens;
+} OS_semaphore_t;
+
+//=============================================================================
 // structs for memcluster.c
 //=============================================================================
 
 typedef struct{
 	uint32_t volatile * nextMemblock; //pointer to next block, either in pool or in "allocated block linked list" of hashtable
-	uint32_t 						blockSize; // memcluster needs to know to put block back into corresponding pool
-	uint32_t * 					headPtr; // points to first address of memory that the requester can use.
+	uint32_t 			blockSize; // memcluster needs to know to put block back into corresponding pool
+	uint32_t * 			headPtr; // points to first address of memory that the requester can use.
 } memBlock;
 
 typedef struct{
-	volatile uint32_t 			freeBlocks;
-	uint32_t 								blockSize; // does not include ID field and blockSize field, so actual size is blockSize+2 !
-	OS_mutex_t 	* 					memory_pool_lock;
-	memBlock 		* volatile 	firstMemoryBlock;
+	volatile      uint32_t 	freeBlocks;
+	uint32_t 			    blockSize; // does not include ID field and blockSize field, so actual size is blockSize+2 !
+	OS_mutex_t 	* 		    memory_pool_lock;
+	memBlock    * volatile 	firstMemoryBlock;
 } memory_pool;
 
 typedef struct {
-	uint32_t * (* allocate)	(uint32_t required_size_in_4byte_words);// guarantees returned memory is at least required_size_in_4byte_words large
-	void 						(* deallocate)(void * memblock_head_ptr);
-} OS_memcluster;
+	uint32_t * (* allocate)	    (uint32_t required_size_in_4byte_words);// guarantees returned memory is at least required_size_in_4byte_words large
+	void 	   (* deallocate)   (void * memblock_head_ptr);
+} OS_memcluster_t;
 
 //=============================================================================
-// structs for queue.c 
+// structs for channel.c
 //=============================================================================
 
 typedef struct{
-	volatile uint32_t * writePointer;
-	volatile uint32_t * readPointer;
-	uint32_t maxCapacity;
-	uint32_t * memoryStart;
-	uint32_t * memoryEnd;
-} OS_queue_t;
+	uint32_t channelID;
+	uint32_t capacity;
+	OS_semaphore_t * readTokens;
+	OS_semaphore_t * writeTokens;
+	OS_mutex_t * queueLock;
+	OS_queue_t * queue;
+} OS_channel_t;
+
+//=============================================================================
+// structs for channel.c
+//=============================================================================
+
+typedef struct{
+	OS_channel_t * (* connect_callback)(uint32_t _channelID);
+	uint32_t (* disconnect_callback)(uint32_t _channelID);
+	uint32_t (* isAlive_callback)(uint32_t _channelID);
+} OS_channelManager_t;
 
 #endif /*STRUCTS_H*/

@@ -28,7 +28,7 @@ static void 				deallocate	(void * memblock_head_ptr);
 
 /* Cluster Init Function
 */
-void memory_cluster_init(OS_memcluster * memory_cluster, uint32_t * memoryArray, uint32_t memory_Size_in_4byte_words){
+void memory_cluster_init(OS_memcluster_t * memory_cluster, uint32_t * memoryArray, uint32_t memory_Size_in_4byte_words){
 	printf("MEMCLUSTER %p -> ",memoryArray);
 	for(int i=0;i<memory_Size_in_4byte_words;i++){
 		memoryArray[i] = NULL;

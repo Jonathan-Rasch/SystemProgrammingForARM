@@ -18,7 +18,10 @@ enum OS_SVC_e {
 	OS_SVC_SCHEDULE,
 	OS_SVC_WAIT,
 	OS_SVC_NOTIFY,
-	OS_SVC_SLEEP
+	OS_SVC_SLEEP,
+	OS_CHANNEL_CONNECT,
+	OS_CHANNEL_DISCONNECT,
+	OS_CHANNEL_CHECK
 };
 
 /* A structure to hold callbacks for a scheduler, plus a 'preemptive' flag */
@@ -55,7 +58,7 @@ uint32_t OS_checkCode(void);
 /*functions to allow the user to allocate and deallocate memory through
 the memory cluster of the OS*/
 void * OS_alloc(uint32_t num_32bit_words);
-void OS_free(void * head_ptr);
+void OS_free(uint32_t * head_ptr);
 /******************************************/
 /* Task creation and management functions */
 /******************************************/
@@ -73,6 +76,10 @@ void OS_free(void * head_ptr);
    The fourth argument is a void pointer to data that the task should receive. */
 void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func)(void const * const), void const * const data);
 
+//=============================================================================
+// scheduler svc
+//=============================================================================
+
 /* SVC delegate to add a task */
 void __svc(OS_SVC_ADD_TASK) OS_addTask(OS_TCB_t const * const,uint32_t task_priority);
 
@@ -83,6 +90,14 @@ void __svc(OS_SVC_WAIT) OS_wait(void * reason, uint32_t check_Code);
 void __svc(OS_SVC_NOTIFY) OS_notify(void * reason);
 
 void __svc(OS_SVC_SLEEP) OS_sleep(uint32_t min_sleep_duration);
+
+//=============================================================================
+// channel manager svc
+//=============================================================================
+
+OS_channel_t * __svc(OS_CHANNEL_CONNECT) OS_channel_connect(uint32_t channelID);
+OS_channel_t * __svc(OS_CHANNEL_DISCONNECT) OS_channel_disconnect(uint32_t channelID);
+OS_channel_t * __svc(OS_CHANNEL_CHECK) OS_channel_check(uint32_t channelID);
 
 /************************/
 /* Scheduling functions */

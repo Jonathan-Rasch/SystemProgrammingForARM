@@ -23,27 +23,33 @@ static uint32_t systick_rollover_detected_FLAG = 0;
 
 //TASK HEAP RELATED
 static minHeap * taskHeap;
-/*waitingTasksHashTable
+/*waitingTasksHashTable_reasonAsKey
 holds the TCB of all tasks that have entered the waiting state.
+
 NOTE: a task being in this hashtable does not mean it is not present in the heap !! the scheduler only removes waiting tasks from the 
-heap if it attemps to select them during task switch. This is to save cycles that would otherwise be wasted removing every single task from the 
+heap if it attempts to select them during task switch. This is to save cycles that would otherwise be wasted removing every single task from the
 heap that is waiting and restoring the heap property. As long as task is not selected it is ok for it to be in the heap, it might wake up before the
-the heap gets around to removing it.*/
-static OS_hashtable * waitingTasksHashTable;
+the heap gets around to removing it.
+
+ NOTE: keys in this hashtable are the reason of why the task is waiting. This allows quick access to all tasks that are waiting for a specific resource*/
+static OS_hashtable_t * waitingTasksHashTable_reasonAsKey;
+static OS_hashtable_t * waitingTasksHashTable_tcbAsKey;/* allows quick access to specific task that is waiting which is not possible via
+ * waitingTasksHashTable_reasonAsKey since the reason for waiting is used as the key. both waitingTasksHashTable_tcbAsKey and waitingTasksHashTable_reasonAsKey
+ * are identical in terms of the tcb pointers they contain. waitingTasksHashTable_tcbAsKey has the _reason as value corresponding to the key*/
 /*activeTasksHashTable
 holds the TCB of all tasks that are currently active and can be selected by the scheduler*/
-static OS_hashtable * activeTasksHashTable;
+static OS_hashtable_t * activeTasksHashTable;
 /*tasksInHeapHashTable
 keeps track of all tasks that are in the heap, active or otherwise. This is needed to prevent a task that exits the waiting state getting
 added to the heap even though it was never removed in the first place.*/
-static OS_hashtable * tasksInHeapHashTable;
+static OS_hashtable_t * tasksInHeapHashTable;
 
 //SLEEP HEAP RELATED
 static minHeap * sleepHeap;
 /*Keeps track of tasks that requested sleep. tasks that requested sleep but have not been encountered by the scheduler (trying to run the task that has requested sleep)
 might remain in the scheduler heap (might never leave it if their sleep time expires before scheduler encounters them, in which case scheduler will unset sleep state and 
 remove the task from this hashtable).*/
-static OS_hashtable * sleepingTasksHashTable;
+static OS_hashtable_t * sleepingTasksHashTable;
 
 //=============================================================================
 // prototypes
@@ -69,27 +75,28 @@ static void DEBUG_hashTableState();
 static void DEBUG_heapState();
 
 //=============================================================================
-// Scheduler struct definition and init function
+// init
 //=============================================================================
 
-/*scheduler struct definition*/
+/*scheduler struct init*/
 OS_Scheduler_t const stochasticScheduler = {
         .preemptive = 1,
         .scheduler_callback = stochasticScheduler_scheduler,
         .addtask_callback = stochasticScheduler_addTask,
         .taskexit_callback = stochasticScheduler_taskExit,
-				.wait_callback = stochasticScheduler_waitCallback,
-				.notify_callback = stochasticScheduler_notifyCallback,
-				.sleep_callback = stochasticScheduler_sleepCallback
+        .wait_callback = stochasticScheduler_waitCallback,
+		.notify_callback = stochasticScheduler_notifyCallback,
+		.sleep_callback = stochasticScheduler_sleepCallback
 };
 
 void initialize_scheduler(uint32_t _size_of_heap_node_array){
 	/* initializing heaps needed to keep track of tasks in various states. Carefull consideration needs to be taken
 	when deciding on the capacity of these hashtables since if they are too small it might prevent wait() and sleep() from working
-	(task cant be removed from heap if there is no space in waitingTasksHashTable since the pointer to the TCB would be lost)
+	(task cant be removed from heap if there is no space in waitingTasksHashTable_reasonAsKey since the pointer to the TCB would be lost)
 	
 	choosing the bucket size is not as important, but fewer buckets lead to increased item access time*/
-	waitingTasksHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
+	waitingTasksHashTable_reasonAsKey = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
+	waitingTasksHashTable_tcbAsKey = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	activeTasksHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	tasksInHeapHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	sleepingTasksHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
@@ -249,7 +256,20 @@ static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_prior
 	#ifdef stochasticScheduler_DEBUG
 	printf("\r\nACTIVE TASK HASH TABLE:\r\n");
 	DEBUG_printHashtable(activeTasksHashTable);
-	#endif /*stochasticScheduler_DEBUG*/
+    #endif /*stochasticScheduler_DEBUG*/
+	if(tcb == NULL){
+		printf("\r\nSCHEDULER: ERROR, attempt to add null pointer tcb to scheduler!\r\n");
+		ASSERT(0);
+		return;
+	}else if(!tcb->state){
+		printf("\r\nSCHEDULER: ERROR, cannot add tasks that have a state other than 0x00 to scheduler! The task you tried to add has state 0x%08x\r\n",tcb->state);
+		ASSERT(0);
+		return;
+	}else if(task_priority == 0){
+		printf("\r\nSCHEDULER: ERROR, tried to add task with priority 0, lowest allowed priority is 1!\r\n");
+		ASSERT(0);
+		return;
+	}
 	tcb->priority = task_priority;
 	hashtable_put(activeTasksHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 	hashtable_put(tasksInHeapHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
@@ -299,12 +319,15 @@ static void stochasticScheduler_waitCallback(void * const _reason, uint32_t chec
 		printf("\u001b[0m");
 		ASSERT(0);
 	}
-	if(!hashtable_put(waitingTasksHashTable,(uint32_t)_reason,(uint32_t *)currentTCB,HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY)){
-		printf("\u001b[31m\r\nSCHEDULER: ERROR, task %p requested wait for %p , but it could not be added to the waitingTasksHashTable!\r\n",currentTCB,_reason);
+	if(!hashtable_put(waitingTasksHashTable_reasonAsKey,(uint32_t)_reason,(uint32_t *)currentTCB,HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY)){
+		printf("\u001b[31m\r\nSCHEDULER: ERROR, task %p requested wait for %p , but it could not be added to the waitingTasksHashTable_reasonAsKey!\r\n",currentTCB,_reason);
 		DEBUG_hashTableState();
 		DEBUG_heapState();
 		printf("\u001b[0m");
 		ASSERT(0);
+	}else{
+		/*mirroring waitingTaskHashTable_reasonAsKey*/
+		hashtable_put(waitingTasksHashTable_tcbAsKey,(uint32_t )currentTCB,(uint32_t *)_reason,HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY);
 	}
 	/*HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY because mutex is used as key, and the same task is allowed to wait on more than one mutex in theory,
 	but the same task cannot wait multiple times on the same mutex*/
@@ -315,11 +338,13 @@ static void stochasticScheduler_waitCallback(void * const _reason, uint32_t chec
 static void stochasticScheduler_notifyCallback(void * const reason){
 	/*add all the tasks that are waiting for the given reason back to the scheduler heap*/
 	//printf("\r\n>>>>>>NOTIFY: %p <<<<<<\r\n",reason);
-	if(waitingTasksHashTable == NULL){
+	if(waitingTasksHashTable_reasonAsKey == NULL){
 		return;//during initialisation locks are released calling notify, but hash table is not created yet
 	}
 	while(1){
-		OS_TCB_t * task = (OS_TCB_t*)hashtable_remove(waitingTasksHashTable,(uint32_t)reason);
+		OS_TCB_t * task = (OS_TCB_t*)hashtable_remove(waitingTasksHashTable_reasonAsKey,(uint32_t)reason);
+		/*mirroring waitingTasksHashTable_reasonAsKey content*/
+		hashtable_remove(waitingTasksHashTable_tcbAsKey,(uint32_t)task);
 		if(task == NULL){
 			break; /*no task was waiting for _reason, this is normal behaviour*/
 		}
@@ -538,6 +563,45 @@ static uint32_t __removeIfSleeping(uint32_t _index){
 }
 
 //=============================================================================
+// Externally accessible utility functions
+//=============================================================================
+/* Following functions can be used to check various states of a specific task by checking the internal hashtables of the scheduler.
+ *
+ * RETURNS: 1 if true, 0 otherwise*/
+
+uint32_t isTaskActive(OS_TCB_t * _task){
+	if(hashtable_get(activeTasksHashTable,_task)){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+uint32_t isTaskSleeping(OS_TCB_t * _task){
+	if(hashtable_get(sleepingTasksHashTable,_task)){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+uint32_t isTaskWaiting(OS_TCB_t * _task){
+	if(hashtable_get(waitingTasksHashTable_tcbAsKey,_task)){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+uint32_t doesTaskExist(OS_TCB_t * _task){
+	if(isTaskActive(_task) || isTaskSleeping(_task) || isTaskWaiting(_task)){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+//=============================================================================
 // DEBUG functions
 //=============================================================================
 
@@ -549,7 +613,7 @@ static void DEBUG_hashTableState(){
 	printf("\r\nTASKS IN SCHEDULER HEAP HASH TABLE:");
 	DEBUG_printHashtable(tasksInHeapHashTable);
 	printf("\r\nWAITING TASK HASH TABLE:\r\nNOTE: the key is the reason the task is waiting, multiple entries with same key are allowed provided their 'data' fields differ.\r\n");
-	DEBUG_printHashtable(waitingTasksHashTable);
+	DEBUG_printHashtable(waitingTasksHashTable_reasonAsKey);
 	printf("\r\nSLEEPING TASK HASH TABLE:");
 	DEBUG_printHashtable(sleepingTasksHashTable);
 }
