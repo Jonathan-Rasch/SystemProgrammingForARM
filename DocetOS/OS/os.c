@@ -1,7 +1,7 @@
 #include "os.h"
 #include "os_internal.h"
 #include "stm32f4xx.h"
-#include "channelManger.h"
+#include "../channelManger.h"
 #include "../utils/memcluster.h"
 #include "../stochasticScheduler.h"
 #include <stdlib.h>
@@ -22,7 +22,7 @@ static volatile uint32_t _ticks = 0;
 static OS_Scheduler_t const * _scheduler = 0;
 
 /* Pointer to the memcluster. used for allocating memory */
-static OS_memcluster_t const * _memcluster = 0;
+static OS_memcluster_t _memcluster;
 
 /* pointer to channel manager struct. Manages channels used for inter task communication*/
 static OS_channelManager_t const *_channelManager = 0;
@@ -61,8 +61,8 @@ void _svc_OS_schedule(void) {
    Also establishes the system tick timer and interrupt if preemption is enabled. */
 void OS_init(OS_Scheduler_t const * scheduler,uint32_t * memory,uint32_t memory_size) {
 	_scheduler = scheduler;
-	_channelManager = channelManager;
-    *((uint32_t volatile *)0xE000ED14) |= (1 << 9); // Set STKALIGN
+	_channelManager = &channelManager;
+  *((uint32_t volatile *)0xE000ED14) |= (1 << 9); // Set STKALIGN
 	ASSERT(_scheduler->scheduler_callback);
 	ASSERT(_scheduler->addtask_callback);
 	ASSERT(_scheduler->taskexit_callback);
@@ -227,7 +227,8 @@ void _svc_OS_yield(void) {
 
 OS_channel_t * _svc_OS_channelManager_connect(_OS_SVC_StackFrame_t const * const stack){
 	uint32_t channelID = stack->r0;
-	OS_channel_t * channel = _channelManager->connect_callback(channelID);
+	uint32_t capacity = stack->r0;
+	OS_channel_t * channel = _channelManager->connect_callback(channelID,capacity);
 	return channel;
 }
 

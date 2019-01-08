@@ -1,7 +1,5 @@
 #include "channelManger.h"
-#include "stochasticScheduler.h"
-#include "hashtable.h"
-#include "channel.h"
+
 //=============================================================================
 // vars
 //=============================================================================
@@ -21,7 +19,7 @@ static OS_hashtable_t * channelStatusHashTable;
 //=============================================================================
 
 //svc accessible
-static OS_channel_t * channelManager_connect(uint32_t _channelID);
+static OS_channel_t * channelManager_connect(uint32_t _channelID,uint32_t _capacity);
 static uint32_t channelManager_disconnect(uint32_t _channelID);
 static uint32_t channelManager_checkAlive(uint32_t _channelID);
 
@@ -30,14 +28,13 @@ static uint32_t channelManager_checkAlive(uint32_t _channelID);
 //=============================================================================
 
 OS_channelManager_t const channelManager = {
-        .connect_callback = channelManager_connect;
-        .idInUse_callback = channelManager_isChannelIDinUse;
-        .disconnect_callback = channelManager_disconnect;
-        .checkAlive_callback = channelManager_checkAlive;
+        .connect_callback = channelManager_connect,
+        .disconnect_callback = channelManager_disconnect,
+        .isAlive_callback = channelManager_checkAlive
 };
 
 void initialize_channelManager(uint32_t _max_number_of_channels){
-    channelsHashTable = new_hashtable(_max_number_of_channels,NUM_BUCKETS_FOR_CHANNELS_HASHTABLE);
+    channelHashTable = new_hashtable(_max_number_of_channels,NUM_BUCKETS_FOR_CHANNELS_HASHTABLE);
     channelStatusHashTable = new_hashtable(_max_number_of_channels,NUM_BUCKETS_FOR_CHANNELS_HASHTABLE);
 };
 
@@ -68,7 +65,7 @@ static OS_channel_t * channelManager_connect(uint32_t _channelID,uint32_t _capac
         OS_channel_t * channel = (OS_channel_t *)hashtable_get(channelHashTable,_channelID);
         if(channel){
             if(channel->capacity != _capacity){
-                printf("\r\nCHANNEL_MANAGER: WARNING a channel with the ID %d already exists, but its capacity (%d) differs from the requested capacity (%d).\r\n",_channelID,channel->capacity,_capacity)
+                printf("\r\nCHANNEL_MANAGER: WARNING a channel with the ID %d already exists, but its capacity (%d) differs from the requested capacity (%d).\r\n",_channelID,channel->capacity,_capacity);
             }
             /*yes a channel exists, return it after updating the channel status*/
             uint32_t num_connections = (uint32_t)hashtable_remove(channelStatusHashTable,_channelID);
@@ -78,14 +75,14 @@ static OS_channel_t * channelManager_connect(uint32_t _channelID,uint32_t _capac
         }
     }
     /*channel does not exist yet and we need to create it*/
-    OS_channel_t * newChannel = new_channel(_capacity);
+    OS_channel_t * newChannel = new_channel(_channelID, _capacity);
     if(newChannel == NULL){
         printf("\r\nCHANNEL_MANAGER: ERROR could not allocate the memory required for the channel!\r\n");
         return NULL; //could not allocate the memory
     }
     /*at this point we have a valid channel, now we add it to the hashtable*/
-    hashtable_put(channelHashTable,_channelID,(uint32_t *)newChannel);
-    hashtable_put(channelStatusHashTable,_channelID,(uint32_t*)1);//one task connected to channel
+    hashtable_put(channelHashTable,_channelID,(uint32_t *)newChannel,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+    hashtable_put(channelStatusHashTable,_channelID,(uint32_t*)1,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);//one task connected to channel
     return newChannel;
 }
 
@@ -94,7 +91,7 @@ static OS_channel_t * channelManager_connect(uint32_t _channelID,uint32_t _capac
  *
  * RETURNS: number of connections to channel if ID is in use, 0 otherwise*/
 static uint32_t channelManager_checkAlive(uint32_t _channelID){
-    uint32_t numConnections = hashtable_get(channelStatusHashTable,_channelID);
+    uint32_t numConnections = (uint32_t)hashtable_get(channelStatusHashTable,_channelID);
     if(numConnections){
         return numConnections;
     }else{
@@ -113,11 +110,11 @@ static uint32_t channelManager_disconnect(uint32_t _channelID){
     uint32_t num_connections = (uint32_t)hashtable_remove(channelStatusHashTable,_channelID);
     num_connections -= 1;
     if(num_connections){
-        hashtable_put(channelStatusHashTable,_channelID,(uint32_t *)num_connections);
+        hashtable_put(channelStatusHashTable,_channelID,(uint32_t *)num_connections,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
         return 1;
     }else{
         /*no more connections, kill channel*/
-        OS_channel_t * channel = hashtable_remove(channelHashTable,_channelID);
+        OS_channel_t * channel = (OS_channel_t *)hashtable_remove(channelHashTable,_channelID);
         destroy_channel(channel);
     }
     return 1;

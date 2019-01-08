@@ -1,7 +1,5 @@
 #include "semaphore.h"
-#include <stdio.h>
-#include "os_internal.h"
-#include "os.h"
+
 
 //================================================================================
 // init, new and destroy
@@ -16,15 +14,15 @@ void init_semaphore(OS_semaphore_t * _semaphore,uint32_t _initial_tokens, uint32
 /*new_semaphore allocates and initialises a semaphore.
  *
  * RETURNS: pointer to a semaphore*/
-OS_mutex_t * new_semaphore(uint32_t _initial_tokens, uint32_t _max_tokens){
+OS_semaphore_t * new_semaphore(uint32_t _initial_tokens, uint32_t _max_tokens){
     OS_semaphore_t * semaphore = OS_alloc(sizeof(OS_semaphore_t)/4);
-    OS_init_semaphore(semaphore);
+    init_semaphore(semaphore,_initial_tokens,_max_tokens);
     return semaphore;
 }
 
 /* deallocate the resources associated with the semaphore*/
 uint32_t destroy_semaphore(OS_semaphore_t * _semaphore){
-    OS_free((uint32_t*)_semaphore)
+    OS_free((uint32_t*)_semaphore);
     return 1;
 }
 
@@ -40,10 +38,10 @@ void semaphore_acquire_token(OS_semaphore_t * _semaphore){
     uint32_t exclusiveAcessFailed;
     while(1){
         uint32_t checkCode = OS_checkCode();
-        uint32_t token_counter = (uint32_t)__LDREXW((uint32_t*) &(_semaphore->tokens));
-        if(token_counter > 0){
-            token_counter--;
-            exclusiveAcess = __STREXW((uint32_t)currentTCB,(uint32_t*) &(_semaphore->tokens)); // returns 0 on success !
+        uint32_t tokens = (uint32_t)__LDREXW((uint32_t*) &(_semaphore->availableTokens));
+        if(tokens > 0){
+            tokens--;
+            exclusiveAcessFailed = __STREXW(tokens,(uint32_t*) &(_semaphore->availableTokens)); // returns 0 on success !
             if(exclusiveAcessFailed){
                 continue;// try again, go back to loading
             }else{
@@ -63,12 +61,13 @@ void semaphore_acquire_token(OS_semaphore_t * _semaphore){
  * -> notifies all tasks waiting on this semaphore after successfully placing token
  * */
 void semaphore_release_token(OS_semaphore_t * _semaphore){
-    while(1){
+    uint32_t exclusiveAcessFailed;
+		while(1){
         uint32_t checkCode = OS_checkCode();
-        uint32_t token_counter = (uint32_t)__LDREXW((uint32_t*) &(_semaphore->tokens));
+        uint32_t token_counter = (uint32_t)__LDREXW((uint32_t*) &(_semaphore->availableTokens));
         if(token_counter < _semaphore->maxTokens){
             token_counter++;
-            exclusiveAcess = __STREXW((uint32_t)currentTCB,(uint32_t*) &(_semaphore->tokens)); // returns 0 on success !
+            exclusiveAcessFailed = __STREXW(token_counter,(uint32_t*) &(_semaphore->availableTokens)); // returns 0 on success !
             if(exclusiveAcessFailed){
                 continue;// try again, go back to loading
             }else{

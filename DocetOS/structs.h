@@ -126,7 +126,7 @@ typedef struct{
 //=============================================================================
 
 typedef struct{
-	OS_channel_t * (* connect_callback)(uint32_t _channelID);
+	OS_channel_t * (* connect_callback)(uint32_t _channelID,uint32_t _capacity);
 	uint32_t (* disconnect_callback)(uint32_t _channelID);
 	uint32_t (* isAlive_callback)(uint32_t _channelID);
 } OS_channelManager_t;

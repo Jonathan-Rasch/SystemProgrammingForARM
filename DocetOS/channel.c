@@ -36,7 +36,7 @@ OS_channel_t * new_channel(uint32_t _channelID, uint32_t _capacity){
 /*frees all resources associated with the queue*/
 uint32_t destroy_channel(OS_channel_t * _channel){
     destroy_semaphore(_channel->writeTokens);
-    destroy_semaphore(_channel->readTokensTokens);
+    destroy_semaphore(_channel->readTokens);
     destroy_mutex(_channel->queueLock);
     destroy_queue(_channel->queue);
     OS_free((uint32_t*)_channel);
@@ -64,7 +64,8 @@ uint32_t channel_read(OS_channel_t * _channel){
     semaphore_acquire_token(_channel->readTokens);
     /*got a token, lock the queue and read data*/
     OS_mutex_acquire(_channel->queueLock);
-    uint32_t readData = queue_read(_channel->queue);
+    uint32_t readData;
+		queue_read(_channel->queue,&readData);
     /*reading from the queue frees up space, hence place a token into THE WRITE SEMAPHORE*/
     semaphore_release_token(_channel->writeTokens);
     /*finally release the lock and return the data*/

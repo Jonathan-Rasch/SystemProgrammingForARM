@@ -80,11 +80,11 @@ static void DEBUG_heapState();
 
 /*scheduler struct init*/
 OS_Scheduler_t const stochasticScheduler = {
-        .preemptive = 1,
-        .scheduler_callback = stochasticScheduler_scheduler,
-        .addtask_callback = stochasticScheduler_addTask,
-        .taskexit_callback = stochasticScheduler_taskExit,
-        .wait_callback = stochasticScheduler_waitCallback,
+		.preemptive = 1,
+		.scheduler_callback = stochasticScheduler_scheduler,
+		.addtask_callback = stochasticScheduler_addTask,
+		.taskexit_callback = stochasticScheduler_taskExit,
+		.wait_callback = stochasticScheduler_waitCallback,
 		.notify_callback = stochasticScheduler_notifyCallback,
 		.sleep_callback = stochasticScheduler_sleepCallback
 };
@@ -261,7 +261,7 @@ static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_prior
 		printf("\r\nSCHEDULER: ERROR, attempt to add null pointer tcb to scheduler!\r\n");
 		ASSERT(0);
 		return;
-	}else if(!tcb->state){
+	}else if(tcb->state != 0){
 		printf("\r\nSCHEDULER: ERROR, cannot add tasks that have a state other than 0x00 to scheduler! The task you tried to add has state 0x%08x\r\n",tcb->state);
 		ASSERT(0);
 		return;
@@ -570,7 +570,7 @@ static uint32_t __removeIfSleeping(uint32_t _index){
  * RETURNS: 1 if true, 0 otherwise*/
 
 uint32_t isTaskActive(OS_TCB_t * _task){
-	if(hashtable_get(activeTasksHashTable,_task)){
+	if(hashtable_get(activeTasksHashTable,(uint32_t)_task)){
 		return 1;
 	}else{
 		return 0;
@@ -578,7 +578,7 @@ uint32_t isTaskActive(OS_TCB_t * _task){
 }
 
 uint32_t isTaskSleeping(OS_TCB_t * _task){
-	if(hashtable_get(sleepingTasksHashTable,_task)){
+	if(hashtable_get(sleepingTasksHashTable,(uint32_t)_task)){
 		return 1;
 	}else{
 		return 0;
@@ -586,7 +586,7 @@ uint32_t isTaskSleeping(OS_TCB_t * _task){
 }
 
 uint32_t isTaskWaiting(OS_TCB_t * _task){
-	if(hashtable_get(waitingTasksHashTable_tcbAsKey,_task)){
+	if(hashtable_get(waitingTasksHashTable_tcbAsKey,(uint32_t)_task)){
 		return 1;
 	}else{
 		return 0;
