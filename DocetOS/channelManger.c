@@ -14,6 +14,8 @@ static OS_hashtable_t * channelHashTable;
  * this is used to decide when to deallocate a channel*/
 static OS_hashtable_t * channelStatusHashTable;
 
+static OS_channel_t * freeChannelsLinkedList = NULL;
+
 //=============================================================================
 // prototypes
 //=============================================================================
@@ -36,6 +38,13 @@ OS_channelManager_t const channelManager = {
 void initialize_channelManager(uint32_t _max_number_of_channels){
     channelHashTable = new_hashtable(_max_number_of_channels,NUM_BUCKETS_FOR_CHANNELS_HASHTABLE);
     channelStatusHashTable = new_hashtable(_max_number_of_channels,NUM_BUCKETS_FOR_CHANNELS_HASHTABLE);
+		/*allocating channels*/
+		for(int i=0;i < _max_number_of_channels;i++){
+			OS_channel_t * channel = new_channel(1,MAX_ALLOWED_CHANNEL_CAPACITY);
+			uint32_t * tmp_nextFreeChannel = (uint32_t*)freeChannelsLinkedList;
+			freeChannelsLinkedList = channel;
+			channel->channelID = (uint32_t)tmp_nextFreeChannel;/*overwriting channelID, but that is irrelevant whilst channel is not in use*/
+		}
 };
 
 //=============================================================================
@@ -60,6 +69,10 @@ static OS_channel_t * channelManager_connect(uint32_t _channelID,uint32_t _capac
         printf("\r\nCHANNEL_MANAGER: ERROR 0 is not a valid channelID !\r\n");
         return NULL;
     }
+		if(_capacity > MAX_ALLOWED_CHANNEL_CAPACITY){
+			printf("\r\nCHANNEL_MANAGER: ERROR requested capacity (%d) exceeds the MAX_ALLOWED_CHANNEL_CAPACITY %d!\r\n",_capacity,MAX_ALLOWED_CHANNEL_CAPACITY);
+        return NULL;
+		}
     /* check if a channel for the given ID already exists (another task might have called connect before the current task)*/
     {
         OS_channel_t * channel = (OS_channel_t *)hashtable_get(channelHashTable,_channelID);
@@ -74,12 +87,14 @@ static OS_channel_t * channelManager_connect(uint32_t _channelID,uint32_t _capac
             return channel;
         }
     }
-    /*channel does not exist yet and we need to create it*/
-    OS_channel_t * newChannel = new_channel(_channelID, _capacity);
-    if(newChannel == NULL){
-        printf("\r\nCHANNEL_MANAGER: ERROR could not allocate the memory required for the channel!\r\n");
+    /*channel does not exist yet, take a free one from the linked list*/
+    OS_channel_t * newChannel = freeChannelsLinkedList;//= new_channel(_channelID, _capacity);
+    freeChannelsLinkedList = (OS_channel_t *)newChannel->channelID;//channelID holds pointer to next channel struct whilst the channel is not in use;
+		if(newChannel == NULL){
+        printf("\r\nCHANNEL_MANAGER: ERROR no free channels available!\r\n");
         return NULL; //could not allocate the memory
     }
+		channel_init(newChannel,_channelID,_capacity);//reset the channel (clear values set by previous usage of this channel struct);
     /*at this point we have a valid channel, now we add it to the hashtable*/
     hashtable_put(channelHashTable,_channelID,(uint32_t *)newChannel,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
     hashtable_put(channelStatusHashTable,_channelID,(uint32_t*)1,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);//one task connected to channel
@@ -113,9 +128,11 @@ static uint32_t channelManager_disconnect(uint32_t _channelID){
         hashtable_put(channelStatusHashTable,_channelID,(uint32_t *)num_connections,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
         return 1;
     }else{
-        /*no more connections, kill channel*/
+        /*no more connections, put channel back into linked list of free channels*/
         OS_channel_t * channel = (OS_channel_t *)hashtable_remove(channelHashTable,_channelID);
-        destroy_channel(channel);
+        OS_channel_t * tmp_channel = freeChannelsLinkedList;
+				freeChannelsLinkedList = channel;
+				channel->channelID = (uint32_t)tmp_channel; 
     }
     return 1;
 }

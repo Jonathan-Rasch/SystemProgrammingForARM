@@ -95,7 +95,7 @@ void __svc(OS_SVC_SLEEP) OS_sleep(uint32_t min_sleep_duration);
 // channel manager svc
 //=============================================================================
 
-OS_channel_t * __svc(OS_CHANNEL_CONNECT) OS_channel_connect(uint32_t channelID);
+OS_channel_t * __svc(OS_CHANNEL_CONNECT) OS_channel_connect(uint32_t channelID,uint32_t capacity);
 OS_channel_t * __svc(OS_CHANNEL_DISCONNECT) OS_channel_disconnect(uint32_t channelID);
 OS_channel_t * __svc(OS_CHANNEL_CHECK) OS_channel_check(uint32_t channelID);
 

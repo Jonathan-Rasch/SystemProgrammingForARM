@@ -10,6 +10,7 @@
 #include "utils/memcluster.h"
 #include "structs.h"
 #include "queue.h"
+#include "channel.h"
 
 #define MEMPOOL_SIZE 16384 //
 __align(8)
@@ -19,23 +20,20 @@ static OS_mutex_t printLock;
 static uint32_t taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8 = 0;
 
 void task1(void const *const args) {
+	OS_channel_t * channel = OS_channel_connect(1234,16);//todo no return from svc delegate. place in tcb->data ?
 	while(1){
-		OS_mutex_acquire(&printLock);
 		taskcounter1++;
-		printf("\t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
-		OS_mutex_release(&printLock);
-		////////////////////////////
-		//OS_sleep(rand()%100);
+		channel_write(channel,taskcounter1);
 	}
 }
 
 void task2(void const *const args) {
+	OS_channel_t * channel = OS_channel_connect(1234,16);
 	while(1){
 		OS_mutex_acquire(&printLock);
-		taskcounter2++;
-		printf("\t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		uint32_t value = channel_read(channel);
+		printf("READ: %d",value);
 		OS_mutex_release(&printLock);
-		//OS_sleep(rand()%100);
 	}
 }
 

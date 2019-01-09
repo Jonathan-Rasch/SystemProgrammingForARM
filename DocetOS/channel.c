@@ -4,6 +4,20 @@
 // init and destroy
 //=============================================================================
 
+void channel_init(OS_channel_t * channel,uint32_t _channelID,uint32_t _capacity){
+	channel->capacity = _capacity;
+	channel->channelID = _channelID;
+	/*(re)setting semaphores*/
+	channel->readTokens->availableTokens = 0;
+	channel->readTokens->maxTokens = _capacity;
+	channel->writeTokens->availableTokens = _capacity;
+	channel->writeTokens->maxTokens = _capacity;
+	/*(re)setting queue*/
+	channel->queue->readPointer = channel->queue->memoryStart;
+	channel->queue->writePointer = channel->queue->memoryEnd;
+	channel->queue->maxCapacity = _capacity;
+}
+
 /* new_channel allocates and initialises a channel that can be used for inter task communication
  * RETURNS: OS_channel_t pointer if successful, returns NULL otherwise.*/
 OS_channel_t * new_channel(uint32_t _channelID, uint32_t _capacity){
@@ -16,7 +30,7 @@ OS_channel_t * new_channel(uint32_t _channelID, uint32_t _capacity){
     newChannel->capacity = _capacity;
     newChannel->readTokens = new_semaphore(0,_capacity);
     newChannel->writeTokens = new_semaphore(_capacity,_capacity);
-    if(newChannel->readTokens == NULL || newChannel->writeTokens){
+    if(newChannel->readTokens == NULL || newChannel->writeTokens == NULL){
         printf("\r\nCHANNEL: ERROR, failed to allocate memory for channel semaphores!\r\n");
         return NULL;
     }

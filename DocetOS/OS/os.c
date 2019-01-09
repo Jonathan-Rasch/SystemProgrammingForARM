@@ -69,8 +69,8 @@ void OS_init(OS_Scheduler_t const * scheduler,uint32_t * memory,uint32_t memory_
 	ASSERT(_scheduler->wait_callback);
 	ASSERT(_scheduler->notify_callback);
 	memory_cluster_init(&_memcluster,memory,memory_size); //TODO why &_memcluster ?
-	initialize_channelManager(64);
 	initialize_scheduler(8);
+	initialize_channelManager(8);
 }
 
 /* OS_alloc allocates num_32bit_words words of memory if possible.
@@ -227,7 +227,7 @@ void _svc_OS_yield(void) {
 
 OS_channel_t * _svc_OS_channelManager_connect(_OS_SVC_StackFrame_t const * const stack){
 	uint32_t channelID = stack->r0;
-	uint32_t capacity = stack->r0;
+	uint32_t capacity = stack->r1;
 	OS_channel_t * channel = _channelManager->connect_callback(channelID,capacity);
 	return channel;
 }

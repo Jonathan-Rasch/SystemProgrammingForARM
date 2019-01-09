@@ -7,6 +7,7 @@
 #include "semaphore.h"
 #include "mutex.h"
 
+void channel_init(OS_channel_t * channel,uint32_t _channelID,uint32_t _capacity);
 OS_channel_t * new_channel(uint32_t _channelID, uint32_t _capacity);
 uint32_t destroy_channel(OS_channel_t * _channel);
 void channel_write(OS_channel_t * _channel, uint32_t _word);
