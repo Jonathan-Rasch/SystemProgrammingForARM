@@ -24,7 +24,7 @@ void task1(void const *const args) {
 	while(1){
 		taskcounter1++;
 		channel_write(channel,taskcounter1);
-		printf("\r\nWROTE: %d\r\n",taskcounter1);
+		printf("\r\nWROTE_1: %d\r\n",taskcounter1);
 	}
 }
 
@@ -33,7 +33,7 @@ void task2(void const *const args) {
 	while(1){
 		OS_mutex_acquire(&printLock);
 		uint32_t value = channel_read(channel);
-		printf("\r\nREAD: %d\r\n",value);
+		printf("\r\nREAD_2: %d\r\n",value);
 		OS_mutex_release(&printLock);
 	}
 }
@@ -44,17 +44,17 @@ void task3(void const *const args) {
 	while(1){
 		taskcounter3++;
 		channel_write(channel,taskcounter3);
-		printf("\r\nWROTE: %d\r\n",taskcounter3);
+		printf("\r\nWROTE_3: %d\r\n",taskcounter3);
 	}
 }
 
 void task4(void const *const args) {
+	OS_channel_t * channel = OS_channel_connect(1234,16);
 	while (1) {
 		OS_mutex_acquire(&printLock);
-		taskcounter4++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		uint32_t value = channel_read(channel);
+		printf("\r\nREAD_4: %d\r\n",value);
 		OS_mutex_release(&printLock);
-		//OS_sleep(rand()%100);
 	}
 }
 
@@ -195,10 +195,10 @@ int main(void) {
 	OS_addTask(TCB2,2);
 	OS_addTask(TCB3,3);
 	OS_addTask(TCB4,4);
-	OS_addTask(TCB5,5);
-	OS_addTask(TCB6,6);
-	OS_addTask(TCB7,7);
-	OS_addTask(TCB8,8);
+//	OS_addTask(TCB5,5);
+//	OS_addTask(TCB6,6);
+//	OS_addTask(TCB7,7);
+//	OS_addTask(TCB8,8);
 	
 	
 	OS_start();
