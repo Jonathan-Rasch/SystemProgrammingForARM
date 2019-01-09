@@ -66,6 +66,7 @@ typedef struct {
 	uint32_t volatile priority;
 	uint32_t volatile data;
 	uint32_t volatile data2;
+	uint32_t volatile svc_return;//data returned from svc placed in here.
 } OS_TCB_t;
 
 //=============================================================================

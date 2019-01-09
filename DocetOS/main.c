@@ -20,10 +20,11 @@ static OS_mutex_t printLock;
 static uint32_t taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8 = 0;
 
 void task1(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(1234,16);//todo no return from svc delegate. place in tcb->data ?
+	OS_channel_t * channel = OS_channel_connect(1234,16);
 	while(1){
 		taskcounter1++;
 		channel_write(channel,taskcounter1);
+		printf("\r\nWROTE: %d\r\n",taskcounter1);
 	}
 }
 
@@ -32,18 +33,18 @@ void task2(void const *const args) {
 	while(1){
 		OS_mutex_acquire(&printLock);
 		uint32_t value = channel_read(channel);
-		printf("READ: %d",value);
+		printf("\r\nREAD: %d\r\n",value);
 		OS_mutex_release(&printLock);
 	}
 }
 
 void task3(void const *const args) {
+	OS_channel_t * channel = OS_channel_connect(1234,16);
+	taskcounter3 = 999000;
 	while(1){
-		OS_mutex_acquire(&printLock);
 		taskcounter3++;
-		printf("\t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
-		OS_mutex_release(&printLock);
-		//OS_sleep(rand()%100);
+		channel_write(channel,taskcounter3);
+		printf("\r\nWROTE: %d\r\n",taskcounter3);
 	}
 }
 

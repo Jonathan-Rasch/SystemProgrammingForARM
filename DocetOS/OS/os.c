@@ -1,4 +1,5 @@
 #include "os.h"
+
 #include "os_internal.h"
 #include "stm32f4xx.h"
 #include "../channelManger.h"
@@ -6,7 +7,6 @@
 #include "../stochasticScheduler.h"
 #include <stdlib.h>
 #include <string.h>
-
 __align(8)
 /* Idle task stack frame area and TCB.  The TCB is not declared const, to ensure that it is placed in writable
    memory by the compiler.  The pointer to the TCB _is_ declared const, as it is visible externally - but it will
@@ -225,21 +225,45 @@ void _svc_OS_yield(void) {
 // channel manager svc
 //=============================================================================
 
-OS_channel_t * _svc_OS_channelManager_connect(_OS_SVC_StackFrame_t const * const stack){
-	uint32_t channelID = stack->r0;
-	uint32_t capacity = stack->r1;
-	OS_channel_t * channel = _channelManager->connect_callback(channelID,capacity);
+//wrappers around svc delegate to make usage easier
+OS_channel_t * OS_channel_connect(uint32_t _channelID,uint32_t _capacity){
+	__OS_channel_connect(_channelID,_capacity);
+	OS_channel_t * channel = (OS_channel_t *)OS_currentTCB()->svc_return;
 	return channel;
 }
 
-uint32_t _svc_OS_channelManager_disconnect(_OS_SVC_StackFrame_t const * const stack){
-	uint32_t channelID = stack->r0;
-	uint32_t return_val = _channelManager->disconnect_callback(channelID);
-	return return_val;
+uint32_t OS_channel_disconnect(uint32_t _channelID){
+	__OS_channel_disconnect(_channelID);
+	uint32_t returnVal = OS_currentTCB()->svc_return;
+	return returnVal;
 }
 
-uint32_t _svc_OS_channelManager_checkAlive(_OS_SVC_StackFrame_t const * const stack){
+uint32_t OS_channel_check(uint32_t _channelID){
+	__OS_channel_check(_channelID);
+	uint32_t returnVal = OS_currentTCB()->svc_return;
+	return returnVal;
+}
+
+//functions called in handler mode
+
+void _svc_OS_channelManager_connect(_OS_SVC_StackFrame_t const * const stack){
+	OS_TCB_t * tcb = OS_currentTCB();
+	uint32_t channelID = stack->r0;
+	uint32_t capacity = stack->r1;
+	OS_channel_t * channel = _channelManager->connect_callback(channelID,capacity);
+	tcb->svc_return = (uint32_t)channel;
+}
+
+void _svc_OS_channelManager_disconnect(_OS_SVC_StackFrame_t const * const stack){
+	OS_TCB_t * tcb = OS_currentTCB();
+	uint32_t channelID = stack->r0;
+	uint32_t return_val = _channelManager->disconnect_callback(channelID);
+	tcb->svc_return = return_val;
+}
+
+void _svc_OS_channelManager_checkAlive(_OS_SVC_StackFrame_t const * const stack){
+	OS_TCB_t * tcb = OS_currentTCB();
 	uint32_t channelID = stack->r0;
 	uint32_t return_val = _channelManager->isAlive_callback(channelID);
-	return return_val;
+	tcb->svc_return = return_val;
 }

@@ -4,6 +4,7 @@
 #include "task.h"
 #include "sleep.h"
 #include "../structs.h"
+
 /********************/
 /* Type definitions */
 /********************/
@@ -59,6 +60,13 @@ uint32_t OS_checkCode(void);
 the memory cluster of the OS*/
 void * OS_alloc(uint32_t num_32bit_words);
 void OS_free(uint32_t * head_ptr);
+
+/*wrappers around channel functions to hide the use of tcb to retreive return data
+from scv delegate functions from the user. User should not need to call connect and then
+have to access task tcb to get the returned channel pointer.*/
+OS_channel_t * OS_channel_connect(uint32_t channelID,uint32_t capacity);
+uint32_t OS_channel_disconnect(uint32_t channelID);
+uint32_t OS_channel_check(uint32_t channelID);
 /******************************************/
 /* Task creation and management functions */
 /******************************************/
@@ -95,9 +103,9 @@ void __svc(OS_SVC_SLEEP) OS_sleep(uint32_t min_sleep_duration);
 // channel manager svc
 //=============================================================================
 
-OS_channel_t * __svc(OS_CHANNEL_CONNECT) OS_channel_connect(uint32_t channelID,uint32_t capacity);
-OS_channel_t * __svc(OS_CHANNEL_DISCONNECT) OS_channel_disconnect(uint32_t channelID);
-OS_channel_t * __svc(OS_CHANNEL_CHECK) OS_channel_check(uint32_t channelID);
+void __svc(OS_CHANNEL_CONNECT) __OS_channel_connect(uint32_t channelID,uint32_t capacity);
+void __svc(OS_CHANNEL_DISCONNECT) __OS_channel_disconnect(uint32_t channelID);
+void __svc(OS_CHANNEL_CHECK) __OS_channel_check(uint32_t channelID);
 
 /************************/
 /* Scheduling functions */

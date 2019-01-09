@@ -496,6 +496,16 @@
               <FileType>5</FileType>
               <FilePath>.\queue.h</FilePath>
             </File>
+            <File>
+              <FileName>channelManger.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\channelManger.c</FilePath>
+            </File>
+            <File>
+              <FileName>semaphore.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\OS\semaphore.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -1,5 +1,5 @@
 #include "channel.h"
-#include "os.h"
+
 //=============================================================================
 // init and destroy
 //=============================================================================
@@ -14,7 +14,7 @@ void channel_init(OS_channel_t * channel,uint32_t _channelID,uint32_t _capacity)
 	channel->writeTokens->maxTokens = _capacity;
 	/*(re)setting queue*/
 	channel->queue->readPointer = channel->queue->memoryStart;
-	channel->queue->writePointer = channel->queue->memoryEnd;
+	channel->queue->writePointer = channel->queue->memoryStart;
 	channel->queue->maxCapacity = _capacity;
 }
 
