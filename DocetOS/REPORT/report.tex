@@ -1,0 +1,28 @@
+\documentclass[12pt,a4paper]{article}
+
+%language and font
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[scaled]{beramono}
+\usepackage[T1]{fontenc}
+
+%% Useful packages
+\usepackage{amsmath}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\author{Y1471938}
+\title{
+\includegraphics[width=\textwidth]{images/yorkUniLogo.png}\\
+\textbf{Systems programming for ARM}\\ extending DocetOS}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+This document outlines the extensions and modifications made to the DocetOS operating system. I decided focus on scalability and extended docetOS to allow it to work with a large number of tasks efficiently. This results in a slight overhead in memory usage but allows for a priority scheduler that can efficiently switch between many tasks, and prevent starvation of individual tasks by ensuring that even the lowest priority task gets occasionally allocated cpu time. The scheduler also incorporates an efficient task sleeping and waiting mechanism which aims to minimise the operations that have to be performed when a task transitions from one state to another. 
+\end{abstract}
+\todo{bla bla \ldots} test  test test. bla bla test test
+\end{document}

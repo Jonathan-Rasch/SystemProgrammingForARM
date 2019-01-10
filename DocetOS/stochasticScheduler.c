@@ -103,7 +103,7 @@ void initialize_scheduler(uint32_t _size_of_heap_node_array){
 	//other init stuff
 	taskHeap = new_heap(_size_of_heap_node_array);
 	sleepHeap = new_heap(_size_of_heap_node_array);
-	srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so dont really care
+	srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so don't really care
 }
 
 //=============================================================================
