@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.11.18)  10 JAN 2019 21:21
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.11.18)  10 JAN 2019 22:48
 entering extended mode
 **./report.tex
 (report.tex
@@ -1072,7 +1072,7 @@ LaTeX Info: Redefining \nameref on input line 22.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-<images/yorkUniLogo.png, id=46, 1691.31876pt x 894.34125pt>
+<images/yorkUniLogo.png, id=118, 1691.31876pt x 894.34125pt>
 File: images/yorkUniLogo.png Graphic file (type png)
 <use images/yorkUniLogo.png>
 Package pdftex.def Info: images/yorkUniLogo.png  used on input line 24.
@@ -1098,21 +1098,29 @@ rkUniLogo.png>]
 \tf@toc=\write5
 \openout5 = `report.toc'.
 
- [2] [3]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 35.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 35.
+ [2]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 35.
+ ("A:\Program Files\MiKTeX 2.9\tex\latex\base\omscmr.fd"
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 35.
+
+[3] [4]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 67.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 67.
  (report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 35.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 35.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 67.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 67.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 6268B84E8FCA73F6E3B9E549F25D69E0;244.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 35.
+(rerunfilecheck)             Checksum: 2F50F9305C468C80C9FEDCC54AF2FD01;1330.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 67.
  ) 
 Here is how much of TeX's memory you used:
- 18079 strings out of 493312
- 333923 string characters out of 3138898
- 403397 words of memory out of 3000000
- 21255 multiletter control sequences out of 15000+200000
+ 18133 strings out of 493312
+ 334716 string characters out of 3138898
+ 403407 words of memory out of 3000000
+ 21287 multiletter control sequences out of 15000+200000
  19604 words of font info for 59 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  62i,6n,81p,1802b,339s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1126,10 +1134,11 @@ cal\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1095.pk> <C:\Users\Human\
 AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm1440.pk> <C:\Us
 ers\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm2074.
 pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600
-\ecbx2074.pk>
-Output written on report.pdf (3 pages, 202637 bytes).
+\ecbx2074.pk><A:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10
+.pfb>
+Output written on report.pdf (4 pages, 248077 bytes).
 PDF statistics:
- 288 PDF objects out of 1000 (max. 8388607)
- 9 named destinations out of 1000 (max. 500000)
- 146 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 459 PDF objects out of 1000 (max. 8388607)
+ 28 named destinations out of 1000 (max. 500000)
+ 290 words of extra memory for PDF output out of 10000 (max. 10000000)
 

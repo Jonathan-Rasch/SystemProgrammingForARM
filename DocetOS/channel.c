@@ -79,7 +79,7 @@ uint32_t channel_read(OS_channel_t * _channel){
     /*got a token, lock the queue and read data*/
     OS_mutex_acquire(_channel->queueLock);
     uint32_t readData;
-		queue_read(_channel->queue,&readData);
+    queue_read(_channel->queue,&readData);
     /*reading from the queue frees up space, hence place a token into THE WRITE SEMAPHORE*/
     semaphore_release_token(_channel->writeTokens);
     /*finally release the lock and return the data*/
