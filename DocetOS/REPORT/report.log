@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.11.18)  10 JAN 2019 10:19
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.11.18)  10 JAN 2019 21:21
 entering extended mode
 **./report.tex
 (report.tex
@@ -1072,7 +1072,7 @@ LaTeX Info: Redefining \nameref on input line 22.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-<images/yorkUniLogo.png, id=30, 1691.31876pt x 894.34125pt>
+<images/yorkUniLogo.png, id=46, 1691.31876pt x 894.34125pt>
 File: images/yorkUniLogo.png Graphic file (type png)
 <use images/yorkUniLogo.png>
 Package pdftex.def Info: images/yorkUniLogo.png  used on input line 24.
@@ -1090,45 +1090,46 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 24.
 
 ("A:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd"
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-Package hyperref Info: bookmark level for unknown todo defaults to 0 on input l
-ine 27.
- [1
+) [1
 
 {C:/Users/Human/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map} <./images/yo
 rkUniLogo.png>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 28.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 28.
+(report.toc)
+\tf@toc=\write5
+\openout5 = `report.toc'.
 
-(report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 28.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 28.
+ [2] [3]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 35.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 35.
+ (report.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 35.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 35.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 28.
+(rerunfilecheck)             Checksum: 6268B84E8FCA73F6E3B9E549F25D69E0;244.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 35.
  ) 
 Here is how much of TeX's memory you used:
- 18131 strings out of 493312
- 335669 string characters out of 3138898
- 403534 words of memory out of 3000000
- 21328 multiletter control sequences out of 15000+200000
- 11667 words of font info for 35 fonts, out of 3000000 for 9000
+ 18079 strings out of 493312
+ 333923 string characters out of 3138898
+ 403397 words of memory out of 3000000
+ 21255 multiletter control sequences out of 15000+200000
+ 19604 words of font info for 59 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,9n,81p,681b,951s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 62i,6n,81p,1802b,339s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\
-ecrm1200.pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\
-ec\dpi600\ecrm1095.pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour
-\jknappen\ec\dpi600\ecbx1095.pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts
-\pk\ljfour\jknappen\ec\dpi600\ecrm1440.pk> <C:\Users\Human\AppData\Local\MiKTeX
-\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm2074.pk> <C:\Users\Human\AppData\Lo
-cal\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx2074.pk>
-Output written on report.pdf (1 page, 166514 bytes).
+ecbx1440.pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\
+ec\dpi600\ecbx1200.pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour
+\jknappen\ec\dpi600\ecbx1728.pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts
+\pk\ljfour\jknappen\ec\dpi600\ecrm1200.pk> <C:\Users\Human\AppData\Local\MiKTeX
+\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm1095.pk> <C:\Users\Human\AppData\Lo
+cal\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1095.pk> <C:\Users\Human\
+AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm1440.pk> <C:\Us
+ers\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm2074.
+pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600
+\ecbx2074.pk>
+Output written on report.pdf (3 pages, 202637 bytes).
 PDF statistics:
- 159 PDF objects out of 1000 (max. 8388607)
- 3 named destinations out of 1000 (max. 500000)
- 114 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 288 PDF objects out of 1000 (max. 8388607)
+ 9 named destinations out of 1000 (max. 500000)
+ 146 words of extra memory for PDF output out of 10000 (max. 10000000)
 
