@@ -22,7 +22,7 @@
 static uint32_t systick_rollover_detected_FLAG = 0;
 
 //TASK HEAP RELATED
-static minHeap * taskHeap;
+static minHeap * schedulerHeap;
 /*waitingTasksHashTable_reasonAsKey
 holds the TCB of all tasks that have entered the waiting state.
 
@@ -39,10 +39,10 @@ static OS_hashtable_t * waitingTasksHashTable_tcbAsKey;/* allows quick access to
 /*activeTasksHashTable
 holds the TCB of all tasks that are currently active and can be selected by the scheduler*/
 static OS_hashtable_t * activeTasksHashTable;
-/*tasksInHeapHashTable
+/*tasksInSchedulerHeapHashTable
 keeps track of all tasks that are in the heap, active or otherwise. This is needed to prevent a task that exits the waiting state getting
 added to the heap even though it was never removed in the first place.*/
-static OS_hashtable_t * tasksInHeapHashTable;
+static OS_hashtable_t * tasksInSchedulerHeapHashTable;
 
 //SLEEP HEAP RELATED
 static minHeap * sleepHeap;
@@ -98,10 +98,10 @@ void initialize_scheduler(uint32_t _size_of_heap_node_array){
 	waitingTasksHashTable_reasonAsKey = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	waitingTasksHashTable_tcbAsKey = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	activeTasksHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
-	tasksInHeapHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
+	tasksInSchedulerHeapHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	sleepingTasksHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	//other init stuff
-	taskHeap = new_heap(_size_of_heap_node_array);
+	schedulerHeap = new_heap(_size_of_heap_node_array);
 	sleepHeap = new_heap(_size_of_heap_node_array);
 	srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so don't really care
 }
@@ -141,7 +141,7 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 	sleep needs to be adjusted becaus otherwise it might happen that a task has gone to sleep at 513 ticks but the current tick is 11, which means
 	that the elapsed time since the task went to sleep is -502 ticks.
 	
-	The following block UPDATES THE SLEEP STATE OF ALL SLEEPING TASKS, regardless of their location (sleepHeap or taskHeap)*/
+	The following block UPDATES THE SLEEP STATE OF ALL SLEEPING TASKS, regardless of their location (sleepHeap or schedulerHeap)*/
 	if(systick_rollover_detected_FLAG){
 		/*cycle through all sleeping tasks and adjust their timestamp and remaining time*/
 		for(int bucketInd=0;bucketInd<sleepingTasksHashTable->number_of_buckets;bucketInd++){
@@ -156,12 +156,12 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 		systick_rollover_detected_FLAG = 0;
 	}
 	/*The following block removes the first node of the sleepHeap and updates its sleep state (remaining time etc), if this node
-	is found to have woken it is removed from the sleepingTasksHashTable and added back to the activeTasksHashTable, tasksInHeapHashTable
-	and the taskHeap. If it has not woken it is simply added back to the sleepHeap and the block exits (if the top node is not awake then 
+	is found to have woken it is removed from the sleepingTasksHashTable and added back to the activeTasksHashTable, tasksInSchedulerHeapHashTable
+	and the schedulerHeap. If it has not woken it is simply added back to the sleepHeap and the block exits (if the top node is not awake then
 	no other node will be awake either).
 	
 	It is important to note that this block ONLY UPDATES SLEEPING TASKS IN THE SLEEP HEAP, nodes that are asleep but have not been
-	removed from the taskHeap (nodes present in sleepingTasksHashTable, tasksInHeapHashTable and taskHeap but not in sleepHeap) are dealt with
+	removed from the schedulerHeap (nodes present in sleepingTasksHashTable, tasksInSchedulerHeapHashTable and schedulerHeap but not in sleepHeap) are dealt with
 	later in the scheduler function.*/
 	void * sleepingTask;
 	while(1){
@@ -180,7 +180,7 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 	
 	
 	/*Is there any active task to run in the heap (THIS MUST RUN AFTER UPDATING SLEEP STATE! DONT MOVE THIS!)?*/
-	if(taskHeap->currentNumNodes == 0){
+	if(schedulerHeap->currentNumNodes == 0){
 		return OS_idleTCB_p;// no active tasks currently (maybe all sleeping).
 	}
 	/*Select random task to give cpu time to (probability of each task being selected based on its position in heap)*/
@@ -188,21 +188,21 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 	{
 		int randNodeSelection;
 		int nodeIndex = 0; //starting with highest priority node
-		int maxValidHeapIdx = taskHeap->currentNumNodes - 1;
+		int maxValidHeapIdx = schedulerHeap->currentNumNodes - 1;
 		int lastActiveNodeIndex = 0;
 		while(1){
 			/*remove the current node if the task is waiting or sleeping*/
 			if(__removeIfExit(nodeIndex) || __removeIfWaiting(nodeIndex) || __removeIfSleeping(nodeIndex) ){
 				//waiting/sleeping node removed
-				maxValidHeapIdx = taskHeap->currentNumNodes - 1;
+				maxValidHeapIdx = schedulerHeap->currentNumNodes - 1;
 				/*after removal of node there might be none left in which case we need to stop and return idle task*/
-				if(taskHeap->currentNumNodes == 0){
+				if(schedulerHeap->currentNumNodes == 0){
 					return OS_idleTCB_p;// no active tasks currently (maybe all sleeping).
 				}
 				/*after removing a waiting/sleeping node at this index it turns out that this index no longer
 					lies within the valid heap, return the last not sleeping task encountered in the heap*/
 				if(nodeIndex > maxValidHeapIdx){
-					return taskHeap->ptrToUnderlyingArray[lastActiveNodeIndex].ptrToNodeContent;
+					return schedulerHeap->ptrToUnderlyingArray[lastActiveNodeIndex].ptrToNodeContent;
 				}
 				/*sleeping or waiting node has been removed and the heap has been restored, this means that we need to
 				rerun for the same index to check if the new node at the current index is sleeping or waiting*/
@@ -235,7 +235,7 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 				break;//nodeIndex not updated, so current node is selected for cpu time
 			}
 		}
-		selectedTCB = taskHeap->ptrToUnderlyingArray[nodeIndex].ptrToNodeContent;
+		selectedTCB = schedulerHeap->ptrToUnderlyingArray[nodeIndex].ptrToNodeContent;
 	}
 	if(selectedTCB == NULL){
 		return OS_idleTCB_p;
@@ -272,16 +272,16 @@ static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_prior
 	}
 	tcb->priority = task_priority;
 	hashtable_put(activeTasksHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-	hashtable_put(tasksInHeapHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-	if ( addNode(taskHeap,tcb,task_priority)) {
+	hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+	if ( addNode(schedulerHeap,tcb,task_priority)) {
 		/*HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY prevent the same task (TCB=key) being added multiple times to the scheduler */
 		#ifdef stochasticScheduler_DEBUG
 			printf("TASK ADDED: %p %d\r\n",tcb,task_priority);
-			printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,taskHeap->currentNumNodes);
+			printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,schedulerHeap->currentNumNodes);
 		#endif /*stochasticScheduler_DEBUG*/
 	}else{
 		#ifdef stochasticScheduler_DEBUG
-				printf("SCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,taskHeap->currentNumNodes);
+				printf("SCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,schedulerHeap->currentNumNodes);
 		#endif /*stochasticScheduler_DEBUG*/
 	}
 }
@@ -358,13 +358,13 @@ static void stochasticScheduler_notifyCallback(void * const reason){
 			ASSERT(0);
 		}
 		
-		/*if the hashtable_put(tasksInHeapHashTable...) below fails (returns 0) that is expected behaviour. It simply means that a task
-		requested wait but that it was never removed from the taskHeap because the scheduler did not come accross that node in the heap
+		/*if the hashtable_put(tasksInSchedulerHeapHashTable...) below fails (returns 0) that is expected behaviour. It simply means that a task
+		requested wait but that it was never removed from the schedulerHeap because the scheduler did not come accross that node in the heap
 		when searching for the next task to select (and therefore did not have a chance to remove it from the heap). */
-		if(hashtable_put(tasksInHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
-			/*tcb was added to "tasksInHeapHashTable" meaning that it currently is not in the heap (if it had never been removed from the heap
+		if(hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
+			/*tcb was added to "tasksInSchedulerHeapHashTable" meaning that it currently is not in the heap (if it had never been removed from the heap
 			the hashtable_put operation would have returned 0 when attempting to add it again), hence add it*/
-			addNode(taskHeap,task,task->priority);
+			addNode(schedulerHeap,task,task->priority);
 		}
 	}
 }
@@ -443,10 +443,10 @@ returns: 1 if the task at_index was waiting and has been removed, 0 otherwise.
 */
 static void * removedWaitingNode;
 static uint32_t __removeIfWaiting(uint32_t _index){
-	OS_TCB_t * task = taskHeap->ptrToUnderlyingArray[_index].ptrToNodeContent;
+	OS_TCB_t * task = schedulerHeap->ptrToUnderlyingArray[_index].ptrToNodeContent;
 	if(task->state & TASK_STATE_WAIT){
-		removeNodeAt(taskHeap,_index,&removedWaitingNode);
-		hashtable_remove(tasksInHeapHashTable,(uint32_t)task);
+		removeNodeAt(schedulerHeap,_index,&removedWaitingNode);
+		hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
 		return 1;
 	}else{
 		return 0;
@@ -460,9 +460,9 @@ returns: 1 if the task at_index exited and has therefore been removed, 0 otherwi
 */
 static void * removedNode;
 static uint32_t __removeIfExit(uint32_t _index){
-	OS_TCB_t * task = taskHeap->ptrToUnderlyingArray[_index].ptrToNodeContent;
+	OS_TCB_t * task = schedulerHeap->ptrToUnderlyingArray[_index].ptrToNodeContent;
 	if(task->state & (TASK_STATE_EXIT) && task->state & (TASK_STATE_SLEEP | TASK_STATE_WAIT)){
-		/*cannot remove task since if SLEEP or WAITING states are set it might be in a hashtables other than tasksInHeapHashTable
+		/*cannot remove task since if SLEEP or WAITING states are set it might be in a hashtables other than tasksInSchedulerHeapHashTable
 		and activeTasksHashTable. A waiting task should never be able to terminate before it has been woken (same goes for waiting)
 		so something must be really wrong.*/
 		printf("\u001b[31m\r\nSCHEDULER: ERROR task %p has state TASK_STATE_EXIT set whilst being asleep or waiting!\r\n",task);
@@ -472,10 +472,10 @@ static uint32_t __removeIfExit(uint32_t _index){
 		ASSERT(0);
 		return 0;
 	}else if(task->state & (TASK_STATE_EXIT)){
-		/*task tcb pointer will only be present in taskHeap, tasksInHeapHashTable, activeTasksHashTable. Removing
+		/*task tcb pointer will only be present in schedulerHeap, tasksInSchedulerHeapHashTable, activeTasksHashTable. Removing
 		it there will cause the task to vanish*/
-		removeNodeAt(taskHeap,_index,&removedNode);
-		hashtable_remove(tasksInHeapHashTable,(uint32_t)task);
+		removeNodeAt(schedulerHeap,_index,&removedNode);
+		hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
 		hashtable_remove(activeTasksHashTable,(uint32_t)task);
 //		DEBUG_hashTableState();
 //		DEBUG_heapState();
@@ -505,7 +505,7 @@ static uint32_t __updateSleepState(OS_TCB_t * task){
 	/*determine elapsed time*/
 	uint32_t deltaTime = 0;
 	if(lastSleepStateUpdate > currentTime){
-		/*systick timer has roled over, need to set flag to force scheduler to itterate through
+		/*systick timer has rolled over, need to set flag to force scheduler to iterate through
 		all elements in the sleepHeap and adjust the remainingTime and lastSleepStateUpdate timestamps to avoid
 		those tasks from sleeping much MUCH (like up to 2^32 systicks) longer than desired.*/
 		systick_rollover_detected_FLAG = 1;
@@ -521,9 +521,9 @@ static uint32_t __updateSleepState(OS_TCB_t * task){
 		/*yes update hash tables to reflect its new state*/
 		hashtable_remove(sleepingTasksHashTable,(uint32_t)task);
 		hashtable_put(activeTasksHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-		/*add the task back to the taskHeap should it not already be in there*/
-		if(hashtable_put(tasksInHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
-			addNode(taskHeap,task,task->priority);
+		/*add the task back to the schedulerHeap should it not already be in there*/
+		if(hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
+			addNode(schedulerHeap,task,task->priority);
 		}
 		/*finally update the TCB*/
 		task->state &= ~TASK_STATE_SLEEP;
@@ -544,15 +544,15 @@ If the task is sleeping it must be added to sleepingTasksHashTable prior to this
 being called or else the pointer to its tcb will be lost.
 
 RETURNS:
-1 = task was sleeping and has been removed from heap and tasksInHeapHashTable
+1 = task was sleeping and has been removed from heap and tasksInSchedulerHeapHashTable
 0 = task is awake, no change made
 */
 static void * removedSleepingNode;
 static uint32_t __removeIfSleeping(uint32_t _index){
-	OS_TCB_t * task = taskHeap->ptrToUnderlyingArray[_index].ptrToNodeContent;
+	OS_TCB_t * task = schedulerHeap->ptrToUnderlyingArray[_index].ptrToNodeContent;
 	if(__updateSleepState(task)){
-		removeNodeAt(taskHeap,_index,&removedSleepingNode);
-		hashtable_remove(tasksInHeapHashTable,(uint32_t)task);
+		removeNodeAt(schedulerHeap,_index,&removedSleepingNode);
+		hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
 		addNode(sleepHeap,task,task->data2);/*data2 keeps track of remaining sleep duration which
 			the sleepHeap uses to order its elements. This means that tasks that are about to wake up are
 			right at the top of the heap.*/
@@ -622,7 +622,7 @@ static void DEBUG_heapState(){
 	printf("\r\n\r\n######################################################################\r\n");
 	printf("DEBUG: DUMPING CONTENT OF HEAPS!\r\n");
 	printf("\r\nTASK HEAP:\r\n");
-	printHeap(taskHeap);
+	printHeap(schedulerHeap);
 	printf("\r\nSLEEP HEAP:\r\n");
 	printHeap(sleepHeap);
 }

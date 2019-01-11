@@ -7,6 +7,7 @@
 \usepackage[T1]{fontenc}
 
 %% Useful packages
+\usepackage{pdfpages}
 \usepackage{amsmath}
 \usepackage{mathrsfs}
 \usepackage{amssymb}
@@ -37,8 +38,24 @@ My plan was to allow DocetOS to support a large number of tasks, which made me c
   \item Task starvation should be avoided, even the lowest priority task should have a non-zero probability of getting selected during task switch.
   \item Task switching and status changes of tasks should not result in a large overhead of CPU time.
 \end{itemize}
-\subsection{Design Overview}
-\subsection{Internal Resources}
+
+\pagebreak
+\subsection{Implementation}
+At the end of this section you will find an example illustration of the internal state of the scheduler at a particular point in time. The scheduler contains 2 heaps and 5 hashtables which are used to keep track of the various states a task can be in, and allow quick access to any task no matter its state.
+
+\begin{itemize}
+  \item The \textbf{Scheduler Heap} is used by the scheduler to determine what task to select for execution. This heap can contain tasks that are active and tasks that are waiting, sleeping or have tasks that have run to completion (see highlight 1). Tasks that are not active are only moved/removed from the scheduler heap if they are encountered in the heap during task selection. This is done to save cpu time on operations that might be unnecessary, a task that goes to sleep might wake up long before the scheduler comes across it in the heap, so moving it to the sleep heap would only waste cpu cycles on restructuring the sleep and scheduler heaps. When the scheduler comes across a sleeping/waiting task it checks if this state is still applicable and only then moves the task to a different heap/hashtable.
+  \item The \textbf{Sleep Heap} stores tasks that are sleeping and have been removed from the scheduler heap. In this heap the tasks position in the heap is not determined by its priority but by its remaining sleep time (highlight 2). The scheduler removes the first node, updates its remaining sleep time by referring to the time it started sleeping and checks if it has woken up, if it has it is added back to the scheduler heap and the process is repeated. If the first node has not woken up yet then none of the other nodes will have woken up either. This approach means only one sleeping node has to be updated.
+  \item The \textbf{tasksInSchedulerHeapHashTable} keeps track of all the tasks currently present in the scheduler heap. Used to check what tasks have to be added back to the scheduler heap after wake/notify and which ones were never removed.
+  \item The \textbf{activeTasksHashTable} keeps track of all tasks that are currently executable.
+  \item The \textbf{waitingTasksHashTable\_reasonAsKey/\_tcbAsKey} both keep track of tasks that are waiting. The \_reasonAsKey table is used during notify to change the state of a task waiting for "reason" without needing to check each waiting task. the \_tcbAsKey allows the OS and user to check if a given task is waiting.
+  \item The  \textbf{sleepingTasksHashTable} keeps track of all tasks that are sleeping, no matter what heap they are in.
+\end{itemize}
+
+\includepdf[landscape=true]{images/schedulerOverview.png}
+
+
+\subsection{Selecting a Task}
 \subsection{Sleep}
 \subsection{Wait}
 \subsection{Notify}
