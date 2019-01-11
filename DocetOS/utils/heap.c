@@ -1,5 +1,6 @@
 #include "heap.h"
 #include "os.h"
+#include "../hashtable.h"
 //================================================================================
 // Internal Function Prototypes
 //================================================================================
@@ -17,13 +18,22 @@ static void __heapDown(minHeap * _heap,uint32_t _index_of_node_to_remove);
 the heap os a MIN_HEAP, meaning tha t the element with the lowest value is on top. Setting the value to
 the minimum ensures that empty nodes are never the parent of nodes that actyally point to something
 usefull.
+-> if _enableQuickNodeContentIndexLookup is > 1 a hashtable will be created that maps the "content"
+	 to the node index, this is useful for quickly retrieving the location of the node that stores "content"
 */
-minHeap * new_heap(uint32_t max_number_of_heap_nodes){
+minHeap * new_heap(uint32_t max_number_of_heap_nodes, uint32_t _enableQuickNodeContentIndexLookup){
 	
 	//allocating memory
 	minHeap * heap_struct = (minHeap *)OS_alloc(sizeof(minHeap)/4);
 	minHeapNode * node_Array = (minHeapNode *)OS_alloc(max_number_of_heap_nodes*sizeof(minHeapNode)/4);
-	
+
+	/*This adds a hashtable which stores the index of the node with a given content. This allows the user to quickly obtain the index of any node
+	given that the user knows the content pointer they are trying to locate. this is useful in combination with the removeNodeAt function*/
+	if(_enableQuickNodeContentIndexLookup){
+    heap_struct->nodeContentIndexHashTable = new_hashtable(max_number_of_heap_nodes,CONTENT_INDEX_LOOKUP_HASHTABLE_BUCKETS_NUM);
+	}else{
+		heap_struct->nodeContentIndexHashTable = NULL;
+	}
 	/*assertions for debugging*/
 	ASSERT(max_number_of_heap_nodes > 0);
 	
@@ -54,16 +64,8 @@ PARAMETERS:
 RETURNS:
 -> status_code: 1 if element added succssfully, 0 if not (for example if the heap is full)*/
 uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _value_to_order_by){
-	#ifdef HEAP_DEBUG
-	printf("\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG ADD NODE priority %d <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\r\n",_value_to_order_by);
-	printf("*** INITIAL STATE ***\r\n");
-	printHeap(_heap);
-	#endif /*HEAP_DEBUG*/
 	// is there space in the heap ?
 	if (_heap->lastArrayElement < _heap->nextEmptyElement){
-		#ifdef HEAP_DEBUG
-		printf("INFO: [utils/heap.c addNode(...)]\r\nAttempt to add node to minHeap that is full, returning 0.\r\n");
-		#endif /*HEAP_DEBUG*/
 		return 0; // cant add node, no space
 	}
 	
@@ -72,11 +74,23 @@ uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _
 	node->ptrToNodeContent = _element_to_add;
 	node->nodeValue = _value_to_order_by;
 	uint32_t currentNodeIndex = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
+	/*add new node to content index hash table if applicable*/
+	if(_heap->nodeContentIndexHashTable){
+		hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent,(uint32_t*)currentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+	}
 	while(currentNodeIndex){
 		uint32_t parentNodeIndex = __getParentIndex(currentNodeIndex);
 		minHeapNode * parentNode = __getPointerToItemAtIndex(_heap,parentNodeIndex);
 		// compare and swap
 		if (parentNode->nodeValue > node->nodeValue){
+			/*if applicable update the indexes in the hashtable used to quickly retrieve the index a certain node with "content" can be found at*/
+			if(_heap->nodeContentIndexHashTable){
+				hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent);
+				hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)parentNode->ptrToNodeContent);
+				hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent,(uint32_t*)parentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+				hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)parentNode->ptrToNodeContent,(uint32_t*)currentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+			}
+			/*do the swap*/
 			minHeapNode * tempNodeArray = _heap->ptrToUnderlyingArray;
 			minHeapNode tempNode = *node;
 			tempNodeArray[currentNodeIndex] = tempNodeArray[parentNodeIndex];
@@ -91,10 +105,6 @@ uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _
 	/* updating empty element pointer */
 	_heap->nextEmptyElement++;
 	_heap->currentNumNodes = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
-	#ifdef HEAP_DEBUG
-	printf("\r\n*** FINAL STATE ***\r\n");
-	printHeap(_heap);
-	#endif /*HEAP_DEBUG*/
 	return 1;
 }
 
@@ -110,27 +120,15 @@ PARAMETERS:
 
 RETURNS:
 ->  status_code: 1 if element removed succssfully, 0 if not (for example if the heap is empty)*/
-uint32_t removeNode(minHeap * _heap, void * * _return_content){
-	#ifdef HEAP_DEBUG
-	printf("\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG REMOVE NODE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\r\n");
-	printf("*** INITIAL STATE ***\r\n");
-	printHeap(_heap);
-	#endif /*HEAP_DEBUG*/
-	
+uint32_t removeNode(minHeap * _heap, void * * _return_content){	
 	/* checks */
 	if(_heap->ptrToUnderlyingArray == _heap->nextEmptyElement){
 		return 0; // cant remove node, heap empty
 	}
-	
 	/* return content pointer of element 0 (via _return_content) and restore heap property*/
 	const minHeapNode nodeToReturn = _heap->ptrToUnderlyingArray[0];
 	__heapDown(_heap,0);
-	
 	/* returning values*/
-	#ifdef HEAP_DEBUG
-	printf("*** FINAL STATE ***\r\n");
-	printHeap(_heap);
-  #endif /*HEAP_DEBUG*/
 	*_return_content = nodeToReturn.ptrToNodeContent;
 	return 1;
 }
@@ -144,6 +142,22 @@ uint32_t * peek(minHeap * _heap,uint32_t _index){
 	return nodeToReturn.ptrToNodeContent;
 }
 
+/*if this was enabled during init this function can retrieve the index at which a node containing "content" is located*/
+uint32_t indexOfContent(minHeap * _heap,uint32_t _content){
+	if(!_heap->nodeContentIndexHashTable){
+		printf("\r\nHEAP: ERROR, quick index lockup was not enabled during init of this heap!\r\n");
+		ASSERT(0);
+		return 0;
+	}
+	uint32_t index = (uint32_t)hashtable_get(_heap->nodeContentIndexHashTable,_content);
+	if(!_heap->nodeContentIndexHashTable->validValueFlag){
+		printf("\r\nHEAP: ERROR, index of content could not be found!\r\n");
+		return UINT32_MAX;
+	}else{
+		return index;
+	}
+}
+
 /* Removes the node at the given index from the heap and places its content into _return_content
 
 PARAMETERS:
@@ -155,11 +169,6 @@ PARAMETERS:
 RETURNS:
 ->  status_code: 1 if element removed succssfully, 0 if not*/
 uint32_t removeNodeAt(minHeap * _heap,uint32_t _index, void * * _return_content){
-	#ifdef HEAP_DEBUG
-	printf("\r\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG REMOVE NODE AT %d <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\r\n",_index);
-	printf("*** INITIAL STATE ***\r\n");
-	printHeap(_heap);
-	#endif /*HEAP_DEBUG*/
 	/*is the provided index within the range of valid nodes?*/
 	if(_index > _heap->currentNumNodes-1){
 		printf("ERROR: the provided index %d is outside of the heap (max index %d)",_index,_heap->currentNumNodes-1);
@@ -167,10 +176,6 @@ uint32_t removeNodeAt(minHeap * _heap,uint32_t _index, void * * _return_content)
 	}
 	const minHeapNode nodeToReturn = _heap->ptrToUnderlyingArray[_index];
 	__heapDown(_heap,_index);
-	#ifdef HEAP_DEBUG
-	printf("*** FINAL STATE ***\r\n");
-	printHeap(_heap);
-  #endif /*HEAP_DEBUG*/
 	*_return_content = nodeToReturn.ptrToNodeContent;
 	return 1;
 }
@@ -192,8 +197,16 @@ uint32_t getSecondChildIndex(uint32_t node_index_zero_based){
 //================================================================================
 
 static void __heapDown(minHeap * _heap,uint32_t _index_of_node_to_remove){
-	//swapping, inserting lowest node at index _index_of_node_to_remove
 	uint32_t elemIdx = (_heap->nextEmptyElement-1) - _heap->ptrToUnderlyingArray; // index of lowest heap node
+	/*if applicable update the indexes in the hashtable used to quickly retrieve the index a certain node with "content" can be found at*/
+	if(_heap->nodeContentIndexHashTable){
+		minHeapNode lowestIdxNode = _heap->ptrToUnderlyingArray[elemIdx];
+		minHeapNode nodeToRemove = _heap->ptrToUnderlyingArray[_index_of_node_to_remove];
+		uint32_t * ret1 = hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)lowestIdxNode.ptrToNodeContent);
+		uint32_t * ret2 = hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)nodeToRemove.ptrToNodeContent);
+		uint32_t ret3 = hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)lowestIdxNode.ptrToNodeContent,(uint32_t*)_index_of_node_to_remove, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+	}
+	//swapping, inserting lowest node at index _index_of_node_to_remove
 	_heap->ptrToUnderlyingArray[_index_of_node_to_remove] = _heap->ptrToUnderlyingArray[elemIdx];
 	//erasing data from node (this is not strictly necessary)
 	_heap->ptrToUnderlyingArray[elemIdx].nodeValue = UINT32_MAX;
@@ -225,10 +238,19 @@ static void __heapDown(minHeap * _heap,uint32_t _index_of_node_to_remove){
 			break;
 		}
 		// swap (only if node value is larger than that of child)
-		minHeapNode tmpNode = _heap->ptrToUnderlyingArray[elemIdx];
-		if (tmpNode.nodeValue > _heap->ptrToUnderlyingArray[smallerChildIdx].nodeValue){
+		minHeapNode currentNode = _heap->ptrToUnderlyingArray[elemIdx];
+		if (currentNode.nodeValue > _heap->ptrToUnderlyingArray[smallerChildIdx].nodeValue){
+			/*if applicable update the indexes in the hashtable used to quickly retrieve the index at which a certain node with "content" can be found at*/
+			if(_heap->nodeContentIndexHashTable){
+				minHeapNode childNode = _heap->ptrToUnderlyingArray[smallerChildIdx];
+				hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)currentNode.ptrToNodeContent);
+				hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)childNode.ptrToNodeContent);
+				hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)currentNode.ptrToNodeContent,(uint32_t*)smallerChildIdx, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+				hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)childNode.ptrToNodeContent,(uint32_t*)elemIdx, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+			}
+			/*swap*/
 			_heap->ptrToUnderlyingArray[elemIdx] = _heap->ptrToUnderlyingArray[smallerChildIdx];
-			_heap->ptrToUnderlyingArray[smallerChildIdx] = tmpNode;
+			_heap->ptrToUnderlyingArray[smallerChildIdx] = currentNode;
 			elemIdx = smallerChildIdx;
 		}else{
 			//node value is smaller than its children, heap property restored

@@ -88,9 +88,6 @@ uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _va
 	if(_hashtable->remaining_capacity == 0){
 		return 0; //hashtable is full
 	}
-	if(_value == NULL){
-		return 0; //NULL is not a valid value
-	}
 	/*determine bucket*/
 	uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
@@ -133,8 +130,9 @@ uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _va
 	return 1;
 }
 
-/* retrives the value at given key, if no value present in table NULL is returned*/
+/* retrives the value at given key, if no value present in table NULL is returned and validValueFlag is set to 0*/
 uint32_t * hashtable_get(OS_hashtable_t * _hashtable, uint32_t _key){
+	_hashtable->validValueFlag = 0;
 	/*determine bucket*/
 	uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
@@ -144,20 +142,19 @@ uint32_t * hashtable_get(OS_hashtable_t * _hashtable, uint32_t _key){
 	while(hash_val){
 		if(hash_val->key == _key){
 			value = hash_val->underlying_data;
-			break;
+			_hashtable->validValueFlag = 1;
+			return value;
 		}else{
 			hash_val = (hashtable_value *)hash_val->next_hashtable_value;
 		}
 	}
-	#ifdef HASHTABLE_DEBUG
-	printf("HASHTABLE: removed %p key: %d\r\n",hash_val->underlying_data,_key);
-	#endif /*HASHTABLE_DEBUG*/
-	return value;
+	return NULL;
 }
 
 /* retrieves the value associated with "key" then REMOVES IT FROM THE HASHTABLE. If no value is associated
 with "key" NULL is returned*/
 uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
+	_hashtable->validValueFlag = 0;
 	/*determine bucket*/
 	uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
@@ -167,6 +164,7 @@ uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 	hashtable_value * hash_val = (hashtable_value *)bucket_array[bucket_number];
 	while(hash_val){
 		if(hash_val->key == _key){
+			_hashtable->validValueFlag = 1;
 			value = hash_val->underlying_data;
 			/*remove from bucket, clear, and return to linked list of unused elements*/
 			if(prev_hash_val){
@@ -176,7 +174,7 @@ uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 			}
 			hash_val->key = NULL;
 			hash_val->next_hashtable_value = NULL;
-			hash_val->underlying_data = NULL; //TODO am i deleting the pointer or the value the pointer points to ?
+			hash_val->underlying_data = NULL;
 			//return to linked list
 			hashtable_value * tmp_hashtable_val = (hashtable_value *)_hashtable->free_hashtable_value_struct_linked_list;
 			_hashtable->free_hashtable_value_struct_linked_list = (uint32_t *)hash_val;
@@ -196,12 +194,14 @@ uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 	if n is larger than the largest bucket index of the hashtable. this function helps 
 	to access all elements stored in the hashtable*/
 const hashtable_value * hashtable_getFirstElementOfNthBucket(OS_hashtable_t * _hashtable, uint32_t _n){
+	_hashtable->validValueFlag = 0;
 	if(_n > _hashtable->number_of_buckets-1){
 		return NULL;
 	}
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
 	hashtable_value * val = (hashtable_value *)bucket_array[_n];
 	if(val){
+		_hashtable->validValueFlag = 1;
 		return val;
 	}else{
 		return NULL;

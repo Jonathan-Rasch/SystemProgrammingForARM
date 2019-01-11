@@ -7,13 +7,13 @@
 #include "..\structs.h"
 
 #define MAX_HEAP_SIZE 63 // 2^N - 1 , where n is the number of desired levels in binary tree
-
+#define CONTENT_INDEX_LOOKUP_HASHTABLE_BUCKETS_NUM 8
 
 
 //=============================================================================
 // Exported Functions
 //=============================================================================
-minHeap * new_heap(uint32_t max_number_of_heap_nodes);
+minHeap * new_heap(uint32_t max_number_of_heap_nodes,uint32_t _enableQuickNodeContentIndexLookup);
 /*NOTE:
  * the return value (uint32_t) in these functions ALWAYS indicates a status code (success/failure) of
  * the operation. Other returns (e.g index of a node) are obtained */
@@ -21,6 +21,7 @@ uint32_t addNode(minHeap * heap_to_operate_on, void * const element_to_add, cons
 uint32_t removeNode(minHeap * _heap, void * * _return_content);
 uint32_t removeNodeAt(minHeap * _heap,uint32_t _index, void * * _return_content);
 uint32_t * peek(minHeap * _heap,uint32_t _index);
+uint32_t indexOfContent(minHeap * _heap,uint32_t _content);
 uint32_t getFirstChildIndex(uint32_t node_index_zero_based);
 uint32_t getSecondChildIndex(uint32_t node_index_zero_based);
 void printHeap(minHeap * heap);

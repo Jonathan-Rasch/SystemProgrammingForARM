@@ -18,17 +18,16 @@ typedef struct{
 // structs for hashtable.c
 //=============================================================================
 typedef struct{
-	volatile uint32_t * next_hashtable_value;
-	volatile uint32_t * underlying_data;
-	volatile uint32_t key;
+	uint32_t * next_hashtable_value;
+	uint32_t * underlying_data;
+	uint32_t key;
 }hashtable_value;
 
 typedef struct{
 	uint32_t number_of_buckets;
 	uint32_t maximum_capacity;
-	volatile uint32_t remaining_capacity;
-	volatile uint32_t validValueFlag; // set to 0 on entry to get or remove operation. set to 1 if valid
-	volatile uint32_t * free_hashtable_value_struct_linked_list;
+	uint32_t remaining_capacity;
+	uint32_t * free_hashtable_value_struct_linked_list;
 }OS_hashtable_t;
 
 //=============================================================================
@@ -44,8 +43,8 @@ typedef struct __s_heap{
 	/* the heap has an underlying array of nodes. each node holds a value that is used during the
 	 * restoration of the heap (node->nodeValue). */
 	minHeapNode *   ptrToUnderlyingArray;
-	OS_hashtable_t * nodeContentIndexHashTable; // only created if requested by user, stores node index of a given node content for quick access.
 	uint32_t        maxNumberOfNodes;
+	OS_hashtable_t * nodeIndexHashTable; // only created if requested by user
 	volatile uint32_t        currentNumNodes;
 	volatile minHeapNode *   nextEmptyElement;
 	minHeapNode *   lastArrayElement;
@@ -69,7 +68,7 @@ typedef struct {
 	uint32_t volatile data;
 	uint32_t volatile data2;
 	uint32_t volatile svc_return;//data returned from svc placed in here.
-	uint32_t volatile originalPriority; // 0 if nothing inherited
+	uint32_t volatile inheritedPriority; // 0 if nothing inherited
 	uint32_t * volatile acquiredResourcesLinkedList; // 0 if nothing inherited
 } OS_TCB_t;
 

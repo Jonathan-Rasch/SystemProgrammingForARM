@@ -103,8 +103,8 @@ void initialize_scheduler(uint32_t _size_of_heap_node_array){
 	tasksInSchedulerHeapHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	sleepingTasksHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	//other init stuff
-	schedulerHeap = new_heap(_size_of_heap_node_array);
-	sleepHeap = new_heap(_size_of_heap_node_array);
+	schedulerHeap = new_heap(_size_of_heap_node_array,1);
+	sleepHeap = new_heap(_size_of_heap_node_array,0);
 	srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so don't really care
 }
 
@@ -242,6 +242,7 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 	if(selectedTCB == NULL){
 		return OS_idleTCB_p;
 	}else{
+		printf("\r\nTCB index %d\r\n",indexOfContent(schedulerHeap,(uint32_t)selectedTCB));
 		return selectedTCB;
 	}
 }
@@ -402,7 +403,8 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 //=============================================================================
 
 static void resourceAcquired_callback( uint32_t * _resource,uint32_t _resourceType){
- printf("test");
+    OS_TCB_t * currentTcb = OS_currentTCB();
+		
 }
 
 //=============================================================================
