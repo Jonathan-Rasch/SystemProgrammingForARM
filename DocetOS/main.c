@@ -191,14 +191,14 @@ int main(void) {
 	ASSERT(!queue_isFull(queue));
 	ASSERT(!queue_read(queue,&_return) && _return == 49);
 	
-	OS_addTask(TCB1,1);
+	OS_addTask(TCB1,5);
 	OS_addTask(TCB2,2);
 	OS_addTask(TCB3,3);
 	OS_addTask(TCB4,4);
-//	OS_addTask(TCB5,5);
-//	OS_addTask(TCB6,6);
-//	OS_addTask(TCB7,7);
-//	OS_addTask(TCB8,8);
+	OS_addTask(TCB5,1);
+	OS_addTask(TCB6,6);
+	OS_addTask(TCB7,7);
+	OS_addTask(TCB8,8);
 	
 	
 	OS_start();

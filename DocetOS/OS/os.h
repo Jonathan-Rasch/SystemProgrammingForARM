@@ -22,7 +22,8 @@ enum OS_SVC_e {
 	OS_SVC_SLEEP,
 	OS_CHANNEL_CONNECT,
 	OS_CHANNEL_DISCONNECT,
-	OS_CHANNEL_CHECK
+	OS_CHANNEL_CHECK,
+	OS_RESOURCE_ACQUIRED
 };
 
 /* A structure to hold callbacks for a scheduler, plus a 'preemptive' flag */
@@ -34,6 +35,7 @@ typedef struct {
 	void (* wait_callback)(void * const reason, uint32_t check_Code);
 	void (* notify_callback)(void * const reason);
 	void (* sleep_callback)(OS_TCB_t * const task,uint32_t min_duration);
+	void (* resourceAcquired_callback)(uint32_t * _resource,uint32_t _resourceType);
 } OS_Scheduler_t;
 
 /***************************/
@@ -98,6 +100,8 @@ void __svc(OS_SVC_WAIT) OS_wait(void * reason, uint32_t check_Code);
 void __svc(OS_SVC_NOTIFY) OS_notify(void * reason);
 
 void __svc(OS_SVC_SLEEP) OS_sleep(uint32_t min_sleep_duration);
+
+void __svc(OS_RESOURCE_ACQUIRED) OS_notify_resource_aquired(uint32_t * _resource, uint32_t _resourceType);
 
 //=============================================================================
 // channel manager svc

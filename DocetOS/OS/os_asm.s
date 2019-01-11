@@ -23,6 +23,7 @@
 	IMPORT _svc_OS_channelManager_connect
 	IMPORT _svc_OS_channelManager_disconnect
 	IMPORT _svc_OS_channelManager_checkAlive
+	IMPORT _svc_OS_resource_acquired
     
 SVC_Handler
     ; Link register contains special 'exit handler mode' code
@@ -58,6 +59,7 @@ SVC_tableStart
 	DCD _svc_OS_channelManager_connect
 	DCD _svc_OS_channelManager_disconnect
 	DCD _svc_OS_channelManager_checkAlive
+	DCD _svc_OS_resource_acquired
 SVC_tableEnd
 
     ALIGN

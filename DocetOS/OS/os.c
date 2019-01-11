@@ -221,6 +221,12 @@ void _svc_OS_yield(void) {
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
 
+void _svc_OS_resource_acquired(_OS_SVC_StackFrame_t const * const stack) {
+	uint32_t * resource = (uint32_t *)stack->r0;
+	uint32_t resourceType = (uint32_t )stack->r1;
+	_scheduler->resourceAcquired_callback(resource,resourceType);
+}
+
 //=============================================================================
 // channel manager svc
 //=============================================================================

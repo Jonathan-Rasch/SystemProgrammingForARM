@@ -62,6 +62,7 @@ static void stochasticScheduler_taskExit(OS_TCB_t * const tcb);
 static void stochasticScheduler_waitCallback(void * const _reason, uint32_t checkCode);
 static void stochasticScheduler_notifyCallback(void * const reason);
 static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_sleep_duration);
+static void resourceAcquired_callback( uint32_t * _resource,uint32_t _resourceType);
 
 //internal
 static int __getRandForTaskChoice(void);
@@ -86,7 +87,8 @@ OS_Scheduler_t const stochasticScheduler = {
 		.taskexit_callback = stochasticScheduler_taskExit,
 		.wait_callback = stochasticScheduler_waitCallback,
 		.notify_callback = stochasticScheduler_notifyCallback,
-		.sleep_callback = stochasticScheduler_sleepCallback
+		.sleep_callback = stochasticScheduler_sleepCallback,
+        .resourceAcquired_callback =resourceAcquired_callback
 };
 
 void initialize_scheduler(uint32_t _size_of_heap_node_array){
@@ -331,7 +333,7 @@ static void stochasticScheduler_waitCallback(void * const _reason, uint32_t chec
 	}
 	/*HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY because mutex is used as key, and the same task is allowed to wait on more than one mutex in theory,
 	but the same task cannot wait multiple times on the same mutex*/
-	//TODO: if hashtable is full (returnCode = 0) make task sleep instead, for now assume waitinTasksHashTable can hold max number of tasks
+	
 	currentTCB->state |= TASK_STATE_WAIT;
 }
 
@@ -393,6 +395,14 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 		ASSERT(0);
 	}
 	return;
+}
+
+//=============================================================================
+// Priority inheritance related
+//=============================================================================
+
+static void resourceAcquired_callback( uint32_t * _resource,uint32_t _resourceType){
+ printf("test");
 }
 
 //=============================================================================
@@ -611,7 +621,7 @@ static void DEBUG_hashTableState(){
 	printf("\r\nACTIVE TASK HASH TABLE:");
 	DEBUG_printHashtable(activeTasksHashTable);
 	printf("\r\nTASKS IN SCHEDULER HEAP HASH TABLE:");
-	DEBUG_printHashtable(tasksInHeapHashTable);
+	DEBUG_printHashtable(tasksInSchedulerHeapHashTable);
 	printf("\r\nWAITING TASK HASH TABLE:\r\nNOTE: the key is the reason the task is waiting, multiple entries with same key are allowed provided their 'data' fields differ.\r\n");
 	DEBUG_printHashtable(waitingTasksHashTable_reasonAsKey);
 	printf("\r\nSLEEPING TASK HASH TABLE:");
