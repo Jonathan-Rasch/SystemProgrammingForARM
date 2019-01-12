@@ -32,10 +32,10 @@ typedef struct {
 	OS_TCB_t const * (* scheduler_callback)(void);//ME:called by SysTick or when task yields
 	void (* addtask_callback)(OS_TCB_t * const newTask, uint32_t taskPriority);//ME:called by user...to add task to scheduler
 	void (* taskexit_callback)(OS_TCB_t * const task);//ME:called automatically on task func return. DO NOT CALL MANUALLY
-	void (* wait_callback)(void * const reason, uint32_t check_Code);
+	void (* wait_callback)(void * const reason, uint32_t check_Code, uint32_t _isReasonMutex);
 	void (* notify_callback)(void * const reason);
 	void (* sleep_callback)(OS_TCB_t * const task,uint32_t min_duration);
-	void (* resourceAcquired_callback)(uint32_t * _resource,uint32_t _resourceType);
+	void (* resourceAcquired_callback)(OS_mutex_t * _resource);
 } OS_Scheduler_t;
 
 /***************************/
@@ -94,14 +94,14 @@ void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func
 void __svc(OS_SVC_ADD_TASK) OS_addTask(OS_TCB_t const * const,uint32_t task_priority);
 
 /* SVC delegate to allow task to wait for resource*/
-void __svc(OS_SVC_WAIT) OS_wait(void * reason, uint32_t check_Code);
+void __svc(OS_SVC_WAIT) OS_wait(void * reason, uint32_t check_Code, uint32_t _isReasonMutex);
 
 /* SVC delegate to allow task to notify that a resource has been released*/
 void __svc(OS_SVC_NOTIFY) OS_notify(void * reason);
 
 void __svc(OS_SVC_SLEEP) OS_sleep(uint32_t min_sleep_duration);
 
-void __svc(OS_RESOURCE_ACQUIRED) OS_notify_resource_aquired(uint32_t * _resource, uint32_t _resourceType);
+void __svc(OS_RESOURCE_ACQUIRED) OS_notify_resource_aquired(OS_mutex_t * _resource);
 
 //=============================================================================
 // channel manager svc

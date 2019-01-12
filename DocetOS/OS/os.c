@@ -94,7 +94,7 @@ void OS_start() {
 /* Initialises a task control block (TCB) and its associated stack.  See os.h for details. */
 void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func)(void const * const), void const * const data) {
 	TCB->sp = stack - (sizeof(OS_StackFrame_t) / sizeof(uint32_t));
-	TCB->priority = TCB->state = TCB->data = 0;
+	TCB->priority = TCB->inheritedPriority = TCB->state = TCB->data = 0;
 	OS_StackFrame_t *sf = (OS_StackFrame_t *)(TCB->sp);
 	memset(sf, 0, sizeof(OS_StackFrame_t));
 	/* By placing the address of the task function in pc, and the address of _OS_task_end() in lr, the task
@@ -165,7 +165,8 @@ NOTE: this is all esentially because the current task "called" the interrupt and
 void _svc_OS_wait(_OS_SVC_StackFrame_t const * const stack){
 	void * reason = (void *)stack->r0;
 	uint32_t checkCode = (uint32_t)stack->r1;
-	_scheduler->wait_callback(reason, checkCode);
+	uint32_t isReasonMutex = (uint32_t)stack->r2;
+	_scheduler->wait_callback(reason, checkCode,isReasonMutex);
 	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
 
@@ -222,9 +223,8 @@ void _svc_OS_yield(void) {
 }
 
 void _svc_OS_resource_acquired(_OS_SVC_StackFrame_t const * const stack) {
-	uint32_t * resource = (uint32_t *)stack->r0;
-	uint32_t resourceType = (uint32_t )stack->r1;
-	_scheduler->resourceAcquired_callback(resource,resourceType);
+	OS_mutex_t * resource = (OS_mutex_t *)stack->r0;
+	_scheduler->resourceAcquired_callback(resource);
 }
 
 //=============================================================================

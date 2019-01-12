@@ -69,8 +69,8 @@ typedef struct {
 	uint32_t volatile data;
 	uint32_t volatile data2;
 	uint32_t volatile svc_return;//data returned from svc placed in here.
-	uint32_t volatile originalPriority; // 0 if nothing inherited
-	uint32_t * volatile acquiredResourcesLinkedList; // 0 if nothing inherited
+	uint32_t volatile inheritedPriority; // 0 if nothing inherited
+	void * volatile acquiredResourcesLinkedList; // 0 if nothing inherited
 } OS_TCB_t;
 
 //=============================================================================
@@ -80,8 +80,7 @@ typedef struct {
 typedef struct{
 	uint32_t counter;
 	OS_TCB_t * tcbPointer;//pointer to a pointer to a tcb
-	volatile uint32_t resourcePriorityValue; // priority of highest priority task waiting for this resource.
-	uint32_t * nextAcquiredResource; // points to resource of next lower priority acquired by task;
+	void * nextAcquiredResource; // points to resource of next lower priority acquired by task;
 } OS_mutex_t;
 
 //=============================================================================
@@ -91,8 +90,6 @@ typedef struct{
 typedef struct{
     volatile uint32_t availableTokens;
     uint32_t maxTokens;
-	volatile uint32_t resourcePriorityValue; // priority of highest priority task waiting for this resource.
-	uint32_t * nextAcquiredResource; // points to resource of next lower priority acquired by task;
 } OS_semaphore_t;
 
 //=============================================================================

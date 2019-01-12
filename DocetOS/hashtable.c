@@ -132,23 +132,51 @@ uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _va
 
 /* retrives the value at given key, if no value present in table NULL is returned and validValueFlag is set to 0*/
 uint32_t * hashtable_get(OS_hashtable_t * _hashtable, uint32_t _key){
-	_hashtable->validValueFlag = 0;
-	/*determine bucket*/
-	uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
-	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
-	/*search linked list*/
-	uint32_t * value = NULL;
-	hashtable_value * hash_val = (hashtable_value *)bucket_array[bucket_number];
-	while(hash_val){
-		if(hash_val->key == _key){
-			value = hash_val->underlying_data;
-			_hashtable->validValueFlag = 1;
-			return value;
-		}else{
-			hash_val = (hashtable_value *)hash_val->next_hashtable_value;
-		}
-	}
-	return NULL;
+    _hashtable->validValueFlag = 0;
+    /*determine bucket*/
+    uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
+    uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
+    /*search linked list*/
+    uint32_t * value = NULL;
+    hashtable_value * hash_val = (hashtable_value *)bucket_array[bucket_number];
+    while(hash_val){
+        if(hash_val->key == _key){
+            value = hash_val->underlying_data;
+            _hashtable->validValueFlag = 1;
+            return value;
+        }else{
+            hash_val = (hashtable_value *)hash_val->next_hashtable_value;
+        }
+    }
+    return NULL;
+}
+
+/* This function allows the retrieval of multiple values stored under the same key by setting the value _n.
+ * when _n is 0 this function returns the first instance with _key, when _n is 1 it returns the second etc.
+ * when no _nth instance with _key exists NULL is returned AND validValueFlag REMAINS 0*/
+uint32_t * hashtable_getNthValueAtKey(OS_hashtable_t * _hashtable, uint32_t _key, uint32_t _n){
+    _hashtable->validValueFlag = 0;
+    /*determine bucket*/
+    uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
+    uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
+    /*search linked list*/
+    uint32_t * value = NULL;
+    hashtable_value * hash_val = (hashtable_value *)bucket_array[bucket_number];
+    while(hash_val){
+        if(hash_val->key == _key){
+            if(_n != 0){
+                _n--;
+								hash_val = (hashtable_value *)hash_val->next_hashtable_value;
+                continue;
+            }
+            value = hash_val->underlying_data;
+            _hashtable->validValueFlag = 1;
+            return value;
+        }else{
+            hash_val = (hashtable_value *)hash_val->next_hashtable_value;
+        }
+    }
+    return NULL;
 }
 
 /* retrieves the value associated with "key" then REMOVES IT FROM THE HASHTABLE. If no value is associated

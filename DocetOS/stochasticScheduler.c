@@ -59,10 +59,10 @@ static OS_hashtable_t * sleepingTasksHashTable;
 static OS_TCB_t const * stochasticScheduler_scheduler(void);
 static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_priority);
 static void stochasticScheduler_taskExit(OS_TCB_t * const tcb);
-static void stochasticScheduler_waitCallback(void * const _reason, uint32_t checkCode);
+static void stochasticScheduler_waitCallback(void * const _reason, uint32_t checkCode,uint32_t _isReasonMutex);
 static void stochasticScheduler_notifyCallback(void * const reason);
 static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_sleep_duration);
-static void resourceAcquired_callback( uint32_t * _resource,uint32_t _resourceType);
+static void resourceAcquired_callback( OS_mutex_t * _resource);
 
 //internal
 static int __getRandForTaskChoice(void);
@@ -70,6 +70,7 @@ static uint32_t __removeIfWaiting(uint32_t _index);
 static uint32_t __removeIfSleeping(uint32_t _index);
 static uint32_t __removeIfExit(uint32_t _index);
 static uint32_t __updateSleepState(OS_TCB_t * task);
+static void __updatePriorityInheritance(OS_TCB_t * task);
 
 //debug
 static void DEBUG_hashTableState();
@@ -242,7 +243,6 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 	if(selectedTCB == NULL){
 		return OS_idleTCB_p;
 	}else{
-		printf("\r\nTCB index %d\r\n",indexOfContent(schedulerHeap,(uint32_t)selectedTCB));
 		return selectedTCB;
 	}
 }
@@ -303,12 +303,12 @@ static void stochasticScheduler_taskExit(OS_TCB_t * const tcb){
 }
 
 //=============================================================================
-// wait and notify hash table
+// wait, notify and sleep
 //=============================================================================
 
 /*Marks the current task as waitin and adds it to the hashtable that keeps track of all waiting tasks. The Task is not
 actually removed from the heap, this is done by the scheduler.*/
-static void stochasticScheduler_waitCallback(void * const _reason, uint32_t checkCode){
+static void stochasticScheduler_waitCallback(void * const _reason, uint32_t checkCode,uint32_t _isReasonMutex){
 	if (checkCode != OS_checkCode()){
 		return;//checkcode mismatch, notify called during function that uses wait
 	}
@@ -334,13 +334,18 @@ static void stochasticScheduler_waitCallback(void * const _reason, uint32_t chec
 	}
 	/*HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY because mutex is used as key, and the same task is allowed to wait on more than one mutex in theory,
 	but the same task cannot wait multiple times on the same mutex*/
-	
 	currentTCB->state |= TASK_STATE_WAIT;
+
+    /*start the priority inherritance */
+    if(_isReasonMutex ){
+        OS_mutex_t * mutex = (OS_mutex_t * ) _reason;
+        OS_TCB_t * mutexOwner = mutex->tcbPointer;
+        __updatePriorityInheritance(mutexOwner);
+    }
 }
 
 static void stochasticScheduler_notifyCallback(void * const reason){
 	/*add all the tasks that are waiting for the given reason back to the scheduler heap*/
-	//printf("\r\n>>>>>>NOTIFY: %p <<<<<<\r\n",reason);
 	if(waitingTasksHashTable_reasonAsKey == NULL){
 		return;//during initialisation locks are released calling notify, but hash table is not created yet
 	}
@@ -367,9 +372,38 @@ static void stochasticScheduler_notifyCallback(void * const reason){
 		if(hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
 			/*tcb was added to "tasksInSchedulerHeapHashTable" meaning that it currently is not in the heap (if it had never been removed from the heap
 			the hashtable_put operation would have returned 0 when attempting to add it again), hence add it*/
-			addNode(schedulerHeap,task,task->priority);
+			if(task->inheritedPriority)
+                addNode(schedulerHeap,task,task->inheritedPriority);
+            else{
+                addNode(schedulerHeap,task,task->priority);
+            }
 		}
 	}
+    /*This task has just released a resource. If it is currently running under inherited priority this priority needs
+     * to be updated now to reflect this change.*/
+    OS_TCB_t * currentTCB = OS_currentTCB();
+    if(!currentTCB->inheritedPriority){
+        return;
+    }
+    /*First remove the released resource from the tasks linked list of acquired mutexes, (if the resource cannot be found
+     * in that list then do nothing, priority inheritance currently only works for mutex)*/
+    OS_mutex_t * prevAcquiredMutex = NULL;
+    OS_mutex_t * acquiredMutex = currentTCB->acquiredResourcesLinkedList;
+    while (acquiredMutex){
+        if(acquiredMutex == reason){
+            /*found resource, remove it from the list since the task no longer owns it*/
+            if(prevAcquiredMutex){
+                prevAcquiredMutex->nextAcquiredResource = acquiredMutex->nextAcquiredResource;
+            }else{
+                currentTCB->acquiredResourcesLinkedList = acquiredMutex->nextAcquiredResource;
+            }
+						acquiredMutex->nextAcquiredResource = NULL;//reset to avoid infinite loop
+            __updatePriorityInheritance(currentTCB);
+            break;
+        }
+        prevAcquiredMutex = acquiredMutex;
+        acquiredMutex = acquiredMutex->nextAcquiredResource;
+    }
 }
 
 static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_sleep_duration){
@@ -385,7 +419,7 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 		the task should wake up.*/
 		tcb->data2 = min_sleep_duration;/*used to keep track of the remaining sleep duration*/
 		hashtable_put(sleepingTasksHashTable,(uint32_t) tcb,(uint32_t*) tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-		/*task is not removed from the heap, this is done inside the scheduler callback schould the scheduler try to run 
+		/*task is not removed from the heap, this is done inside the scheduler callback should the scheduler try to run
 		a task that is in the sleep state.*/
 	}else{
 		/*hashtable_remove returned NULL meaning that no element with the given key was present*/
@@ -398,13 +432,66 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 	return;
 }
 
+/*changes the tasks priority depending on the priority of other tasks that are waiting on resources acquired by this
+ * task. The task will use the highest priority (lowest value, minHeap) as its own priority as long as it holds the
+ * resource*/
+static void __updatePriorityInheritance(OS_TCB_t * task){
+    OS_mutex_t * acquiredMutex = task->acquiredResourcesLinkedList;
+    uint32_t highestPriority = task->priority;
+    /*loop through all mutexes owned by the given task and determine the highest priority that the task should iinherit*/
+    while (acquiredMutex){
+        uint32_t instanceCounter = 0;
+        OS_TCB_t * taskWaitingOnMutex = (OS_TCB_t *)hashtable_getNthValueAtKey(waitingTasksHashTable_reasonAsKey,(uint32_t)acquiredMutex,instanceCounter);
+        /*loop through all tasks waiting on this mutex and determine what the highest priority of the waiting tasks is*/
+        while(waitingTasksHashTable_reasonAsKey->validValueFlag){
+            //REMEMBER, minheap so larger value means less priority
+            uint32_t waitingTaskMaxPriority = (taskWaitingOnMutex->inheritedPriority)? taskWaitingOnMutex->inheritedPriority:taskWaitingOnMutex->priority;
+            if(waitingTaskMaxPriority < highestPriority){
+                highestPriority = waitingTaskMaxPriority;
+            }
+            instanceCounter++;
+            taskWaitingOnMutex = (OS_TCB_t *)hashtable_getNthValueAtKey(waitingTasksHashTable_reasonAsKey,(uint32_t)acquiredMutex,instanceCounter);
+        }
+        acquiredMutex = acquiredMutex->nextAcquiredResource;
+    }
+    /*having determined the priority to inherit set it and move the task to the correct index in the heap (if it is part
+     * of the scheduler heap at this point in time)*/
+    if(highestPriority < task->priority ){
+        task->inheritedPriority = highestPriority;
+    }else{
+        task->inheritedPriority = 0;//nothing inherited
+    }
+
+    if(hashtable_get(tasksInSchedulerHeapHashTable,(uint32_t)task) && tasksInSchedulerHeapHashTable->validValueFlag &&
+            task->inheritedPriority ){
+        uint32_t taskHeapIndex = indexOfContent(schedulerHeap,(uint32_t)task);
+        void * removedTask;
+				removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
+        if(removedTask != task){
+            printf("SCHEDULER: ERROR during priority inheritance, taskHeapIndex is incorrect!");
+            ASSERT(0);
+        }
+        addNode(schedulerHeap,task,task->inheritedPriority);
+    }
+}
+
 //=============================================================================
 // Priority inheritance related
 //=============================================================================
 
-static void resourceAcquired_callback( uint32_t * _resource,uint32_t _resourceType){
+static void resourceAcquired_callback( OS_mutex_t * _acquiredMutex){
     OS_TCB_t * currentTcb = OS_currentTCB();
-		
+    /*Note: for now priority inheritance only works for mutex but can be extended in the future to work for
+     * semaphores too. */
+    if(_acquiredMutex->counter != 0){
+        /*This resource already seems to have been acquired before by this task and therefore should
+         * not be added again to the acquired resources linked list*/
+        return;
+    }
+    /*add the resource to the linked list of acquired resources for later use during priority inheritance*/
+    OS_mutex_t * tmpMutex = currentTcb->acquiredResourcesLinkedList;
+    currentTcb->acquiredResourcesLinkedList = _acquiredMutex;
+    _acquiredMutex->nextAcquiredResource = tmpMutex;
 }
 
 //=============================================================================
@@ -535,7 +622,11 @@ static uint32_t __updateSleepState(OS_TCB_t * task){
 		hashtable_put(activeTasksHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 		/*add the task back to the schedulerHeap should it not already be in there*/
 		if(hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
-			addNode(schedulerHeap,task,task->priority);
+            if(task->inheritedPriority)
+                addNode(schedulerHeap,task,task->inheritedPriority);
+            else{
+                addNode(schedulerHeap,task,task->priority);
+            }
 		}
 		/*finally update the TCB*/
 		task->state &= ~TASK_STATE_SLEEP;

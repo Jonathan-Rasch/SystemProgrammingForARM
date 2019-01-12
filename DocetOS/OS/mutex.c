@@ -10,7 +10,7 @@
 void OS_init_mutex(OS_mutex_t * mutex){
 	mutex->counter = 0;
 	mutex->tcbPointer = NULL; // NULL is just 0 ofc, but i think this makes it clearer
-	mutex->resourcePriorityValue = 0; //invalid priority indicating no task waiting on resource
+    mutex->nextAcquiredResource = NULL;
 };
 
 /*Allocates and initialises mutex.
@@ -46,26 +46,12 @@ void OS_mutex_acquire(OS_mutex_t * _mutex){
 			if(lockNotObtained){
 				continue;// try again, go back to loading
 			}else{
-				OS_notify_resource_aquired((uint32_t *)_mutex,1);
+				OS_notify_resource_aquired(_mutex);
 				break; //got the lock
 			}
 		}else{
-			/*Update the resourcePriorityValue of the mutex. This value reflects the priority of the highest
-			priority task waiting on this resource. Any task that holds this mutex can assume the priority
-			resourcePriorityValue until releasing this mutex.*/
-			uint32_t updatingMutexPriorityValue = 1;
-			while(updatingMutexPriorityValue){
-				uint32_t value = (uint32_t)__LDREXW((uint32_t*) &(_mutex->resourcePriorityValue));
-				if(value != 0 && value <= currentTCB->priority){
-					updatingMutexPriorityValue = 0; // a task with higher or equal priority is already waiting on this resource
-					continue;
-				}else{
-					value = currentTCB->priority;
-					updatingMutexPriorityValue = __STREXW((uint32_t)value,(uint32_t*) &(_mutex->resourcePriorityValue));
-				}
-			}
 			//somebody else holds the lock, wait for its release
-			OS_wait(_mutex,checkCode);
+			OS_wait(_mutex,checkCode,1);
 			continue;//repeat the process of trying to obtain lock
 		}
 	}

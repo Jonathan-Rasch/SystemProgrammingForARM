@@ -49,7 +49,7 @@ void semaphore_acquire_token(OS_semaphore_t * _semaphore){
             }
         }else{
             //no tokens remaining, wait for one to be released
-            OS_wait(_semaphore,checkCode);
+            OS_wait(_semaphore,checkCode,0);
             continue;
         }
     }
@@ -75,7 +75,7 @@ void semaphore_release_token(OS_semaphore_t * _semaphore){
             }
         }else{
             //semaphore holds maximum number of tokens, wait for one to be taken
-            OS_wait(_semaphore,checkCode);
+            OS_wait(_semaphore,checkCode,0);
             continue;
         }
     }
