@@ -10,17 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2baeb46-297d-47e8-b8b0-469489949f26" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/DocetOS/DocetOS_sleep_wait.uvoptx" afterPath="$PROJECT_DIR$/DocetOS/DocetOS_sleep_wait.uvoptx" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/mutex.c" afterPath="$PROJECT_DIR$/DocetOS/OS/mutex.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/os.c" afterPath="$PROJECT_DIR$/DocetOS/OS/os.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/os.h" afterPath="$PROJECT_DIR$/DocetOS/OS/os.h" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/semaphore.c" afterPath="$PROJECT_DIR$/DocetOS/OS/semaphore.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/hashtable.c" afterPath="$PROJECT_DIR$/DocetOS/hashtable.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/hashtable.h" afterPath="$PROJECT_DIR$/DocetOS/hashtable.h" />
       <change beforePath="$PROJECT_DIR$/DocetOS/stochasticScheduler.c" afterPath="$PROJECT_DIR$/DocetOS/stochasticScheduler.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/structs.h" afterPath="$PROJECT_DIR$/DocetOS/structs.h" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/structs.h___jb_tmp___" afterPath="" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -44,7 +35,7 @@
     <splitter split-orientation="horizontal" split-proportion="0.4">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="semaphore.c" pinned="false" current-in-tab="true">
+          <file leaf-file-name="semaphore.c" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/DocetOS/OS/semaphore.c">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="272">
@@ -54,11 +45,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="mutex.c" pinned="false" current-in-tab="false">
+          <file leaf-file-name="mutex.c" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/DocetOS/OS/mutex.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="476">
-                  <caret line="60" column="0" lean-forward="false" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
+                <state relative-caret-position="85">
+                  <caret line="58" column="22" lean-forward="false" selection-start-line="58" selection-start-column="22" selection-end-line="58" selection-end-column="22" />
                   <folding />
                 </state>
               </provider>
@@ -151,8 +142,8 @@
           <file leaf-file-name="stochasticScheduler.c" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/DocetOS/stochasticScheduler.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="296">
-                  <caret line="481" column="12" lean-forward="false" selection-start-line="481" selection-start-column="12" selection-end-line="481" selection-end-column="12" />
+                <state relative-caret-position="749">
+                  <caret line="502" column="60" lean-forward="false" selection-start-line="502" selection-start-column="60" selection-end-line="502" selection-end-column="60" />
                   <folding />
                 </state>
               </provider>
@@ -207,9 +198,9 @@
         <option value="$PROJECT_DIR$/DocetOS/OS/os.c" />
         <option value="$PROJECT_DIR$/DocetOS/hashtable.c" />
         <option value="$PROJECT_DIR$/DocetOS/hashtable.h" />
-        <option value="$PROJECT_DIR$/DocetOS/stochasticScheduler.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/os.h" />
         <option value="$PROJECT_DIR$/DocetOS/structs.h" />
+        <option value="$PROJECT_DIR$/DocetOS/stochasticScheduler.c" />
       </list>
     </option>
   </component>
@@ -219,7 +210,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
     <option name="width" value="2576" />
@@ -298,15 +289,15 @@
       <updated>1547039471933</updated>
       <workItem from="1547039473042" duration="195000" />
       <workItem from="1547039686393" duration="1313000" />
-      <workItem from="1547110984831" duration="33247000" />
+      <workItem from="1547110984831" duration="35031000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="34755000" />
+    <option name="totallyTimeSpent" value="36539000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18020834" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -356,7 +347,9 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="2" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
@@ -520,14 +513,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/mutex.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="60" column="0" lean-forward="false" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/OS/mutex.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -552,18 +537,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/stochasticScheduler.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="296">
-          <caret line="481" column="12" lean-forward="false" selection-start-line="481" selection-start-column="12" selection-end-line="481" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/OS/semaphore.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
           <caret line="46" column="18" lean-forward="false" selection-start-line="46" selection-start-column="18" selection-end-line="46" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/mutex.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="58" column="22" lean-forward="false" selection-start-line="58" selection-start-column="22" selection-end-line="58" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/stochasticScheduler.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="749">
+          <caret line="502" column="60" lean-forward="false" selection-start-line="502" selection-start-column="60" selection-end-line="502" selection-end-column="60" />
           <folding />
         </state>
       </provider>

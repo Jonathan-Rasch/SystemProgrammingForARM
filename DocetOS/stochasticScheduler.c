@@ -379,31 +379,28 @@ static void stochasticScheduler_notifyCallback(void * const reason){
             }
 		}
 	}
-    /*This task has just released a resource. If it is currently running under inherited priority this priority needs
-     * to be updated now to reflect this change.*/
-    OS_TCB_t * currentTCB = OS_currentTCB();
-    if(!currentTCB->inheritedPriority){
-        return;
-    }
-    /*First remove the released resource from the tasks linked list of acquired mutexes, (if the resource cannot be found
-     * in that list then do nothing, priority inheritance currently only works for mutex)*/
-    OS_mutex_t * prevAcquiredMutex = NULL;
-    OS_mutex_t * acquiredMutex = currentTCB->acquiredResourcesLinkedList;
-    while (acquiredMutex){
-        if(acquiredMutex == reason){
-            /*found resource, remove it from the list since the task no longer owns it*/
-            if(prevAcquiredMutex){
-                prevAcquiredMutex->nextAcquiredResource = acquiredMutex->nextAcquiredResource;
-            }else{
-                currentTCB->acquiredResourcesLinkedList = acquiredMutex->nextAcquiredResource;
-            }
-						acquiredMutex->nextAcquiredResource = NULL;//reset to avoid infinite loop
-            __updatePriorityInheritance(currentTCB);
-            break;
-        }
-        prevAcquiredMutex = acquiredMutex;
-        acquiredMutex = acquiredMutex->nextAcquiredResource;
-    }
+	/*This task has just released a resource. If it is currently running under inherited priority this priority needs
+	 * to be updated now to reflect this change.*/
+	OS_TCB_t * currentTCB = OS_currentTCB();
+	/*remove the released resource from the tasks linked list of acquired mutexes, (if the resource cannot be found
+	 * in that list then do nothing, priority inheritance currently only works for mutex)*/
+	OS_mutex_t * prevAcquiredMutex = NULL;
+	OS_mutex_t * acquiredMutex = currentTCB->acquiredResourcesLinkedList;
+	while (acquiredMutex){
+			if(acquiredMutex == reason){
+					/*found resource, remove it from the list since the task no longer owns it*/
+					if(prevAcquiredMutex){
+							prevAcquiredMutex->nextAcquiredResource = acquiredMutex->nextAcquiredResource;
+					}else{
+							currentTCB->acquiredResourcesLinkedList = acquiredMutex->nextAcquiredResource;
+					}
+					acquiredMutex->nextAcquiredResource = NULL;//reset to avoid infinite loop
+					__updatePriorityInheritance(currentTCB);
+					break;
+			}//TODO why do i get a linked list loop here
+			prevAcquiredMutex = acquiredMutex;
+			acquiredMutex = acquiredMutex->nextAcquiredResource;
+	}
 }
 
 static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_sleep_duration){
@@ -456,14 +453,26 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
     }
     /*having determined the priority to inherit set it and move the task to the correct index in the heap (if it is part
      * of the scheduler heap at this point in time)*/
+		uint32_t isActiveAndInHeap = hashtable_get(tasksInSchedulerHeapHashTable,(uint32_t)task) && tasksInSchedulerHeapHashTable->validValueFlag;
     if(highestPriority < task->priority ){
         task->inheritedPriority = highestPriority;
     }else{
+				if(task->inheritedPriority && isActiveAndInHeap){//if true it means that the task was running under inherited priority previously
+					/*remove and re-add task to reset priority*/
+					uint32_t taskHeapIndex = indexOfContent(schedulerHeap,(uint32_t)task);
+					void * removedTask;
+					removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
+					if(removedTask != task){
+            printf("SCHEDULER: ERROR during priority inheritance reset, taskHeapIndex is incorrect!");
+            ASSERT(0);
+					}
+					addNode(schedulerHeap,task,task->priority);
+					printf("\r\ntask %p that inherited priority %d reset to %d\r\n",task,task->inheritedPriority,task->priority);
+				}
         task->inheritedPriority = 0;//nothing inherited
     }
-
-    if(hashtable_get(tasksInSchedulerHeapHashTable,(uint32_t)task) && tasksInSchedulerHeapHashTable->validValueFlag &&
-            task->inheritedPriority ){
+		/*remove and re-add the task to the heap with the inherited priority*/
+    if(isActiveAndInHeap && task->inheritedPriority ){
         uint32_t taskHeapIndex = indexOfContent(schedulerHeap,(uint32_t)task);
         void * removedTask;
 				removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
@@ -472,6 +481,7 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
             ASSERT(0);
         }
         addNode(schedulerHeap,task,task->inheritedPriority);
+				printf("\r\ntask %p with priority %d inherited priority %d \r\n",task,task->priority,task->inheritedPriority);
     }
 }
 
@@ -483,15 +493,32 @@ static void resourceAcquired_callback( OS_mutex_t * _acquiredMutex){
     OS_TCB_t * currentTcb = OS_currentTCB();
     /*Note: for now priority inheritance only works for mutex but can be extended in the future to work for
      * semaphores too. */
-    if(_acquiredMutex->counter != 0){
+		//ASSERT((uint32_t)_acquiredMutex != (uint32_t)0x2000B0D4);
+    if(_acquiredMutex->counter != 0 || currentTcb == NULL){
         /*This resource already seems to have been acquired before by this task and therefore should
          * not be added again to the acquired resources linked list*/
         return;
     }
     /*add the resource to the linked list of acquired resources for later use during priority inheritance*/
+		if(_acquiredMutex == currentTcb->acquiredResourcesLinkedList){
+			return;
+		}
+    _acquiredMutex->nextAcquiredResource = NULL;
     OS_mutex_t * tmpMutex = currentTcb->acquiredResourcesLinkedList;
     currentTcb->acquiredResourcesLinkedList = _acquiredMutex;
     _acquiredMutex->nextAcquiredResource = tmpMutex;
+		
+    //TODO: DEBUG
+    OS_mutex_t * debug_start = currentTcb->acquiredResourcesLinkedList;
+    OS_mutex_t * debug_current = currentTcb->acquiredResourcesLinkedList;
+		uint32_t counter = 0;
+    while(debug_current){
+        if(debug_current == debug_start && counter){
+            ASSERT(0);
+        }
+        debug_current = debug_current->nextAcquiredResource;
+				counter++;
+    }
 }
 
 //=============================================================================
