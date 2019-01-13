@@ -14,7 +14,7 @@
 
 OS_hashtable_t * new_hashtable(uint32_t _capacity,uint32_t _number_of_buckets){
 	uint32_t required_size_4ByteWords = sizeof(OS_hashtable_t)/4;
-	required_size_4ByteWords += _capacity * (sizeof(hashtable_value)/4);
+	required_size_4ByteWords += _capacity * (sizeof(OS_hashtable_value_t)/4);
 	required_size_4ByteWords += _number_of_buckets;
 	uint32_t * memory = OS_alloc(required_size_4ByteWords);
 	if(memory == NULL){
@@ -53,13 +53,13 @@ N+2+3*M) underlying_data		-*/
 	memory = memory + hashtable->number_of_buckets;//now points to start of memory section for hashtable_value structs
 	
 	/*setting up hashtable_value structs and adding them to the free hashtable_value linked list*/
-	hashtable_value * hash_val = (hashtable_value *)memory;
+	OS_hashtable_value_t * hash_val = (OS_hashtable_value_t *)memory;
 	hash_val->key = NULL;
 	hash_val->underlying_data = NULL;
 	hashtable->free_hashtable_value_struct_linked_list = (uint32_t *)hash_val; // link first element in struct
 	for(int i=1;i<_capacity;i++){
 		/*get next element and clear it*/
-		hashtable_value * next_element = hash_val + 1;
+		OS_hashtable_value_t * next_element = hash_val + 1;
 		next_element->key = NULL;
 		next_element->underlying_data = NULL;
 		/*link, then next element becommes current element, repeat process*/
@@ -93,7 +93,7 @@ uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _va
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
 	/*ensure that element with provided _key is not already in bucket*/
 	if(_checkForDuplicates != HASHTABLE_DISABLE_DUPLICATE_CHECKS){
-		hashtable_value * tmp_hashtable_val = (hashtable_value *)bucket_array[bucket_number];
+		OS_hashtable_value_t * tmp_hashtable_val = (OS_hashtable_value_t *)bucket_array[bucket_number];
 		while(tmp_hashtable_val){
 			/*check if key already exists in bucket (might want to allow this, e.g multiple tasks waiting for same mutex (mutex used as key))*/
 			if(_checkForDuplicates == HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY && tmp_hashtable_val->key == _key){
@@ -104,16 +104,16 @@ uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _va
 			if(_checkForDuplicates == HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY && tmp_hashtable_val->underlying_data == _value){
 				return 0;
 			}
-			tmp_hashtable_val = (hashtable_value *)tmp_hashtable_val->next_hashtable_value;
+			tmp_hashtable_val = (OS_hashtable_value_t *)tmp_hashtable_val->next_hashtable_value;
 		}
 	}
 	/*obtain hashtable_value struct from linked list of free structs*/
-	hashtable_value * hashtable_val = (hashtable_value*)_hashtable->free_hashtable_value_struct_linked_list;
+	OS_hashtable_value_t * hashtable_val = (OS_hashtable_value_t*)_hashtable->free_hashtable_value_struct_linked_list;
 	_hashtable->free_hashtable_value_struct_linked_list = hashtable_val->next_hashtable_value;
 	hashtable_val->underlying_data = _value;
 	hashtable_val->key = _key;
 	/*insert hashtable value into bucket linked list*/
-	hashtable_value * tmp_hashtable_value = (hashtable_value *)bucket_array[bucket_number];
+	OS_hashtable_value_t * tmp_hashtable_value = (OS_hashtable_value_t *)bucket_array[bucket_number];
 	bucket_array[bucket_number] = (uint32_t )hashtable_val;
 	hashtable_val->next_hashtable_value = (uint32_t *)tmp_hashtable_value;
 	/*update capacity*/
@@ -129,14 +129,14 @@ uint32_t * hashtable_get(OS_hashtable_t * _hashtable, uint32_t _key){
     uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
     /*search linked list*/
     uint32_t * value = NULL;
-    hashtable_value * hash_val = (hashtable_value *)bucket_array[bucket_number];
+    OS_hashtable_value_t * hash_val = (OS_hashtable_value_t *)bucket_array[bucket_number];
     while(hash_val){
         if(hash_val->key == _key){
             value = hash_val->underlying_data;
             _hashtable->validValueFlag = 1;
             return value;
         }else{
-            hash_val = (hashtable_value *)hash_val->next_hashtable_value;
+            hash_val = (OS_hashtable_value_t *)hash_val->next_hashtable_value;
         }
     }
     return NULL;
@@ -152,19 +152,19 @@ uint32_t * hashtable_getNthValueAtKey(OS_hashtable_t * _hashtable, uint32_t _key
     uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
     /*search linked list*/
     uint32_t * value = NULL;
-    hashtable_value * hash_val = (hashtable_value *)bucket_array[bucket_number];
+    OS_hashtable_value_t * hash_val = (OS_hashtable_value_t *)bucket_array[bucket_number];
     while(hash_val){
         if(hash_val->key == _key){
             if(_n != 0){
                 _n--;
-								hash_val = (hashtable_value *)hash_val->next_hashtable_value;
+								hash_val = (OS_hashtable_value_t *)hash_val->next_hashtable_value;
                 continue;
             }
             value = hash_val->underlying_data;
             _hashtable->validValueFlag = 1;
             return value;
         }else{
-            hash_val = (hashtable_value *)hash_val->next_hashtable_value;
+            hash_val = (OS_hashtable_value_t *)hash_val->next_hashtable_value;
         }
     }
     return NULL;
@@ -179,8 +179,8 @@ uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
 	/*search linked list*/
 	uint32_t * value = NULL;
-	hashtable_value * prev_hash_val = NULL;
-	hashtable_value * hash_val = (hashtable_value *)bucket_array[bucket_number];
+	OS_hashtable_value_t * prev_hash_val = NULL;
+	OS_hashtable_value_t * hash_val = (OS_hashtable_value_t *)bucket_array[bucket_number];
 	while(hash_val){
 		if(hash_val->key == _key){
 			_hashtable->validValueFlag = 1;
@@ -195,7 +195,7 @@ uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 			hash_val->next_hashtable_value = NULL;
 			hash_val->underlying_data = NULL;
 			//return to linked list
-			hashtable_value * tmp_hashtable_val = (hashtable_value *)_hashtable->free_hashtable_value_struct_linked_list;
+			OS_hashtable_value_t * tmp_hashtable_val = (OS_hashtable_value_t *)_hashtable->free_hashtable_value_struct_linked_list;
 			_hashtable->free_hashtable_value_struct_linked_list = (uint32_t *)hash_val;
 			hash_val->next_hashtable_value = (uint32_t *)tmp_hashtable_val;
 			//increase remaining capacity since an element just freed up
@@ -203,7 +203,7 @@ uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 			break;
 		}else{
 			prev_hash_val = hash_val;
-			hash_val = (hashtable_value *)hash_val->next_hashtable_value;
+			hash_val = (OS_hashtable_value_t *)hash_val->next_hashtable_value;
 		}
 	}
 	return value;
@@ -212,13 +212,13 @@ uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 /*Returns the content of the first element in the Nth bucket, might be NULL if bucket is empty or
 	if n is larger than the largest bucket index of the hashtable. this function helps 
 	to access all elements stored in the hashtable*/
-const hashtable_value * hashtable_getFirstElementOfNthBucket(OS_hashtable_t * _hashtable, uint32_t _n){
+const OS_hashtable_value_t * hashtable_getFirstElementOfNthBucket(OS_hashtable_t * _hashtable, uint32_t _n){
 	_hashtable->validValueFlag = 0;
 	if(_n > _hashtable->number_of_buckets-1){
 		return NULL;
 	}
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
-	hashtable_value * val = (hashtable_value *)bucket_array[_n];
+	OS_hashtable_value_t * val = (OS_hashtable_value_t *)bucket_array[_n];
 	if(val){
 		_hashtable->validValueFlag = 1;
 		return val;
@@ -234,14 +234,14 @@ const hashtable_value * hashtable_getFirstElementOfNthBucket(OS_hashtable_t * _h
 void DEBUG_printHashtable(OS_hashtable_t * _hashtable){
 	printf("\r\n--------------------------------------------------------------------------\r\n");
 	for(int i =0; i<_hashtable->number_of_buckets;i++){
-		hashtable_value * value = (hashtable_value *)(((uint32_t*)_hashtable)+(sizeof(OS_hashtable_t)/4))[i];
+		OS_hashtable_value_t * value = (OS_hashtable_value_t *)(((uint32_t*)_hashtable)+(sizeof(OS_hashtable_t)/4))[i];
 		printf("BUCKET %d: \r\n",i);
 		while(value){
 			printf("\t\t--- Block %p ---\r\n",value);
 			printf("\t\tkey: %d\r\n",value->key);
 			printf("\t\tnext val: %p\r\n",value->next_hashtable_value);
 			printf("\t\tdata: %p\r\n",value->underlying_data);
-			value = (hashtable_value *)value->next_hashtable_value;
+			value = (OS_hashtable_value_t *)value->next_hashtable_value;
 		}
 	}
 }

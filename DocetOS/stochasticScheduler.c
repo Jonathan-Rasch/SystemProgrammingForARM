@@ -148,11 +148,11 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 	if(systick_rollover_detected_FLAG){
 		/*cycle through all sleeping tasks and adjust their timestamp and remaining time*/
 		for(int bucketInd=0;bucketInd<sleepingTasksHashTable->number_of_buckets;bucketInd++){
-			const hashtable_value * element = hashtable_getFirstElementOfNthBucket(sleepingTasksHashTable,bucketInd);
+			const OS_hashtable_value_t * element = hashtable_getFirstElementOfNthBucket(sleepingTasksHashTable,bucketInd);
 			while(element){
 				OS_TCB_t * sleepingTask = (OS_TCB_t *)element->underlying_data;
 				__updateSleepState(sleepingTask);
-				element = (hashtable_value *)element->next_hashtable_value;
+				element = (OS_hashtable_value_t *)element->next_hashtable_value;
 			}
 		}
 		/*reset flag*/

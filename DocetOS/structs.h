@@ -21,7 +21,7 @@ typedef struct{
 	volatile uint32_t * next_hashtable_value;
 	volatile uint32_t * underlying_data;
 	volatile uint32_t key;
-}hashtable_value;
+}OS_hashtable_value_t;
 
 typedef struct{
 	uint32_t number_of_buckets;
