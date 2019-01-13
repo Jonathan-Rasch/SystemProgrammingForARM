@@ -1,7 +1,7 @@
-#include "../queue.h"
+#include "queue.h"
 #include "os.h"
 #include <stdio.h>
-#include "utils/debug.h"
+#include "debug.h"
 #include "os.h"
 //=============================================================================
 //  new and destroy

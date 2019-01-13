@@ -50,7 +50,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\Flash\</OutputDirectory>
-          <OutputName>DocetOS_sleep_wait</OutputName>
+          <OutputName>DocetOS</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
@@ -384,102 +384,19 @@
           <GroupName>Source Files</GroupName>
           <Files>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>heap.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>simpleRoundRobin.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\simpleRoundRobin.c</FilePath>
-            </File>
-            <File>
-              <FileName>stochasticScheduler.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\stochasticScheduler.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>OS</GroupName>
-          <Files>
-            <File>
-              <FileName>os_asm.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\OS\os_asm.s</FilePath>
-            </File>
-            <File>
-              <FileName>os.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\OS\os.c</FilePath>
+              <FilePath>.\heap.c</FilePath>
             </File>
             <File>
               <FileName>mutex.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\OS\mutex.c</FilePath>
+              <FilePath>.\mutex.c</FilePath>
             </File>
             <File>
-              <FileName>mutex.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\OS\mutex.h</FilePath>
-            </File>
-            <File>
-              <FileName>sleep.c</FileName>
+              <FileName>semaphore.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\OS\sleep.c</FilePath>
-            </File>
-            <File>
-              <FileName>sleep.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\OS\sleep.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Debug</GroupName>
-        </Group>
-        <Group>
-          <GroupName>utils</GroupName>
-          <Files>
-            <File>
-              <FileName>heap.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\utils\heap.c</FilePath>
-            </File>
-            <File>
-              <FileName>retarget.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\utils\retarget.c</FilePath>
-            </File>
-            <File>
-              <FileName>serial.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\utils\serial.c</FilePath>
-            </File>
-            <File>
-              <FileName>hardfault.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\utils\hardfault.c</FilePath>
-            </File>
-            <File>
-              <FileName>memcluster.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\utils\memcluster.c</FilePath>
-            </File>
-            <File>
-              <FileName>memcluster.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\utils\memcluster.h</FilePath>
-            </File>
-            <File>
-              <FileName>hashtable.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\hashtable.c</FilePath>
-            </File>
-            <File>
-              <FileName>hashtable.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\hashtable.h</FilePath>
+              <FilePath>.\semaphore.c</FilePath>
             </File>
             <File>
               <FileName>channel.c</FileName>
@@ -487,14 +404,49 @@
               <FilePath>.\channel.c</FilePath>
             </File>
             <File>
-              <FileName>queue.c</FileName>
+              <FileName>hardfault.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\queue.c</FilePath>
+              <FilePath>.\hardfault.c</FilePath>
             </File>
             <File>
-              <FileName>queue.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\queue.h</FilePath>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>memcluster.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\memcluster.c</FilePath>
+            </File>
+            <File>
+              <FileName>os.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\os.c</FilePath>
+            </File>
+            <File>
+              <FileName>retarget.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\retarget.c</FilePath>
+            </File>
+            <File>
+              <FileName>serial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\serial.c</FilePath>
+            </File>
+            <File>
+              <FileName>stochasticScheduler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stochasticScheduler.c</FilePath>
+            </File>
+            <File>
+              <FileName>os_asm.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\os_asm.s</FilePath>
+            </File>
+            <File>
+              <FileName>hashtable.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hashtable.c</FilePath>
             </File>
             <File>
               <FileName>channelManger.c</FileName>
@@ -502,9 +454,9 @@
               <FilePath>.\channelManger.c</FilePath>
             </File>
             <File>
-              <FileName>semaphore.c</FileName>
+              <FileName>queue.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\OS\semaphore.c</FilePath>
+              <FilePath>.\queue.c</FilePath>
             </File>
           </Files>
         </Group>

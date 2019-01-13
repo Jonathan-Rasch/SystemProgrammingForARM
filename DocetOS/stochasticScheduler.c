@@ -1,5 +1,5 @@
 #include "stochasticScheduler.h"
-#include "../utils/heap.h"
+#include "heap.h"
 #include "mutex.h"
 #include <stdlib.h>
 #include "hashtable.h"

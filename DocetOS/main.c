@@ -1,13 +1,12 @@
 #include "os.h"
-#include "utils/heap.h"
+#include "heap.h"
 #include <stdio.h>
-#include "utils/serial.h"
+#include "serial.h"
 #include "stochasticScheduler.h"
 #include <stdlib.h>
-#include "sleep.h"
 #include "mutex.h"
-#include "../hashtable.h"
-#include "utils/memcluster.h"
+#include "hashtable.h"
+#include "memcluster.h"
 #include "structs.h"
 #include "queue.h"
 #include "channel.h"

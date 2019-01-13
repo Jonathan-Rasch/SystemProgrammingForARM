@@ -5,7 +5,7 @@
 #ifndef DOCETOS_SEMAPHORE_H
 #define DOCETOS_SEMAPHORE_H
 
-#include "../structs.h"
+#include "structs.h"
 #include <stdio.h>
 #include "os_internal.h"
 #include "os.h"

@@ -1,9 +1,8 @@
 #include "hashtable.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "utils/memcluster.h"
+#include "memcluster.h"
 #include "os.h"
-#include "../utils/debug.h"
 /*possible feature list
 -> dont have a fixed size, rehash once X% is filled
 -> protect hshtable via mutex*/

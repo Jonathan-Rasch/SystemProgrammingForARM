@@ -2,7 +2,7 @@
 #define DOCETOS_HASHTABLE_H
 
 #include <stdint.h>
-#include "..\structs.h"
+#include "structs.h"
 
 
 //prototypes

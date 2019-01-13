@@ -2,7 +2,7 @@
 #include "math.h"
 #include <stdio.h>
 #include "stm32f4xx.h"
-#include "../hashtable.h"
+#include "hashtable.h"
 #include "mutex.h"
 
 //================================================================================

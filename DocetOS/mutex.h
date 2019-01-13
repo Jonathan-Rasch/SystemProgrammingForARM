@@ -3,7 +3,7 @@
 
 #include "os.h"
 #include "stm32f4xx.h"
-#include "../structs.h"
+#include "structs.h"
 
 //================================================================================
 // Exported Functions
