@@ -101,13 +101,13 @@ typedef struct{
 	uint32_t volatile * nextMemblock; //pointer to next block, either in pool or in "allocated block linked list" of hashtable
 	uint32_t 			blockSize; // memcluster needs to know to put block back into corresponding pool
 	uint32_t * 			headPtr; // points to first address of memory that the requester can use.
-} memBlock;
+} OS_memBlock_t;
 
 typedef struct{
 	volatile      uint32_t 	freeBlocks;
 	uint32_t 			    blockSize; // does not include ID field and blockSize field, so actual size is blockSize+2 !
 	OS_mutex_t 	* 		    memory_pool_lock;
-	memBlock    * volatile 	firstMemoryBlock;
+	OS_memBlock_t    * volatile 	firstMemoryBlock;
 } memory_pool;
 
 typedef struct {

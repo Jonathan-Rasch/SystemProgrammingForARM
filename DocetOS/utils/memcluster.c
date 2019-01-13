@@ -13,15 +13,15 @@
 static memory_pool pools[5];//array holding memory pools
 static OS_mutex_t pool_locks[5]; //pools get locked when in use
 static OS_mutex_t hashtable_lock;
-static memBlock * allocatedBlocksBuckets[MEMPOOL_HASH_TABLE_BUCKET_NUM];
+static OS_memBlock_t * allocatedBlocksBuckets[MEMPOOL_HASH_TABLE_BUCKET_NUM];
 
 /*PROTOTYPES*/
 //for memory pools
-static void __addBlockToPool(memory_pool *,memBlock *);
-static memBlock * __removeBlockFromPool(memory_pool *);
+static void __addBlockToPool(memory_pool *,OS_memBlock_t *);
+static OS_memBlock_t * __removeBlockFromPool(memory_pool *);
 //for hashtable
-static void __placeBlockIntoBucket(memBlock *);
-static memBlock * __recoverBlockFromBucket(uint32_t * memory_pointer);
+static void __placeBlockIntoBucket(OS_memBlock_t *);
+static OS_memBlock_t * __recoverBlockFromBucket(uint32_t * memory_pointer);
 //for memcluster struct
 static uint32_t * 	allocate		(uint32_t required_size_in_4byte_words);
 static void 				deallocate	(void * memblock_head_ptr);
@@ -35,7 +35,7 @@ void memory_cluster_init(OS_memcluster_t * memory_cluster, uint32_t * memoryArra
 	}
 	/*ensuring that the headPtr address of the memblock is 8byte aligned so
 		that the memcluster can be used to allocate memory for task stacks.*/
-	if(((uint32_t)memoryArray + sizeof(memBlock) % 8 != 0)){
+	if(((uint32_t)memoryArray + sizeof(OS_memBlock_t) % 8 != 0)){
 		memoryArray++;//skip 32bit to ensure alignment
 		memory_Size_in_4byte_words--;
 	}
@@ -60,7 +60,7 @@ void memory_cluster_init(OS_memcluster_t * memory_cluster, uint32_t * memoryArra
 		int pool_idx = counter % numberOfPools;
 		memory_pool * pool = &pools[pool_idx];
 		//check if block fits into remaining memory
-		uint32_t requiredMemoryForBlock = (sizeof(memBlock)/4) + pool->blockSize;
+		uint32_t requiredMemoryForBlock = (sizeof(OS_memBlock_t)/4) + pool->blockSize;
 		/*requiredMemoryForBlock:
 			-> in 4byte words*/
 		if(requiredMemoryForBlock > memory_Size_in_4byte_words){
@@ -73,10 +73,10 @@ void memory_cluster_init(OS_memcluster_t * memory_cluster, uint32_t * memoryArra
 			}
 		}
 		//placing memblock struct into memory, struct is 12 bytes
-		memBlock * blockPtr = (memBlock *)memoryArray;
+		OS_memBlock_t * blockPtr = (OS_memBlock_t *)memoryArray;
 		blockPtr->blockSize = pool->blockSize;
 		blockPtr->nextMemblock = NULL;
-		uint32_t tmp_sizeOfMemblockStruct = (sizeof(memBlock)/4);
+		uint32_t tmp_sizeOfMemblockStruct = (sizeof(OS_memBlock_t)/4);
 		blockPtr->headPtr = memoryArray + tmp_sizeOfMemblockStruct; // 3x32bit words for memBlock struct fields
 		/*updating vars keeping track of remaining memory*/
 		memoryArray = memoryArray+requiredMemoryForBlock;
@@ -154,7 +154,7 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 		}
 	}
 	/*got pool lock on pool with free block(s). store block in hashmap and return pointer to usable memory*/
-	memBlock * block = __removeBlockFromPool(selectedPool);
+	OS_memBlock_t * block = __removeBlockFromPool(selectedPool);
 	OS_mutex_release(selectedPool->memory_pool_lock);
 
 	/*Prevent task A from reading what task B stored in the memblock:
@@ -169,7 +169,7 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 /* "deallocate" checks if the given pointer belongs to an allocated memory block and returns it to its corresponding memory pool should 
 this be the case. Nothing happens (except error message) when a user tries to return a block to the cluster that does not belong to the cluster*/
 static void deallocate(void * memblock_head_ptr){
-	memBlock * block = __recoverBlockFromBucket(memblock_head_ptr);
+	OS_memBlock_t * block = __recoverBlockFromBucket(memblock_head_ptr);
 	if(block == NULL){ // NULL pointer returned, provided memory ptr is not valid
 		return;
 	}
@@ -204,17 +204,17 @@ static void deallocate(void * memblock_head_ptr){
 /*MEMORY POOL RELATED
 these functions assume that a lock for _pool has been obtained PRIOR to them being called!*/
 
-static void __addBlockToPool(memory_pool * _pool,memBlock * _block){
+static void __addBlockToPool(memory_pool * _pool,OS_memBlock_t * _block){
 	_block->nextMemblock = (uint32_t *)_pool->firstMemoryBlock;
 	_pool->firstMemoryBlock = _block;
 	_pool->freeBlocks += 1; 
 }
 
 
-static memBlock * __removeBlockFromPool(memory_pool * _pool){
+static OS_memBlock_t * __removeBlockFromPool(memory_pool * _pool){
 	//retrieve block from pool
-	memBlock * block = _pool->firstMemoryBlock;
-	_pool->firstMemoryBlock = (memBlock *) block->nextMemblock;
+	OS_memBlock_t * block = _pool->firstMemoryBlock;
+	_pool->firstMemoryBlock = (OS_memBlock_t *) block->nextMemblock;
 	block->nextMemblock = NULL;
 	_pool->freeBlocks -= 1;
 	//place into hashtable that keeps track of allocated blocks
@@ -225,38 +225,38 @@ static memBlock * __removeBlockFromPool(memory_pool * _pool){
 /* HASH TABLE RELATED
 lock for the hashtable is aquired when function is called (blocking)*/
 
-static void __placeBlockIntoBucket(memBlock * _block){
+static void __placeBlockIntoBucket(OS_memBlock_t * _block){
 	OS_mutex_acquire(&hashtable_lock);
 	//determine into what bucket to place the block
 	uint32_t hash = djb2_hash((uint32_t)_block->headPtr); // hashing the pointer to memory NOT THE BLOCK PTR! (since that is what task passes to deallocate)
 	uint32_t bucketNumber = hash % MEMPOOL_HASH_TABLE_BUCKET_NUM;
 	//now place into linked list in bucket bucketNumber
-	memBlock * tmp_block = allocatedBlocksBuckets[bucketNumber];
+	OS_memBlock_t * tmp_block = allocatedBlocksBuckets[bucketNumber];
 	allocatedBlocksBuckets[bucketNumber] = _block;
 	_block->nextMemblock = (uint32_t *)tmp_block;
 	OS_mutex_release(&hashtable_lock);
 }
 
-static memBlock * __recoverBlockFromBucket(uint32_t * memory_pointer){
+static OS_memBlock_t * __recoverBlockFromBucket(uint32_t * memory_pointer){
 	OS_mutex_acquire(&hashtable_lock);
 	//determine what bucket the block corresponding to the memory pointer should be in
 	uint32_t hash = djb2_hash((uint32_t)memory_pointer);
 	uint32_t bucketNumber = hash % MEMPOOL_HASH_TABLE_BUCKET_NUM;
 	//now search for a memblock with the given pointer inside that bucket
-	memBlock * blockPtr = allocatedBlocksBuckets[bucketNumber]; // get ptr to first block
-	memBlock * prevBlock = NULL;
+	OS_memBlock_t * blockPtr = allocatedBlocksBuckets[bucketNumber]; // get ptr to first block
+	OS_memBlock_t * prevBlock = NULL;
 	while(blockPtr){//stop when NULL ptr (means no more items in linked list)
 		if(blockPtr->headPtr != memory_pointer){
 			//nope, not this block, try next
 			prevBlock = blockPtr;
-			blockPtr = (memBlock *)blockPtr->nextMemblock;
+			blockPtr = (OS_memBlock_t *)blockPtr->nextMemblock;
 			continue;
 		}
 		// match ! now remove the block from the linked list and return it so that it can be readded to one of the pools
 		if(prevBlock){
 			prevBlock->nextMemblock = blockPtr->nextMemblock;
 		}else{
-			allocatedBlocksBuckets[bucketNumber] = (memBlock *)blockPtr->nextMemblock;
+			allocatedBlocksBuckets[bucketNumber] = (OS_memBlock_t *)blockPtr->nextMemblock;
 		}
 		OS_mutex_release(&hashtable_lock);
 		//__printHashtable();
