@@ -19,45 +19,6 @@ static uint32_t memory[MEMPOOL_SIZE];
 static OS_mutex_t printLock, task5_8Lock;
 static uint32_t taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8 = 0;
 
-//void task1(void const *const args) {
-//	OS_channel_t * channel = OS_channel_connect(1234,16);
-//	while(1){
-//		taskcounter1++;
-//		channel_write(channel,taskcounter1);
-//		printf("\r\nWROTE_1: %d\r\n",taskcounter1);
-//	}
-//}
-
-//void task2(void const *const args) {
-//	OS_channel_t * channel = OS_channel_connect(1234,16);
-//	while(1){
-//		OS_mutex_acquire(&printLock);
-//		uint32_t value = channel_read(channel);
-//		printf("\r\nREAD_2: %d\r\n",value);
-//		OS_mutex_release(&printLock);
-//	}
-//}
-
-//void task3(void const *const args) {
-//	OS_channel_t * channel = OS_channel_connect(1234,16);
-//	taskcounter3 = 999000;
-//	while(1){
-//		taskcounter3++;
-//		channel_write(channel,taskcounter3);
-//		printf("\r\nWROTE_3: %d\r\n",taskcounter3);
-//	}
-//}
-
-//void task4(void const *const args) {
-//	OS_channel_t * channel = OS_channel_connect(1234,16);
-//	while (1) {
-//		OS_mutex_acquire(&printLock);
-//		uint32_t value = channel_read(channel);
-//		printf("\r\nREAD_4: %d\r\n",value);
-//		OS_mutex_release(&printLock);
-//	}
-//}
-
 void task1(void const *const args) {
 	OS_channel_t * channel = OS_channel_connect(1234,16);
 	channel_write(channel,1);
@@ -152,6 +113,7 @@ void task7(void const *const args) {
 }
 
 void task8(void const *const args) {
+	OS_channel_t * channel_task9 = OS_channel_connect(1,16);
 	while (1) {
 		OS_mutex_acquire(&task5_8Lock);
 		for(int i =0; i<100;i++){
@@ -165,6 +127,91 @@ void task8(void const *const args) {
 			taskcounter8++;
 			OS_mutex_acquire(&printLock);
 			printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+			OS_mutex_release(&printLock);
+		}
+	}
+}
+
+void task9(void const *const args) {
+	OS_channel_t * channel = OS_channel_connect(1,8);
+	uint32_t num = 1;
+	while(1){
+		if(num % 2 != 0){
+			channel_write(channel,num);
+		}
+		num++;
+	}
+}
+
+void task10(void const *const args) {
+	OS_channel_t * channel = OS_channel_connect(2,8);
+	uint32_t num = 1;
+	while(1){
+		if(num % 3 != 0){
+			channel_write(channel,num);
+		}
+		num++;
+	}
+}
+
+void task11(void const *const args) {
+	OS_channel_t * channel = OS_channel_connect(3,8);
+	uint32_t num = 1;
+	while(1){
+		if(num % 5 != 0){
+			channel_write(channel,num);
+		}
+		num++;
+	}
+}
+
+void task12(void const *const args) {
+	OS_channel_t * channel = OS_channel_connect(4,8);
+	uint32_t num = 1;
+	while(1){
+		if(num % 7 != 0){
+			channel_write(channel,num);
+		}
+		num++;
+	}
+}
+
+void task13(void const *const args) {
+	OS_channel_t * channel_task9 = OS_channel_connect(1,8);
+	OS_channel_t * channel_task10 = OS_channel_connect(2,8);
+	OS_channel_t * channel_task11 = OS_channel_connect(3,8);
+	OS_channel_t * channel_task12 = OS_channel_connect(4,8);
+	OS_TCB_t * TCB9 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB10 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB11 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB12 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	uint32_t * stack9 = OS_alloc(64);
+	uint32_t * stack10 = OS_alloc(64);
+	uint32_t * stack11 = OS_alloc(64);
+	uint32_t * stack12 = OS_alloc(64);
+	OS_initialiseTCB(TCB9, stack9+64, task9, 0);
+	OS_initialiseTCB(TCB10, stack10+64, task10, 0);
+	OS_initialiseTCB(TCB11, stack11+64, task11, 0);
+	OS_initialiseTCB(TCB12, stack12+64, task12, 0);
+	OS_addTask(TCB9,9);
+	OS_addTask(TCB10,10);
+	OS_addTask(TCB11,11);
+	OS_addTask(TCB12,12);
+	uint32_t readNum1, readNum2, readNum3, readNum4 = 1;
+	while (1) {
+		readNum1 = channel_read(channel_task9);
+		while(readNum2 < readNum1){
+			readNum2 = channel_read(channel_task10);
+		}
+		while(readNum3 < readNum1){
+			readNum3 = channel_read(channel_task11);
+		}
+		while(readNum4 < readNum1){
+			readNum4 = channel_read(channel_task12);
+		}
+		if(readNum1 == readNum2 == readNum3 == readNum4){ //
+			OS_mutex_acquire(&printLock);
+			printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8,readNum1);
 			OS_mutex_release(&printLock);
 		}
 	}
@@ -191,6 +238,7 @@ int main(void) {
 	OS_TCB_t * TCB6 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
 	OS_TCB_t * TCB7 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
 	OS_TCB_t * TCB8 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	OS_TCB_t * TCB13 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
 	uint32_t * stack1 = OS_alloc(64);
 	uint32_t * stack2 = OS_alloc(64);
 	uint32_t * stack3 = OS_alloc(64);
@@ -199,6 +247,7 @@ int main(void) {
 	uint32_t * stack6 = OS_alloc(64);
 	uint32_t * stack7 = OS_alloc(64);
 	uint32_t * stack8 = OS_alloc(64);
+	uint32_t * stack13 = OS_alloc(64);
 	OS_init_mutex(&printLock);
 	OS_init_mutex(&task5_8Lock);
 	
@@ -211,57 +260,7 @@ int main(void) {
 	OS_initialiseTCB(TCB6, stack6+64, task6, 0);
 	OS_initialiseTCB(TCB7, stack7+64, task7, 0);
 	OS_initialiseTCB(TCB8, stack8+64, task8, 0);
-	
-	/*TESTING QUEUE*/
-	OS_queue_t * queue = new_queue(8);
-	ASSERT(queue_isEmpty(queue));
-	ASSERT(!queue_isFull(queue));
-	ASSERT(queue_write(queue,42));
-	ASSERT(!queue_isEmpty(queue));
-	ASSERT(!queue_isFull(queue));
-	ASSERT(queue_write(queue,43));
-	ASSERT(queue_write(queue,44));
-	ASSERT(queue_write(queue,45));
-	ASSERT(queue_write(queue,46));
-	ASSERT(queue_write(queue,47));
-	ASSERT(queue_write(queue,48));
-	ASSERT(!queue_isEmpty(queue));
-	ASSERT(!queue_isFull(queue));
-	ASSERT(queue_write(queue,49));
-	ASSERT(!queue_isEmpty(queue));
-	ASSERT(queue_isFull(queue));
-	ASSERT(!queue_write(queue,50));
-	
-	
-	static uint32_t _return;
-	_return = 40;
-	ASSERT(queue_peekAt(queue,0,&_return) && _return == 42);
-	ASSERT(queue_peekAt(queue,1,&_return) && _return == 43);
-	ASSERT(queue_peekAt(queue,2,&_return) && _return == 44);
-	ASSERT(queue_peekAt(queue,3,&_return) && _return == 45);
-	ASSERT(queue_peekAt(queue,4,&_return) && _return == 46);
-	ASSERT(queue_peekAt(queue,5,&_return) && _return == 47);
-	ASSERT(queue_peekAt(queue,6,&_return) && _return == 48);
-	ASSERT(queue_peekAt(queue,7,&_return) && _return == 49);
-	ASSERT(!queue_peekAt(queue,8,&_return) && _return == 49);
-
-	ASSERT(queue_read(queue,&_return) && _return == 42);
-	ASSERT(!queue_isEmpty(queue));
-	ASSERT(!queue_isFull(queue));
-	ASSERT(queue_peekAt(queue,0,&_return) && _return == 43);
-	ASSERT(queue_read(queue,&_return) && _return == 43);
-	ASSERT(queue_peekAt(queue,1,&_return) && _return == 45);
-	ASSERT(queue_read(queue,&_return) && _return == 44);
-	ASSERT(queue_read(queue,&_return) && _return == 45);
-	ASSERT(queue_read(queue,&_return) && _return == 46);
-	ASSERT(queue_read(queue,&_return) && _return == 47);
-	ASSERT(queue_read(queue,&_return) && _return == 48);
-	ASSERT(!queue_isEmpty(queue));
-	ASSERT(!queue_isFull(queue));
-	ASSERT(queue_read(queue,&_return) && _return == 49);
-	ASSERT(queue_isEmpty(queue));
-	ASSERT(!queue_isFull(queue));
-	ASSERT(!queue_read(queue,&_return) && _return == 49);
+	OS_initialiseTCB(TCB13, stack13+64, task13, 0);
 	
 	OS_addTask(TCB1,5);
 	OS_addTask(TCB2,2);
@@ -271,6 +270,7 @@ int main(void) {
 	OS_addTask(TCB6,6);
 	OS_addTask(TCB7,7);
 	OS_addTask(TCB8,8);
+	OS_addTask(TCB13,13);
 	
 	
 	OS_start();

@@ -69,8 +69,8 @@ void OS_init(OS_Scheduler_t const * scheduler,uint32_t * memory,uint32_t memory_
 	ASSERT(_scheduler->wait_callback);
 	ASSERT(_scheduler->notify_callback);
 	memory_cluster_init(&_memcluster,memory,memory_size); //TODO why &_memcluster ?
-	initialize_scheduler(8);
-	initialize_channelManager(8);
+	initialize_scheduler(16);
+	initialize_channelManager(16);
 }
 
 /* OS_alloc allocates num_32bit_words words of memory if possible.
