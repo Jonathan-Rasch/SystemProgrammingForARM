@@ -14,13 +14,13 @@
 #define NUM_BUCKETS_FOR_WAIT_HASHTABLE 8
 #define WAIT_HASHTABLE_CAPACITY 32
 
-void initialize_scheduler(uint32_t _size_of_heap_node_array);
+void initialize_scheduler(uint32_t _sizeOfHeapNodeArray);
 extern OS_Scheduler_t const stochasticScheduler;
 
 /*externally accessible utility functions. This is useful for checking the state of an arbitrary task*/
-uint32_t isTaskActive(OS_TCB_t * _task);
-uint32_t isTaskSleeping(OS_TCB_t * _task);
-uint32_t isTaskWaiting(OS_TCB_t * _task);
-uint32_t doesTaskExist(OS_TCB_t * _task);
+uint32_t OS_scheduler_isTaskActive(OS_TCB_t * _task);
+uint32_t OS_scheduler_isTaskSleeping(OS_TCB_t * _task);
+uint32_t OS_scheduler_isTaskWaiting(OS_TCB_t * _task);
+uint32_t OS_scheduler_doesTaskExist(OS_TCB_t * _task);
 
 #endif //DOCETOS_stochasticScheduler_H

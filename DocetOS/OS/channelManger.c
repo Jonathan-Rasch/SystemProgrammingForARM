@@ -35,11 +35,11 @@ OS_channelManager_t const channelManager = {
         .isAlive_callback = channelManager_checkAlive
 };
 
-void initialize_channelManager(uint32_t _max_number_of_channels){
-    channelHashTable = new_hashtable(_max_number_of_channels,NUM_BUCKETS_FOR_CHANNELS_HASHTABLE);
-    channelStatusHashTable = new_hashtable(_max_number_of_channels,NUM_BUCKETS_FOR_CHANNELS_HASHTABLE);
+void initialize_channelManager(uint32_t _maxNumberOfChannels){
+    channelHashTable = new_hashtable(_maxNumberOfChannels,NUM_BUCKETS_FOR_CHANNELS_HASHTABLE);
+    channelStatusHashTable = new_hashtable(_maxNumberOfChannels,NUM_BUCKETS_FOR_CHANNELS_HASHTABLE);
 		/*allocating channels*/
-		for(int i=0;i < _max_number_of_channels;i++){
+		for(int i=0;i < _maxNumberOfChannels;i++){
 			OS_channel_t * channel = new_channel(1,MAX_ALLOWED_CHANNEL_CAPACITY);
 			uint32_t * tmp_nextFreeChannel = (uint32_t*)freeChannelsLinkedList;
 			freeChannelsLinkedList = channel;

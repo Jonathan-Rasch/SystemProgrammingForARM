@@ -173,15 +173,6 @@ static void deallocate(void * memblockHeadPtr){
 	if(block == NULL){ // NULL pointer returned, provided memory ptr is not valid
 		return;
 	}
-	/*determine in what pool the block belongs:
-	2^(SMALLEST_BLOCK_SIZE + X ) = B
-		B: block_size
-		X: number such that (X + SMALLEST_BLOCK_SIZE <= LARGEST_BLOCK_SIZE)
-	hence:
-	X = (log(B)/log(2)) - SMALLEST_BLOCK_SIZE
-	
-	TODO: implement when FPU is enabled, for now just cycle through pools
-	TODO: depending on number of pools simply cycling through them might actually be faster (depends on math log implmentation)*/
 	OS_memory_pool_t * pool = NULL;
 	int poolIdx = 0;
 	for(int i = 0;i<NUMBER_OF_POOLS;i++){

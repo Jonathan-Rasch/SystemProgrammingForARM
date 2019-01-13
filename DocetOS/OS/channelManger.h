@@ -9,7 +9,7 @@
 
 #define NUM_BUCKETS_FOR_CHANNELS_HASHTABLE 8
 #define MAX_ALLOWED_CHANNEL_CAPACITY 16
-void initialize_channelManager(uint32_t _max_number_of_channels);
+void initialize_channelManager(uint32_t _maxNumberOfChannels);
 
 extern OS_channelManager_t const channelManager;
 

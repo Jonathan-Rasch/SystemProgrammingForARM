@@ -92,7 +92,7 @@ OS_Scheduler_t const stochasticScheduler = {
         .resourceAcquired_callback =resourceAcquired_callback
 };
 
-void initialize_scheduler(uint32_t _size_of_heap_node_array){
+void initialize_scheduler(uint32_t _sizeOfHeapNodeArray){
 	/* initializing heaps needed to keep track of tasks in various states. Carefull consideration needs to be taken
 	when deciding on the capacity of these hashtables since if they are too small it might prevent wait() and sleep() from working
 	(task cant be removed from heap if there is no space in waitingTasksHashTable_reasonAsKey since the pointer to the TCB would be lost)
@@ -104,8 +104,8 @@ void initialize_scheduler(uint32_t _size_of_heap_node_array){
 	tasksInSchedulerHeapHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	sleepingTasksHashTable = new_hashtable(WAIT_HASHTABLE_CAPACITY,NUM_BUCKETS_FOR_WAIT_HASHTABLE);
 	//other init stuff
-	schedulerHeap = new_heap(_size_of_heap_node_array,1);
-	sleepHeap = new_heap(_size_of_heap_node_array,0);
+	schedulerHeap = new_heap(_sizeOfHeapNodeArray,1);
+	sleepHeap = new_heap(_sizeOfHeapNodeArray,0);
 	srand(OS_elapsedTicks());//pseudo random num, ok since this is not security related so don't really care
 }
 
@@ -691,7 +691,7 @@ static uint32_t __removeIfSleeping(uint32_t _index){
  *
  * RETURNS: 1 if true, 0 otherwise*/
 
-uint32_t isTaskActive(OS_TCB_t * _task){
+uint32_t OS_scheduler_isTaskActive(OS_TCB_t * _task){
 	if(OS_hashtable_get(activeTasksHashTable,(uint32_t)_task)){
 		return 1;
 	}else{
@@ -699,7 +699,7 @@ uint32_t isTaskActive(OS_TCB_t * _task){
 	}
 }
 
-uint32_t isTaskSleeping(OS_TCB_t * _task){
+uint32_t OS_scheduler_isTaskSleeping(OS_TCB_t * _task){
 	if(OS_hashtable_get(sleepingTasksHashTable,(uint32_t)_task)){
 		return 1;
 	}else{
@@ -707,7 +707,7 @@ uint32_t isTaskSleeping(OS_TCB_t * _task){
 	}
 }
 
-uint32_t isTaskWaiting(OS_TCB_t * _task){
+uint32_t OS_scheduler_isTaskWaiting(OS_TCB_t * _task){
 	if(OS_hashtable_get(waitingTasksHashTable_tcbAsKey,(uint32_t)_task)){
 		return 1;
 	}else{
@@ -715,8 +715,8 @@ uint32_t isTaskWaiting(OS_TCB_t * _task){
 	}
 }
 
-uint32_t doesTaskExist(OS_TCB_t * _task){
-	if(isTaskActive(_task) || isTaskSleeping(_task) || isTaskWaiting(_task)){
+uint32_t OS_scheduler_doesTaskExist(OS_TCB_t * _task){
+	if(OS_scheduler_isTaskActive(_task) || OS_scheduler_isTaskSleeping(_task) || OS_scheduler_isTaskWaiting(_task)){
 		return 1;
 	}else{
 		return 0;
