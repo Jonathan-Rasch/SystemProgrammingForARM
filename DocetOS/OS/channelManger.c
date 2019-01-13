@@ -83,7 +83,7 @@ static OS_channel_t * channelManager_connect(uint32_t _channelID,uint32_t _capac
             /*yes a channel exists, return it after updating the channel status*/
             uint32_t num_connections = (uint32_t)hashtable_remove(channelStatusHashTable,_channelID);
             num_connections += 1;
-            hashtable_put(channelStatusHashTable,_channelID,(uint32_t*)num_connections,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+            OS_hashtable_put(channelStatusHashTable,_channelID,(uint32_t*)num_connections,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
             return channel;
         }
     }
@@ -96,8 +96,8 @@ static OS_channel_t * channelManager_connect(uint32_t _channelID,uint32_t _capac
     }
 		channel_init(newChannel,_channelID,_capacity);//reset the channel (clear values set by previous usage of this channel struct);
     /*at this point we have a valid channel, now we add it to the hashtable*/
-    hashtable_put(channelHashTable,_channelID,(uint32_t *)newChannel,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-    hashtable_put(channelStatusHashTable,_channelID,(uint32_t*)1,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);//one task connected to channel
+    OS_hashtable_put(channelHashTable,_channelID,(uint32_t *)newChannel,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+    OS_hashtable_put(channelStatusHashTable,_channelID,(uint32_t*)1,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);//one task connected to channel
     return newChannel;
 }
 
@@ -125,7 +125,7 @@ static uint32_t channelManager_disconnect(uint32_t _channelID){
     uint32_t num_connections = (uint32_t)hashtable_remove(channelStatusHashTable,_channelID);
     num_connections -= 1;
     if(num_connections){
-        hashtable_put(channelStatusHashTable,_channelID,(uint32_t *)num_connections,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+        OS_hashtable_put(channelStatusHashTable,_channelID,(uint32_t *)num_connections,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
         return 1;
     }else{
         /*no more connections, put channel back into linked list of free channels*/

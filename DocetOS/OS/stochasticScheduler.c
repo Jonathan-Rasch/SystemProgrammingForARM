@@ -274,8 +274,8 @@ static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_prior
 		return;
 	}
 	tcb->priority = task_priority;
-	hashtable_put(activeTasksHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-	hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+	OS_hashtable_put(activeTasksHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+	OS_hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 	if ( addNode(schedulerHeap,tcb,task_priority)) {
 		/*HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY prevent the same task (TCB=key) being added multiple times to the scheduler */
 		#ifdef stochasticScheduler_DEBUG
@@ -322,7 +322,7 @@ static void stochasticScheduler_waitCallback(void * const _reason, uint32_t chec
 		printf("\u001b[0m");
 		ASSERT(0);
 	}
-	if(!hashtable_put(waitingTasksHashTable_reasonAsKey,(uint32_t)_reason,(uint32_t *)currentTCB,HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY)){
+	if(!OS_hashtable_put(waitingTasksHashTable_reasonAsKey,(uint32_t)_reason,(uint32_t *)currentTCB,HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY)){
 		printf("\u001b[31m\r\nSCHEDULER: ERROR, task %p requested wait for %p , but it could not be added to the waitingTasksHashTable_reasonAsKey!\r\n",currentTCB,_reason);
 		DEBUG_hashTableState();
 		DEBUG_heapState();
@@ -330,7 +330,7 @@ static void stochasticScheduler_waitCallback(void * const _reason, uint32_t chec
 		ASSERT(0);
 	}else{
 		/*mirroring waitingTaskHashTable_reasonAsKey*/
-		hashtable_put(waitingTasksHashTable_tcbAsKey,(uint32_t )currentTCB,(uint32_t *)_reason,HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY);
+		OS_hashtable_put(waitingTasksHashTable_tcbAsKey,(uint32_t )currentTCB,(uint32_t *)_reason,HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY);
 	}
 	/*HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY because mutex is used as key, and the same task is allowed to wait on more than one mutex in theory,
 	but the same task cannot wait multiple times on the same mutex*/
@@ -356,7 +356,7 @@ static void stochasticScheduler_notifyCallback(void * const reason){
 		if(task == NULL){
 			break; /*no task was waiting for _reason, this is normal behaviour*/
 		}
-		if(hashtable_put(activeTasksHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
+		if(OS_hashtable_put(activeTasksHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
 			task->state &= ~TASK_STATE_WAIT;
 		}else{
 			printf("\u001b[31m\r\nSCHEDULER: ERROR, unable to add task %p which was previously waiting back to activeTasksHashTable!\r\n",task);
@@ -366,12 +366,12 @@ static void stochasticScheduler_notifyCallback(void * const reason){
 			ASSERT(0);
 		}
 		
-		/*if the hashtable_put(tasksInSchedulerHeapHashTable...) below fails (returns 0) that is expected behaviour. It simply means that a task
+		/*if the OS_hashtable_put(tasksInSchedulerHeapHashTable...) below fails (returns 0) that is expected behaviour. It simply means that a task
 		requested wait but that it was never removed from the schedulerHeap because the scheduler did not come accross that node in the heap
 		when searching for the next task to select (and therefore did not have a chance to remove it from the heap). */
-		if(hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
+		if(OS_hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
 			/*tcb was added to "tasksInSchedulerHeapHashTable" meaning that it currently is not in the heap (if it had never been removed from the heap
-			the hashtable_put operation would have returned 0 when attempting to add it again), hence add it*/
+			the OS_hashtable_put operation would have returned 0 when attempting to add it again), hence add it*/
 			if(task->inheritedPriority)
                 addNode(schedulerHeap,task,task->inheritedPriority);
             else{
@@ -415,7 +415,7 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 		tcb->data = OS_elapsedTicks(); /*what time did the task request the sleep ? needed to check if
 		the task should wake up.*/
 		tcb->data2 = min_sleep_duration;/*used to keep track of the remaining sleep duration*/
-		hashtable_put(sleepingTasksHashTable,(uint32_t) tcb,(uint32_t*) tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+		OS_hashtable_put(sleepingTasksHashTable,(uint32_t) tcb,(uint32_t*) tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 		/*task is not removed from the heap, this is done inside the scheduler callback should the scheduler try to run
 		a task that is in the sleep state.*/
 	}else{
@@ -638,9 +638,9 @@ static uint32_t __updateSleepState(OS_TCB_t * task){
 	if(remainingTime <= deltaTime){
 		/*yes update hash tables to reflect its new state*/
 		hashtable_remove(sleepingTasksHashTable,(uint32_t)task);
-		hashtable_put(activeTasksHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+		OS_hashtable_put(activeTasksHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 		/*add the task back to the schedulerHeap should it not already be in there*/
-		if(hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
+		if(OS_hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
             if(task->inheritedPriority)
                 addNode(schedulerHeap,task,task->inheritedPriority);
             else{

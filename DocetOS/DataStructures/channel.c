@@ -1,9 +1,10 @@
 #include "channel.h"
 
 //=============================================================================
-// init and destroy
+// init, new and destroy
 //=============================================================================
 
+/*channel_init */
 void channel_init(OS_channel_t * channel,uint32_t _channelID,uint32_t _capacity){
 	channel->capacity = _capacity;
 	channel->channelID = _channelID;
@@ -18,7 +19,7 @@ void channel_init(OS_channel_t * channel,uint32_t _channelID,uint32_t _capacity)
 	channel->queue->maxCapacity = _capacity;
 }
 
-/* new_channel allocates and initialises a channel that can be used for inter task communication
+/* new_channel allocates and initialises a channel that can be used for inter-task communication
  * RETURNS: OS_channel_t pointer if successful, returns NULL otherwise.*/
 OS_channel_t * new_channel(uint32_t _channelID, uint32_t _capacity){
     OS_channel_t * newChannel = OS_alloc(sizeof(OS_channel_t)/4);
@@ -47,7 +48,7 @@ OS_channel_t * new_channel(uint32_t _channelID, uint32_t _capacity){
     return newChannel;
 }
 
-/*frees all resources associated with the queue*/
+/*destroy_channel frees all resources associated with the channel*/
 uint32_t destroy_channel(OS_channel_t * _channel){
     destroy_semaphore(_channel->writeTokens);
     destroy_semaphore(_channel->readTokens);
@@ -61,6 +62,8 @@ uint32_t destroy_channel(OS_channel_t * _channel){
 // functions
 //=============================================================================
 
+/*channel_write places _word into the channel. If the channel is full or if another task is currently using the
+ * channel (read or write) the task will block on this method.*/
 void channel_write(OS_channel_t * _channel, uint32_t _word){
     /*first need to get write token. if a token is available it means that there is space in the queue.*/
     semaphore_acquire_token(_channel->writeTokens);
@@ -73,6 +76,8 @@ void channel_write(OS_channel_t * _channel, uint32_t _word){
     OS_mutex_release(_channel->queueLock);
 }
 
+/*channel_read reads one 32-bit word from the channel. If the channel is empty or currently in use the task will block
+ * on this method.*/
 uint32_t channel_read(OS_channel_t * _channel){
     /*first need to get read token. if a token is available it means that there is data in the queue.*/
     semaphore_acquire_token(_channel->readTokens);

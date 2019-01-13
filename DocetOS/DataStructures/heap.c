@@ -76,7 +76,7 @@ uint32_t addNode(OS_minHeap_t * _heap, void * const _element_to_add, const uint3
 	/*add new node to content index hash table if applicable*/
 	if(_heap->nodeContentIndexHashTable){
     hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent);
-		hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent,(uint32_t*)currentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+		OS_hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent,(uint32_t*)currentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 	}
 	while(currentNodeIndex){
 		uint32_t parentNodeIndex = __getParentIndex(currentNodeIndex);
@@ -97,8 +97,8 @@ uint32_t addNode(OS_minHeap_t * _heap, void * const _element_to_add, const uint3
 					DEBUG_printHashtable(_heap->nodeContentIndexHashTable);
 					ASSERT(0);
 				}
-				hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent,(uint32_t*)parentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-        hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)parentNode->ptrToNodeContent,(uint32_t*)currentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+				OS_hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent,(uint32_t*)parentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+        OS_hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)parentNode->ptrToNodeContent,(uint32_t*)currentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 				
 			}
 			/*do the swap*/
@@ -215,7 +215,7 @@ static void __heapDown(OS_minHeap_t * _heap,uint32_t _index_of_node_to_remove){
 		OS_minHeapNode_t nodeToRemove = _heap->ptrToUnderlyingArray[_index_of_node_to_remove];
 		uint32_t * ret1 = hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)lowestIdxNode.ptrToNodeContent);
 		uint32_t * ret2 = hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)nodeToRemove.ptrToNodeContent);
-		uint32_t ret3 = hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)lowestIdxNode.ptrToNodeContent,(uint32_t*)_index_of_node_to_remove, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+		uint32_t ret3 = OS_hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)lowestIdxNode.ptrToNodeContent,(uint32_t*)_index_of_node_to_remove, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 	}
 	//swapping, inserting lowest node at index _index_of_node_to_remove
 	_heap->ptrToUnderlyingArray[_index_of_node_to_remove] = _heap->ptrToUnderlyingArray[elemIdx];
@@ -256,8 +256,8 @@ static void __heapDown(OS_minHeap_t * _heap,uint32_t _index_of_node_to_remove){
 				OS_minHeapNode_t childNode = _heap->ptrToUnderlyingArray[smallerChildIdx];
 				hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)currentNode.ptrToNodeContent);
 				hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)childNode.ptrToNodeContent);
-				hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)currentNode.ptrToNodeContent,(uint32_t*)smallerChildIdx, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-				hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)childNode.ptrToNodeContent,(uint32_t*)elemIdx, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+				OS_hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)currentNode.ptrToNodeContent,(uint32_t*)smallerChildIdx, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+				OS_hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)childNode.ptrToNodeContent,(uint32_t*)elemIdx, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 			}
 			/*swap*/
 			_heap->ptrToUnderlyingArray[elemIdx] = _heap->ptrToUnderlyingArray[smallerChildIdx];

@@ -10,37 +10,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2baeb46-297d-47e8-b8b0-469489949f26" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/DocetOS/DocetOS_sleep_wait.uvoptx" afterPath="$PROJECT_DIR$/DocetOS/DocetOS_sleep_wait.uvoptx" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/DocetOS_sleep_wait.uvprojx" afterPath="$PROJECT_DIR$/DocetOS/DocetOS_sleep_wait.uvprojx" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/mutex.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/mutex.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/os.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/os.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/os_asm.s" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/os_internal.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/semaphore.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/semaphore.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/sleep.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/sleep.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/task.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/hashtable.c" afterPath="$PROJECT_DIR$/DocetOS/hashtable.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/hashtable.h" afterPath="$PROJECT_DIR$/DocetOS/hashtable.h" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/main.c" afterPath="$PROJECT_DIR$/DocetOS/main.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/queue.c" afterPath="$PROJECT_DIR$/DocetOS/queue.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/simpleRoundRobin.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/simpleRoundRobin.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/stochasticScheduler.c" afterPath="$PROJECT_DIR$/DocetOS/stochasticScheduler.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/debug.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/hardfault.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/hashmap.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/hashmap.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/heap.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/heap.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/memcluster.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/memcluster.h" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/retarget.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/serial.c" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/utils/serial.h" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/channel.c" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/channel.c" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/Flash/DocetOS.htm" afterPath="$PROJECT_DIR$/DocetOS/Flash/DocetOS.htm" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/Flash/DocetOS.map" afterPath="$PROJECT_DIR$/DocetOS/Flash/DocetOS.map" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/OS/channelManger.c" afterPath="$PROJECT_DIR$/DocetOS/OS/channelManger.c" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" afterPath="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -62,106 +39,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="stochasticScheduler.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/stochasticScheduler.c">
+      <file leaf-file-name="hashtable.c" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="884">
-              <caret line="52" column="0" lean-forward="false" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
-              <folding>
-                <marker date="1547400500068" expanded="true" signature="4842:6066" ph="{...}" />
-                <marker date="1547400500068" expanded="true" signature="29672:29951" ph="{...}" />
-                <marker date="1547400500068" expanded="true" signature="30231:31432" ph="{...}" />
-                <marker date="1547400500068" expanded="true" signature="34096:34595" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="stochasticScheduler.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/stochasticScheduler.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="187">
+              <caret line="86" column="25" lean-forward="false" selection-start-line="86" selection-start-column="9" selection-end-line="86" selection-end-column="25" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="structs.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/structs.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1598">
-              <caret line="94" column="0" lean-forward="false" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="task.h" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/DocetOS/task.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="21" column="25" lean-forward="true" selection-start-line="21" selection-start-column="25" selection-end-line="21" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="queue.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/queue.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="retarget.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/retarget.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="semaphore.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/semaphore.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="semaphore.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/semaphore.h">
+      <file leaf-file-name="hashtable.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="238">
-              <caret line="14" column="14" lean-forward="false" selection-start-line="14" selection-start-column="14" selection-end-line="14" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="serial.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/serial.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="serial.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/serial.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <caret line="14" column="51" lean-forward="false" selection-start-line="14" selection-start-column="51" selection-end-line="14" selection-end-column="51" />
               <folding />
             </state>
           </provider>
@@ -194,11 +86,16 @@
       <find>hashtable_value</find>
       <find>memblock_head_ptr</find>
       <find>memory_pool</find>
+      <find>hashtable_put</find>
     </findStrings>
     <replaceStrings>
       <replace>OS_hashtable_value_t</replace>
       <replace>memblockHeadPtr</replace>
       <replace>OS_memory_pool_t</replace>
+      <replace>hashVal</replace>
+      <replace>prevHashVal</replace>
+      <replace>bucketArray</replace>
+      <replace>OS_hashtable_put</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -226,6 +123,9 @@
         <option value="$PROJECT_DIR$/DocetOS/hashtable.c" />
         <option value="$PROJECT_DIR$/DocetOS/memcluster.c" />
         <option value="$PROJECT_DIR$/DocetOS/queue.c" />
+        <option value="$PROJECT_DIR$/DocetOS/DataStructures/channel.c" />
+        <option value="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h" />
+        <option value="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c" />
       </list>
     </option>
   </component>
@@ -267,6 +167,18 @@
               <item name="SystemProgrammingForARM" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
               <item name="SystemProgrammingForARM" type="462c0819:PsiDirectoryNode" />
               <item name="DocetOS" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SystemProgrammingForARM" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
+              <item name="SystemProgrammingForARM" type="462c0819:PsiDirectoryNode" />
+              <item name="DocetOS" type="462c0819:PsiDirectoryNode" />
+              <item name="DataStructures" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SystemProgrammingForARM" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
+              <item name="SystemProgrammingForARM" type="462c0819:PsiDirectoryNode" />
+              <item name="DocetOS" type="462c0819:PsiDirectoryNode" />
+              <item name="OS" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -313,7 +225,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="43761000" />
+    <option name="totallyTimeSpent" value="45665000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -382,50 +294,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/DocetOS/stochasticScheduler.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6783">
-          <caret line="399" column="79" lean-forward="false" selection-start-line="399" selection-start-column="79" selection-end-line="399" selection-end-column="79" />
-          <folding>
-            <marker date="1547400500068" expanded="true" signature="4842:6066" ph="{...}" />
-            <marker date="1547400500068" expanded="true" signature="29672:29951" ph="{...}" />
-            <marker date="1547400500068" expanded="true" signature="30231:31432" ph="{...}" />
-            <marker date="1547400500068" expanded="true" signature="34096:34595" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/structs.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1156">
-          <caret line="68" column="32" lean-forward="false" selection-start-line="68" selection-start-column="22" selection-end-line="68" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4199">
-          <caret line="247" column="32" lean-forward="false" selection-start-line="247" selection-start-column="32" selection-end-line="247" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/utils/memcluster.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/channel.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -516,9 +384,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1377">
           <caret line="81" column="4" lean-forward="false" selection-start-line="81" selection-start-column="4" selection-end-line="81" selection-end-column="4" />
-          <folding>
-            <marker date="1547158605047" expanded="true" signature="992:2004" ph="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -526,9 +392,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
           <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-          <folding>
-            <element signature="e#53#73#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -624,14 +488,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="6" column="10" lean-forward="false" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -760,12 +616,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="884">
           <caret line="52" column="0" lean-forward="false" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
-          <folding>
-            <marker date="1547400500068" expanded="true" signature="4842:6066" ph="{...}" />
-            <marker date="1547400500068" expanded="true" signature="29672:29951" ph="{...}" />
-            <marker date="1547400500068" expanded="true" signature="30231:31432" ph="{...}" />
-            <marker date="1547400500068" expanded="true" signature="34096:34595" ph="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -789,6 +640,54 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="21" column="25" lean-forward="true" selection-start-line="21" selection-start-column="25" selection-end-line="21" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/channelManger.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/channel.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="850">
+          <caret line="50" column="18" lean-forward="false" selection-start-line="50" selection-start-column="18" selection-end-line="50" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/channel.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="51" lean-forward="false" selection-start-line="14" selection-start-column="51" selection-end-line="14" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="86" column="25" lean-forward="false" selection-start-line="86" selection-start-column="9" selection-end-line="86" selection-end-column="25" />
           <folding />
         </state>
       </provider>
