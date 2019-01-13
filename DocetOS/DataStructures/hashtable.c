@@ -122,7 +122,7 @@ uint32_t OS_hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * 
 }
 
 /* retrieves the value at given key, if no value present in table NULL is returned and validValueFlag is set to 0*/
-uint32_t * hashtable_get(OS_hashtable_t * _hashtable, uint32_t _key){
+uint32_t * OS_hashtable_get(OS_hashtable_t * _hashtable, uint32_t _key){
     _hashtable->validValueFlag = 0;
     /*determine bucket*/
     uint32_t bucket_number = djb2_hash(_key) % _hashtable->numberOfBuckets;
@@ -145,7 +145,7 @@ uint32_t * hashtable_get(OS_hashtable_t * _hashtable, uint32_t _key){
 /* This function allows the retrieval of multiple values stored under the same key by setting the value _n.
  * when _n is 0 this function returns the first instance with _key, when _n is 1 it returns the second etc.
  * when no _nth instance with _key exists NULL is returned AND validValueFlag REMAINS 0*/
-uint32_t * hashtable_getNthValueAtKey(OS_hashtable_t * _hashtable, uint32_t _key, uint32_t _n){
+uint32_t * OS_hashtable_getNthValueAtKey(OS_hashtable_t * _hashtable, uint32_t _key, uint32_t _n){
     _hashtable->validValueFlag = 0;
     /*determine bucket*/
     uint32_t bucket_number = djb2_hash(_key) % _hashtable->numberOfBuckets;
@@ -172,7 +172,7 @@ uint32_t * hashtable_getNthValueAtKey(OS_hashtable_t * _hashtable, uint32_t _key
 
 /* retrieves the value associated with "key" then REMOVES IT FROM THE HASHTABLE. If no value is associated
 with "key" NULL is returned*/
-uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
+uint32_t * OS_hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 	_hashtable->validValueFlag = 0;
 	/*determine bucket*/
 	uint32_t bucket_number = djb2_hash(_key) % _hashtable->numberOfBuckets;
@@ -212,7 +212,7 @@ uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 /*Returns the content of the first element in the Nth bucket, might be NULL if bucket is empty or
 	if n is larger than the largest bucket index of the hashtable. this function helps 
 	to access all elements stored in the hashtable*/
-const OS_hashtable_value_t * hashtable_getFirstElementOfNthBucket(OS_hashtable_t * _hashtable, uint32_t _n){
+const OS_hashtable_value_t * OS_hashtable_getFirstElementOfNthBucket(OS_hashtable_t * _hashtable, uint32_t _n){
 	_hashtable->validValueFlag = 0;
 	if(_n > _hashtable->numberOfBuckets-1){
 		return NULL;

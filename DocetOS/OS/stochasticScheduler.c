@@ -148,7 +148,7 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 	if(systick_rollover_detected_FLAG){
 		/*cycle through all sleeping tasks and adjust their timestamp and remaining time*/
 		for(int bucketInd=0;bucketInd<sleepingTasksHashTable->numberOfBuckets;bucketInd++){
-			const OS_hashtable_value_t * element = hashtable_getFirstElementOfNthBucket(sleepingTasksHashTable,bucketInd);
+			const OS_hashtable_value_t * element = OS_hashtable_getFirstElementOfNthBucket(sleepingTasksHashTable,bucketInd);
 			while(element){
 				OS_TCB_t * sleepingTask = (OS_TCB_t *)element->underlyingData;
 				__updateSleepState(sleepingTask);
@@ -168,7 +168,7 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 	later in the scheduler function.*/
 	void * sleepingTask;
 	while(1){
-		if(!removeNode(sleepHeap,&sleepingTask)){
+		if(!OS_heap_removeNode(sleepHeap,&sleepingTask)){
 			break;/*No nodes on the heap to wake*/
 		}
 		//sleepingTask now points to task from sleepHeap with lowest remaining sleep time
@@ -176,7 +176,7 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 			/*task still asleep add it back to the sleep heap with updated priority. since the priority in the sleep heap is given
 			by the tasks remaining sleep time we can stop here. If this task (which was at the top of the heap)
 			is still sleeping then all others will also be still asleep*/
-			addNode(sleepHeap,sleepingTask,((OS_TCB_t*)sleepingTask)->data2);
+			OS_heap_addNode(sleepHeap,sleepingTask,((OS_TCB_t*)sleepingTask)->data2);
 			break;
 		}
 	}	
@@ -226,9 +226,9 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 			/*current node not selected (randNodeSelection != 0), one of its children has been selected. check if node has valid child node*/
 			int nextNodeIdx;
 			if(randNodeSelection == 1){//left child
-				nextNodeIdx = getFirstChildIndex(nodeIndex);
+				nextNodeIdx = OS_heap_getFirstChildIndex(nodeIndex);
 			}else{//right child
-				nextNodeIdx = getSecondChildIndex(nodeIndex);
+				nextNodeIdx = OS_heap_getSecondChildIndex(nodeIndex);
 			}
 			//check if selected child is valid node
 			if (nextNodeIdx <= maxValidHeapIdx){
@@ -276,7 +276,7 @@ static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_prior
 	tcb->priority = task_priority;
 	OS_hashtable_put(activeTasksHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 	OS_hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-	if ( addNode(schedulerHeap,tcb,task_priority)) {
+	if ( OS_heap_addNode(schedulerHeap,tcb,task_priority)) {
 		/*HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY prevent the same task (TCB=key) being added multiple times to the scheduler */
 		#ifdef stochasticScheduler_DEBUG
 			printf("TASK ADDED: %p %d\r\n",tcb,task_priority);
@@ -315,7 +315,7 @@ static void stochasticScheduler_waitCallback(void * const _reason, uint32_t chec
 	//printf("\r\nINFO: task %p starting to wait for %p ...\r\n",OS_currentTCB(),_reason);
 	/*add current task to the waiting hash_table*/
 	OS_TCB_t * currentTCB = OS_currentTCB();
-	if(hashtable_remove(activeTasksHashTable,(uint32_t)currentTCB) == NULL){
+	if(OS_hashtable_remove(activeTasksHashTable,(uint32_t)currentTCB) == NULL){
 		printf("\u001b[31m\r\nSCHEDULER: ERROR, task %p requested wait for %p , but it is not an active task!\r\n",currentTCB,_reason);
 		DEBUG_hashTableState();
 		DEBUG_heapState();
@@ -350,9 +350,9 @@ static void stochasticScheduler_notifyCallback(void * const reason){
 		return;//during initialisation locks are released calling notify, but hash table is not created yet
 	}
 	while(1){
-		OS_TCB_t * task = (OS_TCB_t*)hashtable_remove(waitingTasksHashTable_reasonAsKey,(uint32_t)reason);
+		OS_TCB_t * task = (OS_TCB_t*)OS_hashtable_remove(waitingTasksHashTable_reasonAsKey,(uint32_t)reason);
 		/*mirroring waitingTasksHashTable_reasonAsKey content*/
-		hashtable_remove(waitingTasksHashTable_tcbAsKey,(uint32_t)task);
+		OS_hashtable_remove(waitingTasksHashTable_tcbAsKey,(uint32_t)task);
 		if(task == NULL){
 			break; /*no task was waiting for _reason, this is normal behaviour*/
 		}
@@ -373,9 +373,9 @@ static void stochasticScheduler_notifyCallback(void * const reason){
 			/*tcb was added to "tasksInSchedulerHeapHashTable" meaning that it currently is not in the heap (if it had never been removed from the heap
 			the OS_hashtable_put operation would have returned 0 when attempting to add it again), hence add it*/
 			if(task->inheritedPriority)
-                addNode(schedulerHeap,task,task->inheritedPriority);
+                OS_heap_addNode(schedulerHeap,task,task->inheritedPriority);
             else{
-                addNode(schedulerHeap,task,task->priority);
+                OS_heap_addNode(schedulerHeap,task,task->priority);
             }
 		}
 	}
@@ -408,7 +408,7 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 	if(min_sleep_duration == 0){
 		return;
 	}
-	if(hashtable_remove(activeTasksHashTable,(uint32_t)tcb)){
+	if(OS_hashtable_remove(activeTasksHashTable,(uint32_t)tcb)){
 		/*set task state so that the scheduler can identify tasks that requested sleep and check if this
 		condition still applies*/
 		tcb->state |= TASK_STATE_SLEEP;
@@ -419,7 +419,7 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 		/*task is not removed from the heap, this is done inside the scheduler callback should the scheduler try to run
 		a task that is in the sleep state.*/
 	}else{
-		/*hashtable_remove returned NULL meaning that no element with the given key was present*/
+		/*OS_hashtable_remove returned NULL meaning that no element with the given key was present*/
 		printf("\u001b[31m\r\nSCHEDULER: ERROR task %p called sleep, but it is not in the activeTasks HashTable!\r\n",tcb);
 		DEBUG_hashTableState();
 		DEBUG_heapState();
@@ -438,7 +438,7 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
     /*loop through all mutexes owned by the given task and determine the highest priority that the task should iinherit*/
     while (acquiredMutex){
         uint32_t instanceCounter = 0;
-        OS_TCB_t * taskWaitingOnMutex = (OS_TCB_t *)hashtable_getNthValueAtKey(waitingTasksHashTable_reasonAsKey,(uint32_t)acquiredMutex,instanceCounter);
+        OS_TCB_t * taskWaitingOnMutex = (OS_TCB_t *)OS_hashtable_getNthValueAtKey(waitingTasksHashTable_reasonAsKey,(uint32_t)acquiredMutex,instanceCounter);
         /*loop through all tasks waiting on this mutex and determine what the highest priority of the waiting tasks is*/
         while(waitingTasksHashTable_reasonAsKey->validValueFlag){
             //REMEMBER, minheap so larger value means less priority
@@ -447,41 +447,41 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
                 highestPriority = waitingTaskMaxPriority;
             }
             instanceCounter++;
-            taskWaitingOnMutex = (OS_TCB_t *)hashtable_getNthValueAtKey(waitingTasksHashTable_reasonAsKey,(uint32_t)acquiredMutex,instanceCounter);
+            taskWaitingOnMutex = (OS_TCB_t *)OS_hashtable_getNthValueAtKey(waitingTasksHashTable_reasonAsKey,(uint32_t)acquiredMutex,instanceCounter);
         }
         acquiredMutex = acquiredMutex->nextAcquiredResource;
     }
     /*having determined the priority to inherit set it and move the task to the correct index in the heap (if it is part
      * of the scheduler heap at this point in time)*/
-		uint32_t isActiveAndInHeap = hashtable_get(tasksInSchedulerHeapHashTable,(uint32_t)task) && tasksInSchedulerHeapHashTable->validValueFlag;
+		uint32_t isActiveAndInHeap = OS_hashtable_get(tasksInSchedulerHeapHashTable,(uint32_t)task) && tasksInSchedulerHeapHashTable->validValueFlag;
     if(highestPriority < task->priority ){
         task->prevInheritedPriority = task->inheritedPriority;
         task->inheritedPriority = highestPriority;
     }else{
 				if(task->inheritedPriority && isActiveAndInHeap){//if true it means that the task was running under inherited priority previously
 					/*remove and re-add task to reset priority*/
-					uint32_t taskHeapIndex = indexOfContent(schedulerHeap,(uint32_t)task);
+					uint32_t taskHeapIndex = OS_heap_indexOfContent(schedulerHeap,(uint32_t)task);
 					void * removedTask;
-					removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
+					OS_heap_removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
 					if(removedTask != task){
             printf("SCHEDULER: ERROR during priority inheritance reset, taskHeapIndex is incorrect!");
             ASSERT(0);
 					}
-					addNode(schedulerHeap,task,task->priority);
+					OS_heap_addNode(schedulerHeap,task,task->priority);
 					//printf("\r\ntask %p that inherited priority %d reset to %d\r\n",task,task->inheritedPriority,task->priority);
 				}
         task->inheritedPriority = 0;//nothing inherited
     }
 		/*remove and re-add the task to the heap with the inherited priority*/
     if(isActiveAndInHeap && task->inheritedPriority && task->prevInheritedPriority != task->inheritedPriority){
-        uint32_t taskHeapIndex = indexOfContent(schedulerHeap,(uint32_t)task);
+        uint32_t taskHeapIndex = OS_heap_indexOfContent(schedulerHeap,(uint32_t)task);
         void * removedTask;
-				removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
+				OS_heap_removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
         if(removedTask != task){
             printf("SCHEDULER: ERROR during priority inheritance, taskHeapIndex is incorrect!");
             ASSERT(0);
         }
-        addNode(schedulerHeap,task,task->inheritedPriority);
+        OS_heap_addNode(schedulerHeap,task,task->inheritedPriority);
 				//printf("\r\ntask %p with priority %d inherited priority %d \r\n",task,task->priority,task->inheritedPriority);
     }
 }
@@ -563,8 +563,8 @@ static void * removedWaitingNode;
 static uint32_t __removeIfWaiting(uint32_t _index){
 	OS_TCB_t * task = schedulerHeap->ptrToUnderlyingArray[_index].ptrToNodeContent;
 	if(task->state & TASK_STATE_WAIT){
-		removeNodeAt(schedulerHeap,_index,&removedWaitingNode);
-		hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
+		OS_heap_removeNodeAt(schedulerHeap,_index,&removedWaitingNode);
+		OS_hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
 		return 1;
 	}else{
 		return 0;
@@ -592,9 +592,9 @@ static uint32_t __removeIfExit(uint32_t _index){
 	}else if(task->state & (TASK_STATE_EXIT)){
 		/*task tcb pointer will only be present in schedulerHeap, tasksInSchedulerHeapHashTable, activeTasksHashTable. Removing
 		it there will cause the task to vanish*/
-		removeNodeAt(schedulerHeap,_index,&removedNode);
-		hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
-		hashtable_remove(activeTasksHashTable,(uint32_t)task);
+		OS_heap_removeNodeAt(schedulerHeap,_index,&removedNode);
+		OS_hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
+		OS_hashtable_remove(activeTasksHashTable,(uint32_t)task);
 //		DEBUG_hashTableState();
 //		DEBUG_heapState();
 //		printf("\u001b[0m");
@@ -637,14 +637,14 @@ static uint32_t __updateSleepState(OS_TCB_t * task){
 	/*now determine if the task should wake up*/
 	if(remainingTime <= deltaTime){
 		/*yes update hash tables to reflect its new state*/
-		hashtable_remove(sleepingTasksHashTable,(uint32_t)task);
+		OS_hashtable_remove(sleepingTasksHashTable,(uint32_t)task);
 		OS_hashtable_put(activeTasksHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 		/*add the task back to the schedulerHeap should it not already be in there*/
 		if(OS_hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)task,(uint32_t*)task,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY)){
             if(task->inheritedPriority)
-                addNode(schedulerHeap,task,task->inheritedPriority);
+                OS_heap_addNode(schedulerHeap,task,task->inheritedPriority);
             else{
-                addNode(schedulerHeap,task,task->priority);
+                OS_heap_addNode(schedulerHeap,task,task->priority);
             }
 		}
 		/*finally update the TCB*/
@@ -673,9 +673,9 @@ static void * removedSleepingNode;
 static uint32_t __removeIfSleeping(uint32_t _index){
 	OS_TCB_t * task = schedulerHeap->ptrToUnderlyingArray[_index].ptrToNodeContent;
 	if(__updateSleepState(task)){
-		removeNodeAt(schedulerHeap,_index,&removedSleepingNode);
-		hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
-		addNode(sleepHeap,task,task->data2);/*data2 keeps track of remaining sleep duration which
+		OS_heap_removeNodeAt(schedulerHeap,_index,&removedSleepingNode);
+		OS_hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
+		OS_heap_addNode(sleepHeap,task,task->data2);/*data2 keeps track of remaining sleep duration which
 			the sleepHeap uses to order its elements. This means that tasks that are about to wake up are
 			right at the top of the heap.*/
 		return 1;
@@ -692,7 +692,7 @@ static uint32_t __removeIfSleeping(uint32_t _index){
  * RETURNS: 1 if true, 0 otherwise*/
 
 uint32_t isTaskActive(OS_TCB_t * _task){
-	if(hashtable_get(activeTasksHashTable,(uint32_t)_task)){
+	if(OS_hashtable_get(activeTasksHashTable,(uint32_t)_task)){
 		return 1;
 	}else{
 		return 0;
@@ -700,7 +700,7 @@ uint32_t isTaskActive(OS_TCB_t * _task){
 }
 
 uint32_t isTaskSleeping(OS_TCB_t * _task){
-	if(hashtable_get(sleepingTasksHashTable,(uint32_t)_task)){
+	if(OS_hashtable_get(sleepingTasksHashTable,(uint32_t)_task)){
 		return 1;
 	}else{
 		return 0;
@@ -708,7 +708,7 @@ uint32_t isTaskSleeping(OS_TCB_t * _task){
 }
 
 uint32_t isTaskWaiting(OS_TCB_t * _task){
-	if(hashtable_get(waitingTasksHashTable_tcbAsKey,(uint32_t)_task)){
+	if(OS_hashtable_get(waitingTasksHashTable_tcbAsKey,(uint32_t)_task)){
 		return 1;
 	}else{
 		return 0;

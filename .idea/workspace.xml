@@ -10,12 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2baeb46-297d-47e8-b8b0-469489949f26" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/channel.c" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/channel.c" />
       <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c" />
       <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h" />
       <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/Flash/DocetOS.htm" afterPath="$PROJECT_DIR$/DocetOS/Flash/DocetOS.htm" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/Flash/DocetOS.map" afterPath="$PROJECT_DIR$/DocetOS/Flash/DocetOS.map" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/heap.h" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/heap.h" />
       <change beforePath="$PROJECT_DIR$/DocetOS/OS/channelManger.c" afterPath="$PROJECT_DIR$/DocetOS/OS/channelManger.c" />
       <change beforePath="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" afterPath="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" />
     </list>
@@ -39,21 +37,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="hashtable.c" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c">
+      <file leaf-file-name="heap.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/heap.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="86" column="25" lean-forward="false" selection-start-line="86" selection-start-column="9" selection-end-line="86" selection-end-column="25" />
+            <state relative-caret-position="-2029">
+              <caret line="196" column="58" lean-forward="false" selection-start-line="196" selection-start-column="58" selection-end-line="196" selection-end-column="58" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="hashtable.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h">
+      <file leaf-file-name="heap.h" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/heap.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="14" column="51" lean-forward="false" selection-start-line="14" selection-start-column="51" selection-end-line="14" selection-end-column="51" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -63,8 +61,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>tasksInSchedulerHeapHashTable</find>
-      <find>} OS_TCB_t</find>
       <find>} OS_tcb</find>
       <find>OS_scheduler</find>
       <find>OS_notify_resource_aquired</find>
@@ -75,7 +71,6 @@
       <find>addtask</find>
       <find>stochasticScheduler_addTask</find>
       <find>init_</find>
-      <find>addNode</find>
       <find>tcb</find>
       <find>current</find>
       <find>resourceAcquired_callback</find>
@@ -87,6 +82,15 @@
       <find>memblock_head_ptr</find>
       <find>memory_pool</find>
       <find>hashtable_put</find>
+      <find>hashtable_get</find>
+      <find>hashtable_remove</find>
+      <find>bucket_array</find>
+      <find>addNode</find>
+      <find>removeNode</find>
+      <find>indexOfContent</find>
+      <find>getFirstChildIndex</find>
+      <find>getSecondChildIndex</find>
+      <find>_return_content</find>
     </findStrings>
     <replaceStrings>
       <replace>OS_hashtable_value_t</replace>
@@ -94,8 +98,16 @@
       <replace>OS_memory_pool_t</replace>
       <replace>hashVal</replace>
       <replace>prevHashVal</replace>
-      <replace>bucketArray</replace>
       <replace>OS_hashtable_put</replace>
+      <replace>OS_hashtable_get</replace>
+      <replace>OS_hashtable_remove</replace>
+      <replace>bucketArray</replace>
+      <replace>OS_heap_addNode</replace>
+      <replace>OS_heap_removeNode</replace>
+      <replace>OS_heap_indexOfContent</replace>
+      <replace>OS_heap_getFirstChildIndex</replace>
+      <replace>OS_heap_getSecondChildIndex</replace>
+      <replace>_returnContent</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -126,6 +138,7 @@
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/channel.c" />
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h" />
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c" />
+        <option value="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" />
       </list>
     </option>
   </component>
@@ -225,7 +238,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="45665000" />
+    <option name="totallyTimeSpent" value="47991000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -294,21 +307,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/DocetOS/channel.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/utils/memcluster.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/OS/sleep.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -676,6 +674,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3604">
+          <caret line="251" column="18" lean-forward="false" selection-start-line="251" selection-start-column="9" selection-end-line="251" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
@@ -684,10 +690,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c">
+    <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/heap.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="86" column="25" lean-forward="false" selection-start-line="86" selection-start-column="9" selection-end-line="86" selection-end-column="25" />
+        <state relative-caret-position="-2029">
+          <caret line="196" column="58" lean-forward="false" selection-start-line="196" selection-start-column="58" selection-end-line="196" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/heap.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>

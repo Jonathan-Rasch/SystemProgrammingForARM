@@ -75,13 +75,13 @@ static OS_channel_t * channelManager_connect(uint32_t _channelID,uint32_t _capac
 		}
     /* check if a channel for the given ID already exists (another task might have called connect before the current task)*/
     {
-        OS_channel_t * channel = (OS_channel_t *)hashtable_get(channelHashTable,_channelID);
+        OS_channel_t * channel = (OS_channel_t *)OS_hashtable_get(channelHashTable,_channelID);
         if(channel){
             if(channel->capacity != _capacity){
                 printf("\r\nCHANNEL_MANAGER: WARNING a channel with the ID %d already exists, but its capacity (%d) differs from the requested capacity (%d).\r\n",_channelID,channel->capacity,_capacity);
             }
             /*yes a channel exists, return it after updating the channel status*/
-            uint32_t num_connections = (uint32_t)hashtable_remove(channelStatusHashTable,_channelID);
+            uint32_t num_connections = (uint32_t)OS_hashtable_remove(channelStatusHashTable,_channelID);
             num_connections += 1;
             OS_hashtable_put(channelStatusHashTable,_channelID,(uint32_t*)num_connections,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
             return channel;
@@ -106,7 +106,7 @@ static OS_channel_t * channelManager_connect(uint32_t _channelID,uint32_t _capac
  *
  * RETURNS: number of connections to channel if ID is in use, 0 otherwise*/
 static uint32_t channelManager_checkAlive(uint32_t _channelID){
-    uint32_t numConnections = (uint32_t)hashtable_get(channelStatusHashTable,_channelID);
+    uint32_t numConnections = (uint32_t)OS_hashtable_get(channelStatusHashTable,_channelID);
     if(numConnections){
         return numConnections;
     }else{
@@ -122,14 +122,14 @@ static uint32_t channelManager_disconnect(uint32_t _channelID){
     if(!channelManager_checkAlive(_channelID)){
         return 0;
     }
-    uint32_t num_connections = (uint32_t)hashtable_remove(channelStatusHashTable,_channelID);
+    uint32_t num_connections = (uint32_t)OS_hashtable_remove(channelStatusHashTable,_channelID);
     num_connections -= 1;
     if(num_connections){
         OS_hashtable_put(channelStatusHashTable,_channelID,(uint32_t *)num_connections,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
         return 1;
     }else{
         /*no more connections, put channel back into linked list of free channels*/
-        OS_channel_t * channel = (OS_channel_t *)hashtable_remove(channelHashTable,_channelID);
+        OS_channel_t * channel = (OS_channel_t *)OS_hashtable_remove(channelHashTable,_channelID);
         OS_channel_t * tmp_channel = freeChannelsLinkedList;
 				freeChannelsLinkedList = channel;
 				channel->channelID = (uint32_t)tmp_channel; 
