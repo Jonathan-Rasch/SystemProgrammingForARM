@@ -133,8 +133,8 @@ void task8(void const *const args) {
 }
 
 void task9(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(1,8);
-	uint32_t num = 1;
+	OS_channel_t * channel = OS_channel_connect(2,8);
+	uint32_t num = 2;
 	while(1){
 		if(num % 2 != 0){
 			channel_write(channel,num);
@@ -144,8 +144,8 @@ void task9(void const *const args) {
 }
 
 void task10(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(2,8);
-	uint32_t num = 1;
+	OS_channel_t * channel = OS_channel_connect(3,8);
+	uint32_t num = 3;
 	while(1){
 		if(num % 3 != 0){
 			channel_write(channel,num);
@@ -155,8 +155,8 @@ void task10(void const *const args) {
 }
 
 void task11(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(3,8);
-	uint32_t num = 1;
+	OS_channel_t * channel = OS_channel_connect(4,8);
+	uint32_t num = 5;
 	while(1){
 		if(num % 5 != 0){
 			channel_write(channel,num);
@@ -166,10 +166,10 @@ void task11(void const *const args) {
 }
 
 void task12(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(4,8);
+	OS_channel_t * channel = OS_channel_connect(5,8);
 	uint32_t num = 1;
 	while(1){
-		if(num % 7 != 0){
+		if(num % 7 != 7){
 			channel_write(channel,num);
 		}
 		num++;
@@ -177,10 +177,10 @@ void task12(void const *const args) {
 }
 
 void task13(void const *const args) {
-	OS_channel_t * channel_task9 = OS_channel_connect(1,8);
-	OS_channel_t * channel_task10 = OS_channel_connect(2,8);
-	OS_channel_t * channel_task11 = OS_channel_connect(3,8);
-	OS_channel_t * channel_task12 = OS_channel_connect(4,8);
+	OS_channel_t * channel_task9 = OS_channel_connect(2,8);
+	OS_channel_t * channel_task10 = OS_channel_connect(3,8);
+	OS_channel_t * channel_task11 = OS_channel_connect(4,8);
+	OS_channel_t * channel_task12 = OS_channel_connect(5,8);
 	OS_TCB_t * TCB9 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
 	OS_TCB_t * TCB10 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
 	OS_TCB_t * TCB11 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
@@ -197,7 +197,7 @@ void task13(void const *const args) {
 	OS_addTask(TCB10,10);
 	OS_addTask(TCB11,11);
 	OS_addTask(TCB12,12);
-	uint32_t readNum1, readNum2, readNum3, readNum4 = 1;
+	uint32_t readNum1, readNum2, readNum3, readNum4 = 2;
 	while (1) {
 		readNum1 = channel_read(channel_task9);
 		while(readNum2 < readNum1){
@@ -209,7 +209,7 @@ void task13(void const *const args) {
 		while(readNum4 < readNum1){
 			readNum4 = channel_read(channel_task12);
 		}
-		if(readNum1 == readNum2 == readNum3 == readNum4){ //
+		if(readNum1 == (readNum2 & readNum3 & readNum4) || readNum1 == 2 || readNum1 == 3 || readNum1 == 5 || readNum1 == 7){ //
 			OS_mutex_acquire(&printLock);
 			printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8,readNum1);
 			OS_mutex_release(&printLock);
