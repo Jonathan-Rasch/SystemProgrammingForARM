@@ -29,7 +29,7 @@ typedef struct{
 	volatile uint32_t remaining_capacity;
 	volatile uint32_t validValueFlag; // set to 0 on entry to get or remove operation. set to 1 if valid
 	volatile uint32_t * free_hashtable_value_struct_linked_list;
-}OS_hashtable_t;
+} OS_hashtable_t;
 
 //=============================================================================
 // structs for heap.c
@@ -38,7 +38,7 @@ typedef struct __s_node{
     void * volatile ptrToNodeContent; //ME: leave as volatile for now, ptr changes during swap
     /* Node value is used when restoring heap*/
     volatile uint32_t nodeValue;
-}OS_minHeapNode_t;
+} OS_minHeapNode_t;
 
 typedef struct __s_heap{
 	/* the heap has an underlying array of nodes. each node holds a value that is used during the
@@ -49,7 +49,7 @@ typedef struct __s_heap{
 	volatile uint32_t        currentNumNodes;
 	volatile OS_minHeapNode_t *   nextEmptyElement;
 	OS_minHeapNode_t *   lastArrayElement;
-} minHeap;
+} OS_minHeap_t;
 
 //=============================================================================
 // structs for os.c

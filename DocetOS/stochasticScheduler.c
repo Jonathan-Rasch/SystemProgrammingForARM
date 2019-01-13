@@ -22,7 +22,7 @@
 static uint32_t systick_rollover_detected_FLAG = 0;
 
 //TASK HEAP RELATED
-static minHeap * schedulerHeap;
+static OS_minHeap_t * schedulerHeap;
 /*waitingTasksHashTable_reasonAsKey
 holds the TCB of all tasks that have entered the waiting state.
 
@@ -45,7 +45,7 @@ added to the heap even though it was never removed in the first place.*/
 static OS_hashtable_t * tasksInSchedulerHeapHashTable;
 
 //SLEEP HEAP RELATED
-static minHeap * sleepHeap;
+static OS_minHeap_t * sleepHeap;
 /*Keeps track of tasks that requested sleep. tasks that requested sleep but have not been encountered by the scheduler (trying to run the task that has requested sleep)
 might remain in the scheduler heap (might never leave it if their sleep time expires before scheduler encounters them, in which case scheduler will unset sleep state and 
 remove the task from this hashtable).*/
