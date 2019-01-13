@@ -12,58 +12,58 @@
 // INIT
 //=============================================================================
 
-OS_hashtable_t * new_hashtable(uint32_t _capacity,uint32_t _number_of_buckets){
+OS_hashtable_t * new_hashtable(uint32_t _capacity,uint32_t _numberOfBuckets){
 	uint32_t required_size_4ByteWords = sizeof(OS_hashtable_t)/4;
 	required_size_4ByteWords += _capacity * (sizeof(OS_hashtable_value_t)/4);
-	required_size_4ByteWords += _number_of_buckets;
+	required_size_4ByteWords += _numberOfBuckets;
 	uint32_t * memory = OS_alloc(required_size_4ByteWords);
 	if(memory == NULL){
 		printf("Cannot create hashtable, could not obtain valid memory!\r\n");
 		return NULL;
 	}
 	/* Structure of hashtable in memory:
-		0) number_of_buckets		-
-		1) maximum_capacity			|
-		2) remaining_capacity		| OS_hashtable_t struct
+		0) numberOfBuckets		-
+		1) maximumCapacity			|
+		2) remainingCapacity		| OS_hashtable_t struct
 		3) hashval linked list	-
 		4) bucket 0							-	
 	...												| bucket array (with N elements)
 	N+3) bucket N							-
-	N+4) next_hashtable_value	-
-	N+5) underlying_data			| M* hashtable_value structs
+	N+4) nextHashtableValue	-
+	N+5) underlyingData			| M* hashtable_value structs
 	N+6) key									| 
 	...	 											|
-N+2+3*M) underlying_data		-*/
+N+2+3*M) underlyingData		-*/
 	
 	/*placing hashtable struct into allocated memory*/
 	OS_hashtable_t * hashtable = (OS_hashtable_t *)memory;
-	hashtable->number_of_buckets = _number_of_buckets;
-	hashtable->maximum_capacity = _capacity;
-	hashtable->remaining_capacity = _capacity;
-	hashtable->free_hashtable_value_struct_linked_list = NULL; // will be set up later in this func
+	hashtable->numberOfBuckets = _numberOfBuckets;
+	hashtable->maximumCapacity = _capacity;
+	hashtable->remainingCapacity = _capacity;
+	hashtable->freeHashtableValueStructLinkedList = NULL; // will be set up later in this func
 	memory = memory+sizeof(OS_hashtable_t)/4;
 	
 	/*clearing the remaining memory (dont want future buckets or hashtable value structs to contain invalid data).
 	my mempool already clears the memory, but i think it is better not to rely on this (other mempools might not do this)*/
 	/*clearing bucket array*/
 	uint32_t * bucket_array = memory;
-	for (int i = 0; i< hashtable->number_of_buckets;i++){
+	for (int i = 0; i< hashtable->numberOfBuckets;i++){
 		bucket_array[i] = NULL;
 	}
-	memory = memory + hashtable->number_of_buckets;//now points to start of memory section for hashtable_value structs
+	memory = memory + hashtable->numberOfBuckets;//now points to start of memory section for hashtable_value structs
 	
 	/*setting up hashtable_value structs and adding them to the free hashtable_value linked list*/
 	OS_hashtable_value_t * hash_val = (OS_hashtable_value_t *)memory;
 	hash_val->key = NULL;
-	hash_val->underlying_data = NULL;
-	hashtable->free_hashtable_value_struct_linked_list = (uint32_t *)hash_val; // link first element in struct
+	hash_val->underlyingData = NULL;
+	hashtable->freeHashtableValueStructLinkedList = (uint32_t *)hash_val; // link first element in struct
 	for(int i=1;i<_capacity;i++){
 		/*get next element and clear it*/
 		OS_hashtable_value_t * next_element = hash_val + 1;
 		next_element->key = NULL;
-		next_element->underlying_data = NULL;
+		next_element->underlyingData = NULL;
 		/*link, then next element becommes current element, repeat process*/
-		hash_val->next_hashtable_value = (uint32_t *)next_element;
+		hash_val->nextHashtableValue = (uint32_t *)next_element;
 		hash_val = next_element;
 	}
 	
@@ -85,11 +85,11 @@ returns:
 1 = success
 0 = failure (e.g table is at full capacity)*/
 uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _value,uint32_t  _checkForDuplicates){
-	if(_hashtable->remaining_capacity == 0){
+	if(_hashtable->remainingCapacity == 0){
 		return 0; //hashtable is full
 	}
 	/*determine bucket*/
-	uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
+	uint32_t bucket_number = djb2_hash(_key) % _hashtable->numberOfBuckets;
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
 	/*ensure that element with provided _key is not already in bucket*/
 	if(_checkForDuplicates != HASHTABLE_DISABLE_DUPLICATE_CHECKS){
@@ -101,23 +101,23 @@ uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _va
 			}
 			/*prevent the same data being added twice. this is usefull if multiple tasks should be allowed to wait on the same mutex,
 			but the same task should not be allowed to wait on one mutex multiple times.*/
-			if(_checkForDuplicates == HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY && tmp_hashtable_val->underlying_data == _value){
+			if(_checkForDuplicates == HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY && tmp_hashtable_val->underlyingData == _value){
 				return 0;
 			}
-			tmp_hashtable_val = (OS_hashtable_value_t *)tmp_hashtable_val->next_hashtable_value;
+			tmp_hashtable_val = (OS_hashtable_value_t *)tmp_hashtable_val->nextHashtableValue;
 		}
 	}
 	/*obtain hashtable_value struct from linked list of free structs*/
-	OS_hashtable_value_t * hashtable_val = (OS_hashtable_value_t*)_hashtable->free_hashtable_value_struct_linked_list;
-	_hashtable->free_hashtable_value_struct_linked_list = hashtable_val->next_hashtable_value;
-	hashtable_val->underlying_data = _value;
+	OS_hashtable_value_t * hashtable_val = (OS_hashtable_value_t*)_hashtable->freeHashtableValueStructLinkedList;
+	_hashtable->freeHashtableValueStructLinkedList = hashtable_val->nextHashtableValue;
+	hashtable_val->underlyingData = _value;
 	hashtable_val->key = _key;
 	/*insert hashtable value into bucket linked list*/
 	OS_hashtable_value_t * tmp_hashtable_value = (OS_hashtable_value_t *)bucket_array[bucket_number];
 	bucket_array[bucket_number] = (uint32_t )hashtable_val;
-	hashtable_val->next_hashtable_value = (uint32_t *)tmp_hashtable_value;
+	hashtable_val->nextHashtableValue = (uint32_t *)tmp_hashtable_value;
 	/*update capacity*/
-	_hashtable->remaining_capacity -= 1;
+	_hashtable->remainingCapacity -= 1;
 	return 1;
 }
 
@@ -125,18 +125,18 @@ uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _va
 uint32_t * hashtable_get(OS_hashtable_t * _hashtable, uint32_t _key){
     _hashtable->validValueFlag = 0;
     /*determine bucket*/
-    uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
+    uint32_t bucket_number = djb2_hash(_key) % _hashtable->numberOfBuckets;
     uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
     /*search linked list*/
     uint32_t * value = NULL;
     OS_hashtable_value_t * hash_val = (OS_hashtable_value_t *)bucket_array[bucket_number];
     while(hash_val){
         if(hash_val->key == _key){
-            value = hash_val->underlying_data;
+            value = hash_val->underlyingData;
             _hashtable->validValueFlag = 1;
             return value;
         }else{
-            hash_val = (OS_hashtable_value_t *)hash_val->next_hashtable_value;
+            hash_val = (OS_hashtable_value_t *)hash_val->nextHashtableValue;
         }
     }
     return NULL;
@@ -148,7 +148,7 @@ uint32_t * hashtable_get(OS_hashtable_t * _hashtable, uint32_t _key){
 uint32_t * hashtable_getNthValueAtKey(OS_hashtable_t * _hashtable, uint32_t _key, uint32_t _n){
     _hashtable->validValueFlag = 0;
     /*determine bucket*/
-    uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
+    uint32_t bucket_number = djb2_hash(_key) % _hashtable->numberOfBuckets;
     uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
     /*search linked list*/
     uint32_t * value = NULL;
@@ -157,14 +157,14 @@ uint32_t * hashtable_getNthValueAtKey(OS_hashtable_t * _hashtable, uint32_t _key
         if(hash_val->key == _key){
             if(_n != 0){
                 _n--;
-								hash_val = (OS_hashtable_value_t *)hash_val->next_hashtable_value;
+								hash_val = (OS_hashtable_value_t *)hash_val->nextHashtableValue;
                 continue;
             }
-            value = hash_val->underlying_data;
+            value = hash_val->underlyingData;
             _hashtable->validValueFlag = 1;
             return value;
         }else{
-            hash_val = (OS_hashtable_value_t *)hash_val->next_hashtable_value;
+            hash_val = (OS_hashtable_value_t *)hash_val->nextHashtableValue;
         }
     }
     return NULL;
@@ -175,7 +175,7 @@ with "key" NULL is returned*/
 uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 	_hashtable->validValueFlag = 0;
 	/*determine bucket*/
-	uint32_t bucket_number = djb2_hash(_key) % _hashtable->number_of_buckets;
+	uint32_t bucket_number = djb2_hash(_key) % _hashtable->numberOfBuckets;
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
 	/*search linked list*/
 	uint32_t * value = NULL;
@@ -184,26 +184,26 @@ uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 	while(hash_val){
 		if(hash_val->key == _key){
 			_hashtable->validValueFlag = 1;
-			value = hash_val->underlying_data;
+			value = hash_val->underlyingData;
 			/*remove from bucket, clear, and return to linked list of unused elements*/
 			if(prev_hash_val){
-				prev_hash_val->next_hashtable_value = hash_val->next_hashtable_value;
+				prev_hash_val->nextHashtableValue = hash_val->nextHashtableValue;
 			}else{//no previous hash_val
-				bucket_array[bucket_number] = (uint32_t)hash_val->next_hashtable_value;
+				bucket_array[bucket_number] = (uint32_t)hash_val->nextHashtableValue;
 			}
 			hash_val->key = NULL;
-			hash_val->next_hashtable_value = NULL;
-			hash_val->underlying_data = NULL;
+			hash_val->nextHashtableValue = NULL;
+			hash_val->underlyingData = NULL;
 			//return to linked list
-			OS_hashtable_value_t * tmp_hashtable_val = (OS_hashtable_value_t *)_hashtable->free_hashtable_value_struct_linked_list;
-			_hashtable->free_hashtable_value_struct_linked_list = (uint32_t *)hash_val;
-			hash_val->next_hashtable_value = (uint32_t *)tmp_hashtable_val;
+			OS_hashtable_value_t * tmp_hashtable_val = (OS_hashtable_value_t *)_hashtable->freeHashtableValueStructLinkedList;
+			_hashtable->freeHashtableValueStructLinkedList = (uint32_t *)hash_val;
+			hash_val->nextHashtableValue = (uint32_t *)tmp_hashtable_val;
 			//increase remaining capacity since an element just freed up
-			_hashtable->remaining_capacity++;
+			_hashtable->remainingCapacity++;
 			break;
 		}else{
 			prev_hash_val = hash_val;
-			hash_val = (OS_hashtable_value_t *)hash_val->next_hashtable_value;
+			hash_val = (OS_hashtable_value_t *)hash_val->nextHashtableValue;
 		}
 	}
 	return value;
@@ -214,7 +214,7 @@ uint32_t * hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 	to access all elements stored in the hashtable*/
 const OS_hashtable_value_t * hashtable_getFirstElementOfNthBucket(OS_hashtable_t * _hashtable, uint32_t _n){
 	_hashtable->validValueFlag = 0;
-	if(_n > _hashtable->number_of_buckets-1){
+	if(_n > _hashtable->numberOfBuckets-1){
 		return NULL;
 	}
 	uint32_t * bucket_array = ((uint32_t *)_hashtable) + sizeof(OS_hashtable_t)/4;
@@ -233,15 +233,15 @@ const OS_hashtable_value_t * hashtable_getFirstElementOfNthBucket(OS_hashtable_t
 
 void DEBUG_printHashtable(OS_hashtable_t * _hashtable){
 	printf("\r\n--------------------------------------------------------------------------\r\n");
-	for(int i =0; i<_hashtable->number_of_buckets;i++){
+	for(int i =0; i<_hashtable->numberOfBuckets;i++){
 		OS_hashtable_value_t * value = (OS_hashtable_value_t *)(((uint32_t*)_hashtable)+(sizeof(OS_hashtable_t)/4))[i];
 		printf("BUCKET %d: \r\n",i);
 		while(value){
 			printf("\t\t--- Block %p ---\r\n",value);
 			printf("\t\tkey: %d\r\n",value->key);
-			printf("\t\tnext val: %p\r\n",value->next_hashtable_value);
-			printf("\t\tdata: %p\r\n",value->underlying_data);
-			value = (OS_hashtable_value_t *)value->next_hashtable_value;
+			printf("\t\tnext val: %p\r\n",value->nextHashtableValue);
+			printf("\t\tdata: %p\r\n",value->underlyingData);
+			value = (OS_hashtable_value_t *)value->nextHashtableValue;
 		}
 	}
 }

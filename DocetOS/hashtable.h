@@ -6,7 +6,7 @@
 
 
 //prototypes
-OS_hashtable_t * new_hashtable(uint32_t _capacity,uint32_t _number_of_buckets);
+OS_hashtable_t * new_hashtable(uint32_t _capacity,uint32_t _numberOfBuckets);
 uint32_t djb2_hash(uint32_t thing_to_hash);
 uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _value,uint32_t  _checkForDuplicates);
 uint32_t * hashtable_get(OS_hashtable_t *, uint32_t key);

@@ -10,21 +10,21 @@
 //================================================================================
 
 /*VARIABLES*/
-static memory_pool pools[5];//array holding memory pools
+static OS_memory_pool_t pools[5];//array holding memory pools
 static OS_mutex_t pool_locks[5]; //pools get locked when in use
 static OS_mutex_t hashtable_lock;
 static OS_memBlock_t * allocatedBlocksBuckets[MEMPOOL_HASH_TABLE_BUCKET_NUM];
 
 /*PROTOTYPES*/
 //for memory pools
-static void __addBlockToPool(memory_pool *,OS_memBlock_t *);
-static OS_memBlock_t * __removeBlockFromPool(memory_pool *);
+static void __addBlockToPool(OS_memory_pool_t *,OS_memBlock_t *);
+static OS_memBlock_t * __removeBlockFromPool(OS_memory_pool_t *);
 //for hashtable
 static void __placeBlockIntoBucket(OS_memBlock_t *);
 static OS_memBlock_t * __recoverBlockFromBucket(uint32_t * memory_pointer);
 //for memcluster struct
-static uint32_t * 	allocate		(uint32_t required_size_in_4byte_words);
-static void 				deallocate	(void * memblock_head_ptr);
+static uint32_t * 	allocate		(uint32_t requiredSizeIn4byteWords);
+static void 				deallocate	(void * memblockHeadPtr);
 
 /* Cluster Init Function
 */
@@ -42,13 +42,13 @@ void memory_cluster_init(OS_memcluster_t * memory_cluster, uint32_t * memoryArra
 	/*Initializing pools*/
 	for(int i = SMALLEST_BLOCK_SIZE; i <= LARGEST_BLOCK_SIZE; i++){
 		int array_idx = i-SMALLEST_BLOCK_SIZE;
-		memory_pool * pool = &pools[array_idx];
+		OS_memory_pool_t * pool = &pools[array_idx];
 		OS_mutex_t * pool_lock = &pool_locks[array_idx];
 		OS_init_mutex(pool_lock);
 		// pool setup
 		pool->freeBlocks = 0;
 		pool->blockSize = pow(2,i);
-		pool->memory_pool_lock = pool_lock;
+		pool->memoryPoolLock = pool_lock;
 		pool->firstMemoryBlock = NULL;
 	}
 
@@ -58,7 +58,7 @@ void memory_cluster_init(OS_memcluster_t * memory_cluster, uint32_t * memoryArra
 	int numSkips = 0;// keeps track of largest sequence of block allocations taht where skipped due to insuficient remaining memory
 	while(memory_Size_in_4byte_words){//exits if all memory allocated, or no further allocation possible.
 		int pool_idx = counter % numberOfPools;
-		memory_pool * pool = &pools[pool_idx];
+		OS_memory_pool_t * pool = &pools[pool_idx];
 		//check if block fits into remaining memory
 		uint32_t requiredMemoryForBlock = (sizeof(OS_memBlock_t)/4) + pool->blockSize;
 		/*requiredMemoryForBlock:
@@ -101,21 +101,21 @@ void memory_cluster_init(OS_memcluster_t * memory_cluster, uint32_t * memoryArra
 //================================================================================
 
 /* "allocate" retrieves a memory region that the task is free to write to.
--> it guarantees that the returned memory region has a size of AT LEAST required_size_in_4byte_words (BUT COULD BE LARGER!)
+-> it guarantees that the returned memory region has a size of AT LEAST requiredSizeIn4byteWords (BUT COULD BE LARGER!)
 -> call will block if no memory blocks of specified size (or larger) are available, and will resume as soon as this changes
 -> the user is responsible for not writing more than the size they requested (even though the block returned COULD be larger).
 -> user is responsible for passing the SAME pointer (not a pointer somewhere in the given memory) back to the deallocate function when no longer needed.*/
-static uint32_t * allocate(uint32_t required_size_in_4byte_words){
+static uint32_t * allocate(uint32_t requiredSizeIn4byteWords){
 	/*input checking*/
-	if(required_size_in_4byte_words == 0){
+	if(requiredSizeIn4byteWords == 0){
 		printf("ERROR: cannot allocate memory of size 0 words\r\n");
 		return NULL;
 	}
 	/*determine the minimum size block required*/
-	memory_pool * selectedPool = NULL;
+	OS_memory_pool_t * selectedPool = NULL;
 	int selectedPoolIdx;
 	for(int i=0;i<NUMBER_OF_POOLS;i++){
-		if(required_size_in_4byte_words > pools[i].blockSize){
+		if(requiredSizeIn4byteWords > pools[i].blockSize){
 			continue;
 		}
 		selectedPoolIdx = i;
@@ -123,7 +123,7 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 		break;
 	}
 	if(selectedPool == NULL){
-		printf("ERROR: cannot allocate memory of size %d 4byte words, no block large enough.\r\n",required_size_in_4byte_words);
+		printf("ERROR: cannot allocate memory of size %d 4byte words, no block large enough.\r\n",requiredSizeIn4byteWords);
 		return NULL;
 	}
 	/* pool of correct size found, no try to grab a lock on a pool with free blocks*/
@@ -134,7 +134,7 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 		/*first step is to attempt to get a lock for the currently selected pool. This is done in blocking mode, since
 		aquiering a block is quick and does not warrant for a task that is blocked moving to the next larger pool*/
 		selectedPool = &pools[selectedPoolIdx];
-		OS_mutex_acquire(selectedPool->memory_pool_lock);
+		OS_mutex_acquire(selectedPool->memoryPoolLock);
 		/*the lock has been obtained, now check if the pool has any free blocks*/
 		if(selectedPool->freeBlocks){
 			/*free block is present. break out of this loop to aquire it (making sure NOT to release lock as that is still needed during the 
@@ -155,7 +155,7 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 	}
 	/*got pool lock on pool with free block(s). store block in hashmap and return pointer to usable memory*/
 	OS_memBlock_t * block = __removeBlockFromPool(selectedPool);
-	OS_mutex_release(selectedPool->memory_pool_lock);
+	OS_mutex_release(selectedPool->memoryPoolLock);
 
 	/*Prevent task A from reading what task B stored in the memblock:
 		-> 	this obviously slows things down, and is far from foolproof (nothing stops TASK A just directly accessing 
@@ -168,8 +168,8 @@ static uint32_t * allocate(uint32_t required_size_in_4byte_words){
 
 /* "deallocate" checks if the given pointer belongs to an allocated memory block and returns it to its corresponding memory pool should 
 this be the case. Nothing happens (except error message) when a user tries to return a block to the cluster that does not belong to the cluster*/
-static void deallocate(void * memblock_head_ptr){
-	OS_memBlock_t * block = __recoverBlockFromBucket(memblock_head_ptr);
+static void deallocate(void * memblockHeadPtr){
+	OS_memBlock_t * block = __recoverBlockFromBucket(memblockHeadPtr);
 	if(block == NULL){ // NULL pointer returned, provided memory ptr is not valid
 		return;
 	}
@@ -182,7 +182,7 @@ static void deallocate(void * memblock_head_ptr){
 	
 	TODO: implement when FPU is enabled, for now just cycle through pools
 	TODO: depending on number of pools simply cycling through them might actually be faster (depends on math log implmentation)*/
-	memory_pool * pool = NULL;
+	OS_memory_pool_t * pool = NULL;
 	int poolIdx = 0;
 	for(int i = 0;i<NUMBER_OF_POOLS;i++){
 		if(pools[i].blockSize != block->blockSize){
@@ -204,14 +204,14 @@ static void deallocate(void * memblock_head_ptr){
 /*MEMORY POOL RELATED
 these functions assume that a lock for _pool has been obtained PRIOR to them being called!*/
 
-static void __addBlockToPool(memory_pool * _pool,OS_memBlock_t * _block){
+static void __addBlockToPool(OS_memory_pool_t * _pool,OS_memBlock_t * _block){
 	_block->nextMemblock = (uint32_t *)_pool->firstMemoryBlock;
 	_pool->firstMemoryBlock = _block;
 	_pool->freeBlocks += 1; 
 }
 
 
-static OS_memBlock_t * __removeBlockFromPool(memory_pool * _pool){
+static OS_memBlock_t * __removeBlockFromPool(OS_memory_pool_t * _pool){
 	//retrieve block from pool
 	OS_memBlock_t * block = _pool->firstMemoryBlock;
 	_pool->firstMemoryBlock = (OS_memBlock_t *) block->nextMemblock;
