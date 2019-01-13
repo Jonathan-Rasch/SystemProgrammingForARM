@@ -10,10 +10,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2baeb46-297d-47e8-b8b0-469489949f26" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/Drawing2.vsdx" afterPath="$PROJECT_DIR$/DocetOS/REPORT/images/Drawing2.vsdx" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/scheduler overview.pdf" afterPath="$PROJECT_DIR$/DocetOS/REPORT/images/scheduler overview.pdf" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/schedulerOverview.png" afterPath="$PROJECT_DIR$/DocetOS/REPORT/images/schedulerOverview.png" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/~$$Drawing2.~vsdx" afterPath="$PROJECT_DIR$/DocetOS/REPORT/images/~$$Drawing2.~vsdx" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/OS/memcluster.h" afterPath="$PROJECT_DIR$/DocetOS/OS/memcluster.h" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" afterPath="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/~$$Drawing2.~vsdx" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.aux" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.aux" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.log" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.log" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.pdf" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.pdf" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.synctex.gz" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.synctex.gz" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.tex" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.tex" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.toc" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.toc" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -35,21 +41,101 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="stochasticScheduler.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c">
+      <file leaf-file-name="memcluster.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-234">
+            <state relative-caret-position="17">
+              <caret line="174" column="5" lean-forward="false" selection-start-line="174" selection-start-column="5" selection-end-line="174" selection-end-column="5" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="memcluster.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="170">
+              <caret line="10" column="51" lean-forward="false" selection-start-line="10" selection-start-column="51" selection-end-line="10" selection-end-column="51" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="os.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
               <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="heap.c" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/heap.c">
+      <file leaf-file-name="os.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="370">
-              <caret line="32" column="27" lean-forward="true" selection-start-line="32" selection-start-column="21" selection-end-line="32" selection-end-column="46" />
+            <state relative-caret-position="-1006">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="os_asm.s" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/os_asm.s">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1363">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="os_internal.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/os_internal.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="retarget.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/retarget.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="serial.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/serial.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="serial.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/serial.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="stochasticScheduler.c" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3072">
+              <caret line="576" column="65" lean-forward="false" selection-start-line="576" selection-start-column="65" selection-end-line="576" selection-end-column="65" />
               <folding />
             </state>
           </provider>
@@ -59,7 +145,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>OS_scheduler</find>
       <find>OS_notify_resource_aquired</find>
       <find>resourceAcquired_callback(</find>
       <find>} os</find>
@@ -87,8 +172,9 @@
       <find>indexOfContent</find>
       <find>getFirstChildIndex</find>
       <find>getSecondChildIndex</find>
-      <find>_return_content</find>
       <find>_sizeOfHeapNodeArray</find>
+      <find>_return_content</find>
+      <find>ifdef</find>
     </findStrings>
     <replaceStrings>
       <replace>OS_hashtable_value_t</replace>
@@ -136,13 +222,15 @@
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/channel.c" />
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.h" />
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/hashtable.c" />
-        <option value="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" />
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/queue.c" />
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/semaphore.h" />
         <option value="$PROJECT_DIR$/DocetOS/OS/channelManger.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/debug.h" />
         <option value="$PROJECT_DIR$/DocetOS/OS/memcluster.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.h" />
+        <option value="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" />
+        <option value="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" />
+        <option value="$PROJECT_DIR$/DocetOS/OS/memcluster.h" />
       </list>
     </option>
   </component>
@@ -155,7 +243,7 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="1913" />
     <option name="y" value="-9" />
-    <option name="width" value="1294" />
+    <option name="width" value="2116" />
     <option name="height" value="1087" />
   </component>
   <component name="ProjectView">
@@ -242,13 +330,13 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="51242000" />
+    <option name="totallyTimeSpent" value="53631000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1913" y="-9" width="1294" height="1087" extended-state="0" />
+    <frame x="1913" y="-9" width="2116" height="1087" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27073553" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11285714" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32979852" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -311,30 +399,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/DocetOS/hardfault.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/hashtable.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="10" lean-forward="false" selection-start-line="3" selection-start-column="10" selection-end-line="3" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/hashtable.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="10" lean-forward="false" selection-start-line="4" selection-start-column="10" selection-end-line="4" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/heap.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -599,86 +663,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/debug.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="54" lean-forward="false" selection-start-line="3" selection-start-column="54" selection-end-line="3" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/channelManger.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/hardfault.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/channelManger.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-561">
-          <caret line="42" column="41" lean-forward="false" selection-start-line="42" selection-start-column="41" selection-end-line="42" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-68">
-          <caret line="174" column="5" lean-forward="false" selection-start-line="174" selection-start-column="5" selection-end-line="174" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2193">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/os_internal.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/retarget.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
@@ -703,18 +687,122 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c">
+    <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/heap.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-234">
+        <state relative-caret-position="579">
+          <caret line="295" column="18" lean-forward="false" selection-start-line="295" selection-start-column="18" selection-end-line="295" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/channelManger.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-785">
+          <caret line="42" column="41" lean-forward="false" selection-start-line="42" selection-start-column="41" selection-end-line="42" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/channelManger.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/heap.c">
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/debug.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="370">
-          <caret line="32" column="27" lean-forward="true" selection-start-line="32" selection-start-column="21" selection-end-line="32" selection-end-column="46" />
+        <state relative-caret-position="51">
+          <caret line="3" column="54" lean-forward="false" selection-start-line="3" selection-start-column="54" selection-end-line="3" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/hardfault.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="174" column="5" lean-forward="false" selection-start-line="174" selection-start-column="5" selection-end-line="174" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="51" lean-forward="false" selection-start-line="10" selection-start-column="51" selection-end-line="10" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1006">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/os_asm.s">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1363">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/os_internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/retarget.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/serial.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/serial.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3072">
+          <caret line="576" column="65" lean-forward="false" selection-start-line="576" selection-start-column="65" selection-end-line="576" selection-end-column="65" />
           <folding />
         </state>
       </provider>

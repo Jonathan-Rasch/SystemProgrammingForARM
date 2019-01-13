@@ -3,15 +3,6 @@
 #include "../DataStructures/mutex.h"
 #include <stdlib.h>
 #include "../DataStructures/hashtable.h"
-/*
- * The scheduler has the following features:
- * -> Task priority:
- *      ->  tasks that are not currently running and are NOT WAITING are placed in a max heap.
- *          when the current task (TaskA) yields, exits or the scheduler forces a context switch the task
- *          with the next highest priority (TaskB) becomes the current task. the previously running task is
- *          placed back into the max heap
- *
- */
 
 
 //=============================================================================
@@ -256,10 +247,6 @@ Depending on the given priority the task has a higher or lower probability of be
 NOTE: Schould there be no space on the heap the task is not added.
 */
 static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_priority){
-	#ifdef stochasticScheduler_DEBUG
-	printf("\r\nACTIVE TASK HASH TABLE:\r\n");
-	DEBUG_printHashtable(activeTasksHashTable);
-    #endif /*stochasticScheduler_DEBUG*/
 	if(tcb == NULL){
 		printf("\r\nSCHEDULER: ERROR, attempt to add null pointer tcb to scheduler!\r\n");
 		ASSERT(0);
@@ -276,16 +263,9 @@ static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_prior
 	tcb->priority = task_priority;
 	OS_hashtable_put(activeTasksHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 	OS_hashtable_put(tasksInSchedulerHeapHashTable,(uint32_t)tcb,(uint32_t*)tcb,HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-	if ( OS_heap_addNode(schedulerHeap,tcb,task_priority)) {
+	if ( !OS_heap_addNode(schedulerHeap,tcb,task_priority)) {
 		/*HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY prevent the same task (TCB=key) being added multiple times to the scheduler */
-		#ifdef stochasticScheduler_DEBUG
-			printf("TASK ADDED: %p %d\r\n",tcb,task_priority);
-			printf("SCHEDULER: added task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,schedulerHeap->currentNumNodes);
-		#endif /*stochasticScheduler_DEBUG*/
-	}else{
-		#ifdef stochasticScheduler_DEBUG
-				printf("SCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,schedulerHeap->currentNumNodes);
-		#endif /*stochasticScheduler_DEBUG*/
+		printf("\r\nSCHEDULER: unable to add task (TCB:%p) with priority %d to scheduler. (scheduler task num= %d)\r\n",tcb,task_priority,schedulerHeap->currentNumNodes);
 	}
 }
 
@@ -397,7 +377,7 @@ static void stochasticScheduler_notifyCallback(void * const reason){
 					acquiredMutex->nextAcquiredResource = NULL;//reset to avoid infinite loop
 					__updatePriorityInheritance(currentTCB);
 					break;
-			}//TODO why do i get a linked list loop here
+			}
 			prevAcquiredMutex = acquiredMutex;
 			acquiredMutex = acquiredMutex->nextAcquiredResource;
 	}
@@ -595,10 +575,6 @@ static uint32_t __removeIfExit(uint32_t _index){
 		OS_heap_removeNodeAt(schedulerHeap,_index,&removedNode);
 		OS_hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
 		OS_hashtable_remove(activeTasksHashTable,(uint32_t)task);
-//		DEBUG_hashTableState();
-//		DEBUG_heapState();
-//		printf("\u001b[0m");
-//		ASSERT(0);
 		return 1;
 	}else{
 		return 0;

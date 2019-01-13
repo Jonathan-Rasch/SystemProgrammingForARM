@@ -183,8 +183,9 @@ RETURNS:
 uint32_t OS_heap_removeNodeAt(OS_minHeap_t * _heap,uint32_t _index, void * * _returnContent){
 	/*is the provided index within the range of valid nodes?*/
 	if(_index > _heap->currentNumNodes-1){
-		printf("ERROR: the provided index %d is outside of the heap (max index %d)",_index,_heap->currentNumNodes-1);
-		return 0;
+		printf("HEAP: ERROR the provided index %d is outside of the heap (max index %d)",_index,_heap->currentNumNodes-1);
+        ASSERT(0);
+        return 0;
 	}
 	const OS_minHeapNode_t nodeToReturn = _heap->ptrToUnderlyingArray[_index];
 	__heapDown(_heap,_index);
@@ -291,11 +292,9 @@ static uint32_t __getParentIndex(uint32_t _nodeIndexZeroBased){
 static OS_minHeapNode_t * __getPointerToItemAtIndex(OS_minHeap_t * heap, uint32_t _nodeIndexZeroBased){
 	/* checks:*/
 	if(heap->maxNumberOfNodes <= _nodeIndexZeroBased){
-		printf("ERROR: [utils/heap.c __getPointerToItemAtIndex(...)]\r\nProvided index %d is outside of heap size %d\r\n",_nodeIndexZeroBased,heap->maxNumberOfNodes);
-		#ifdef HEAP_DEBUG
-		ASSERT(0);
-		#endif /*HEAP_DEBUG*/
-		return NULL;
+		printf("\r\nHEAP: ERROR Provided index %d is outside of heap size %d\r\n",_nodeIndexZeroBased,heap->maxNumberOfNodes);
+        ASSERT(0);
+        return NULL;
 	}
 	/* get pointer:*/
 	return &(heap->ptrToUnderlyingArray[_nodeIndexZeroBased]);
