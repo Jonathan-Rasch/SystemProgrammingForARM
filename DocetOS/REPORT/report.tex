@@ -50,6 +50,7 @@ At the end of this section you will find an example illustration of the internal
   \item The \textbf{activeTasksHashTable} keeps track of all tasks that are currently executable.
   \item The \textbf{waitingTasksHashTable\_reasonAsKey/\_tcbAsKey} both keep track of tasks that are waiting. The \_reasonAsKey table is used during notify to change the state of a task waiting for "reason" without needing to check each waiting task. the \_tcbAsKey allows the OS and user to check if a given task is waiting.
   \item The  \textbf{sleepingTasksHashTable} keeps track of all tasks that are sleeping, no matter what heap they are in.
+  \item The  \textbf{nodeContentIndexHashTable} internal (optional) hashtable of heap data structure, can be used to quickly determine at what index a node with a specific content is located in the heap. This is used during priority inheritance.
 \end{itemize}
 
 \includepdf[landscape=true]{images/schedulerOverview.png}
