@@ -455,6 +455,7 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
      * of the scheduler heap at this point in time)*/
 		uint32_t isActiveAndInHeap = hashtable_get(tasksInSchedulerHeapHashTable,(uint32_t)task) && tasksInSchedulerHeapHashTable->validValueFlag;
     if(highestPriority < task->priority ){
+        task->prevInheritedPriority = task->inheritedPriority;
         task->inheritedPriority = highestPriority;
     }else{
 				if(task->inheritedPriority && isActiveAndInHeap){//if true it means that the task was running under inherited priority previously
@@ -467,12 +468,12 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
             ASSERT(0);
 					}
 					addNode(schedulerHeap,task,task->priority);
-					printf("\r\ntask %p that inherited priority %d reset to %d\r\n",task,task->inheritedPriority,task->priority);
+					//printf("\r\ntask %p that inherited priority %d reset to %d\r\n",task,task->inheritedPriority,task->priority);
 				}
         task->inheritedPriority = 0;//nothing inherited
     }
 		/*remove and re-add the task to the heap with the inherited priority*/
-    if(isActiveAndInHeap && task->inheritedPriority ){
+    if(isActiveAndInHeap && task->inheritedPriority && task->prevInheritedPriority != task->inheritedPriority){
         uint32_t taskHeapIndex = indexOfContent(schedulerHeap,(uint32_t)task);
         void * removedTask;
 				removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
@@ -481,7 +482,7 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
             ASSERT(0);
         }
         addNode(schedulerHeap,task,task->inheritedPriority);
-				printf("\r\ntask %p with priority %d inherited priority %d \r\n",task,task->priority,task->inheritedPriority);
+				//printf("\r\ntask %p with priority %d inherited priority %d \r\n",task,task->priority,task->inheritedPriority);
     }
 }
 
@@ -507,18 +508,9 @@ static void resourceAcquired_callback( OS_mutex_t * _acquiredMutex){
     OS_mutex_t * tmpMutex = currentTcb->acquiredResourcesLinkedList;
     currentTcb->acquiredResourcesLinkedList = _acquiredMutex;
     _acquiredMutex->nextAcquiredResource = tmpMutex;
-		
-    //TODO: DEBUG
-    OS_mutex_t * debug_start = currentTcb->acquiredResourcesLinkedList;
-    OS_mutex_t * debug_current = currentTcb->acquiredResourcesLinkedList;
-		uint32_t counter = 0;
-    while(debug_current){
-        if(debug_current == debug_start && counter){
-            ASSERT(0);
-        }
-        debug_current = debug_current->nextAcquiredResource;
-				counter++;
-    }
+//    printf("\r\n\u001b[31mRESOURCE ACQUIRED\u001b[0m\r\n");
+//    DEBUG_hashTableState();
+//    DEBUG_heapState();
 }
 
 //=============================================================================
@@ -746,6 +738,8 @@ static void DEBUG_hashTableState(){
 	DEBUG_printHashtable(waitingTasksHashTable_reasonAsKey);
 	printf("\r\nSLEEPING TASK HASH TABLE:");
 	DEBUG_printHashtable(sleepingTasksHashTable);
+    printf("\r\nNODE CONTENT INDEX:");
+    DEBUG_printHashtable(schedulerHeap->nodeContentIndexHashTable);
 }
 
 static void DEBUG_heapState(){

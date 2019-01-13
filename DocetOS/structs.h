@@ -70,6 +70,7 @@ typedef struct {
 	uint32_t volatile data2;
 	uint32_t volatile svc_return;//data returned from svc placed in here.
 	uint32_t volatile inheritedPriority; // 0 if nothing inherited
+    uint32_t volatile prevInheritedPriority; //used to check if inherited priority changed.
 	void * volatile acquiredResourcesLinkedList; // 0 if nothing inherited
 } OS_TCB_t;
 

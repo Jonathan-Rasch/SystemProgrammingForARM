@@ -97,17 +97,11 @@ uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _va
 		while(tmp_hashtable_val){
 			/*check if key already exists in bucket (might want to allow this, e.g multiple tasks waiting for same mutex (mutex used as key))*/
 			if(_checkForDuplicates == HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY && tmp_hashtable_val->key == _key){
-				#ifdef HASHTABLE_DEBUG
-					printf("\r\nERROR: key '%d' is already in hashtable!\r\n",_key);
-				#endif /*HASHTABLE_DEBUG*/
 				return 0;
 			}
 			/*prevent the same data being added twice. this is usefull if multiple tasks should be allowed to wait on the same mutex,
 			but the same task should not be allowed to wait on one mutex multiple times.*/
 			if(_checkForDuplicates == HASHTABLE_REJECT_MULTIPLE_IDENTICAL_VALUES_PER_KEY && tmp_hashtable_val->underlying_data == _value){
-				#ifdef HASHTABLE_DEBUG
-					printf("\r\nERROR: value '%p' is already in hashtable at key %d !\r\n",_value,_key);
-				#endif /*HASHTABLE_DEBUG*/
 				return 0;
 			}
 			tmp_hashtable_val = (hashtable_value *)tmp_hashtable_val->next_hashtable_value;
@@ -124,9 +118,6 @@ uint32_t hashtable_put(OS_hashtable_t * _hashtable, uint32_t _key,uint32_t * _va
 	hashtable_val->next_hashtable_value = (uint32_t *)tmp_hashtable_value;
 	/*update capacity*/
 	_hashtable->remaining_capacity -= 1;
-	#ifdef HASHTABLE_DEBUG
-		printf("HASHTABLE: added %p at key: %d\r\n",_value,_key);
-	#endif /*HASHTABLE_DEBUG*/
 	return 1;
 }
 

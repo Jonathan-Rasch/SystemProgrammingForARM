@@ -30,7 +30,7 @@ minHeap * new_heap(uint32_t max_number_of_heap_nodes, uint32_t _enableQuickNodeC
 	/*This adds a hashtable which stores the index of the node with a given content. This allows the user to quickly obtain the index of any node
 	given that the user knows the content pointer they are trying to locate. this is useful in combination with the removeNodeAt function*/
 	if(_enableQuickNodeContentIndexLookup){
-    heap_struct->nodeContentIndexHashTable = new_hashtable(max_number_of_heap_nodes,CONTENT_INDEX_LOOKUP_HASHTABLE_BUCKETS_NUM);
+        heap_struct->nodeContentIndexHashTable = new_hashtable(max_number_of_heap_nodes,CONTENT_INDEX_LOOKUP_HASHTABLE_BUCKETS_NUM);
 	}else{
 		heap_struct->nodeContentIndexHashTable = NULL;
 	}
@@ -76,6 +76,7 @@ uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _
 	uint32_t currentNodeIndex = _heap->nextEmptyElement - _heap->ptrToUnderlyingArray;
 	/*add new node to content index hash table if applicable*/
 	if(_heap->nodeContentIndexHashTable){
+    hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent);
 		hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent,(uint32_t*)currentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
 	}
 	while(currentNodeIndex){
@@ -86,9 +87,20 @@ uint32_t addNode(minHeap * _heap, void * const _element_to_add, const uint32_t _
 			/*if applicable update the indexes in the hashtable used to quickly retrieve the index a certain node with "content" can be found at*/
 			if(_heap->nodeContentIndexHashTable){
 				hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent);
+				if(!_heap->nodeContentIndexHashTable->validValueFlag){
+					printf("\r\nHEAP: ERROR, invalid nodeContentIndexHashTable state!\r\n");
+					DEBUG_printHashtable(_heap->nodeContentIndexHashTable);
+					ASSERT(0);
+				}
 				hashtable_remove(_heap->nodeContentIndexHashTable,(uint32_t)parentNode->ptrToNodeContent);
+				if(!_heap->nodeContentIndexHashTable->validValueFlag){
+					printf("\r\nHEAP: ERROR, invalid nodeContentIndexHashTable state!\r\n");
+					DEBUG_printHashtable(_heap->nodeContentIndexHashTable);
+					ASSERT(0);
+				}
 				hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)node->ptrToNodeContent,(uint32_t*)parentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
-				hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)parentNode->ptrToNodeContent,(uint32_t*)currentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+        hashtable_put(_heap->nodeContentIndexHashTable,(uint32_t)parentNode->ptrToNodeContent,(uint32_t*)currentNodeIndex, HASHTABLE_REJECT_MULTIPLE_VALUES_PER_KEY);
+				
 			}
 			/*do the swap*/
 			minHeapNode * tempNodeArray = _heap->ptrToUnderlyingArray;
