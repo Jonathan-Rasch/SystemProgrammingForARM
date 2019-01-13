@@ -10,11 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2baeb46-297d-47e8-b8b0-469489949f26" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/hashtable.c" afterPath="$PROJECT_DIR$/DocetOS/hashtable.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/hashtable.h" afterPath="$PROJECT_DIR$/DocetOS/hashtable.h" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/stochasticScheduler.c" afterPath="$PROJECT_DIR$/DocetOS/stochasticScheduler.c" />
       <change beforePath="$PROJECT_DIR$/DocetOS/structs.h" afterPath="$PROJECT_DIR$/DocetOS/structs.h" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/utils/heap.c" afterPath="$PROJECT_DIR$/DocetOS/utils/heap.c" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -59,8 +56,8 @@
       <file leaf-file-name="structs.h" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DocetOS/structs.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="8" column="15" lean-forward="false" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+            <state relative-caret-position="374">
+              <caret line="37" column="87" lean-forward="false" selection-start-line="37" selection-start-column="87" selection-end-line="37" selection-end-column="87" />
               <folding />
             </state>
           </provider>
@@ -206,7 +203,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="40544000" />
+    <option name="totallyTimeSpent" value="40650000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -635,8 +632,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/structs.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="15" lean-forward="false" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+        <state relative-caret-position="374">
+          <caret line="37" column="87" lean-forward="false" selection-start-line="37" selection-start-column="87" selection-end-line="37" selection-end-column="87" />
           <folding />
         </state>
       </provider>

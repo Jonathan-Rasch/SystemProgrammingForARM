@@ -38,17 +38,17 @@ typedef struct __s_node{
     void * volatile ptrToNodeContent; //ME: leave as volatile for now, ptr changes during swap
     /* Node value is used when restoring heap*/
     volatile uint32_t nodeValue;
-}minHeapNode;
+}OS_minHeapNode_t;
 
 typedef struct __s_heap{
 	/* the heap has an underlying array of nodes. each node holds a value that is used during the
 	 * restoration of the heap (node->nodeValue). */
-	minHeapNode *   ptrToUnderlyingArray;
+	OS_minHeapNode_t *   ptrToUnderlyingArray;
 	OS_hashtable_t * nodeContentIndexHashTable; // only created if requested by user, stores node index of a given node content for quick access.
 	uint32_t        maxNumberOfNodes;
 	volatile uint32_t        currentNumNodes;
-	volatile minHeapNode *   nextEmptyElement;
-	minHeapNode *   lastArrayElement;
+	volatile OS_minHeapNode_t *   nextEmptyElement;
+	OS_minHeapNode_t *   lastArrayElement;
 } minHeap;
 
 //=============================================================================
