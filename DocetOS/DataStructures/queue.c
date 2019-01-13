@@ -43,8 +43,8 @@ uint32_t destroy_queue(OS_queue_t * _queue){
  * operation succeed the function will return 1, returns 0 otherwise
  *
  * NOTE: queue is LIFO*/
-uint32_t queue_write(OS_queue_t * queue, uint32_t _data){
-    if(queue_isFull(queue) || queue == NULL){
+uint32_t OS_queue_write(OS_queue_t * queue, uint32_t _data){
+    if(OS_queue_isFull(queue) || queue == NULL){
         return 0;
     }
     /*getting here means there is space in the queue */
@@ -70,8 +70,8 @@ uint32_t queue_write(OS_queue_t * queue, uint32_t _data){
  * return code of function is 1 if this succeeds and the read value has been placed into _return,
  * returns 0 otherwise
  * */
-uint32_t queue_read(OS_queue_t * queue, uint32_t * _return){
-    if(queue == NULL || queue_isEmpty(queue)){
+uint32_t OS_queue_read(OS_queue_t * queue, uint32_t * _return){
+    if(queue == NULL || OS_queue_isEmpty(queue)){
         return 0;
     }
     /* reading value and placing it into the return value arg*/
@@ -93,8 +93,8 @@ uint32_t queue_read(OS_queue_t * queue, uint32_t * _return){
  * If the given index is valid and the queue is not empty the value will be placed into
  * the _return pointer provided by the user and the return code of the function will be 1. else
  * the return code will be 0 and the *_return value will remain unchanged*/
-uint32_t queue_peekAt(OS_queue_t * queue, uint32_t _n, uint32_t * _return){
-    if(queue == NULL || queue_isEmpty(queue) || _n >= queue->maxCapacity){
+uint32_t OS_queue_peekAt(OS_queue_t * queue, uint32_t _n, uint32_t * _return){
+    if(queue == NULL || OS_queue_isEmpty(queue) || _n >= queue->maxCapacity){
         return 0;
     }
     uint32_t wordsTillArrayEnd = queue->memoryEnd - queue->readPointer;
@@ -114,7 +114,7 @@ uint32_t queue_peekAt(OS_queue_t * queue, uint32_t _n, uint32_t * _return){
 //=============================================================================
 
 /*Returns 1 if the queue is empty, returns 0 otherwise*/
-uint32_t queue_isEmpty(OS_queue_t * queue){
+uint32_t OS_queue_isEmpty(OS_queue_t * queue){
     if(queue->readPointer == queue->writePointer){
         return 1;
     }else{
@@ -123,7 +123,7 @@ uint32_t queue_isEmpty(OS_queue_t * queue){
 }
 
 /* Returns 1 if the queue is full, returns 0 otherwise*/
-uint32_t queue_isFull(OS_queue_t * queue){
+uint32_t OS_queue_isFull(OS_queue_t * queue){
     if (queue->readPointer == queue->memoryStart){
         if(queue->writePointer == queue->memoryEnd){
             return 1;

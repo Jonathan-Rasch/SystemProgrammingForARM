@@ -6,7 +6,7 @@
 //================================================================================
 
 /*OS_init_semaphore initialises the semaphore to the desired values*/
-void init_semaphore(OS_semaphore_t * _semaphore,uint32_t _initial_tokens, uint32_t _max_tokens){
+void OS_semaphore_init(OS_semaphore_t * _semaphore,uint32_t _initial_tokens, uint32_t _max_tokens){
     _semaphore->availableTokens = _initial_tokens;
     _semaphore->maxTokens = _max_tokens;
 }
@@ -16,7 +16,7 @@ void init_semaphore(OS_semaphore_t * _semaphore,uint32_t _initial_tokens, uint32
  * RETURNS: pointer to a semaphore*/
 OS_semaphore_t * new_semaphore(uint32_t _initial_tokens, uint32_t _max_tokens){
     OS_semaphore_t * semaphore = OS_alloc(sizeof(OS_semaphore_t)/4);
-    init_semaphore(semaphore,_initial_tokens,_max_tokens);
+    OS_semaphore_init(semaphore,_initial_tokens,_max_tokens);
     return semaphore;
 }
 
@@ -34,7 +34,7 @@ uint32_t destroy_semaphore(OS_semaphore_t * _semaphore){
  *  -> blocks until another task releases a token if no token is available.
  *  -> if successful it notifies all tasks waiting on the semaphore.
  * */
-void semaphore_acquire_token(OS_semaphore_t * _semaphore){
+void OS_semaphore_acquire_token(OS_semaphore_t * _semaphore){
     uint32_t exclusiveAcessFailed;
     while(1){
         uint32_t checkCode = OS_checkCode();
@@ -60,7 +60,7 @@ void semaphore_acquire_token(OS_semaphore_t * _semaphore){
  * -> blocks until another task removes a token if the semaphore already holds the maximum number of tokens
  * -> notifies all tasks waiting on this semaphore after successfully placing token
  * */
-void semaphore_release_token(OS_semaphore_t * _semaphore){
+void OS_semaphore_release_token(OS_semaphore_t * _semaphore){
     uint32_t exclusiveAcessFailed;
 		while(1){
         uint32_t checkCode = OS_checkCode();

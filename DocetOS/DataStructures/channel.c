@@ -66,12 +66,12 @@ uint32_t destroy_channel(OS_channel_t * _channel){
  * channel (read or write) the task will block on this method.*/
 void channel_write(OS_channel_t * _channel, uint32_t _word){
     /*first need to get write token. if a token is available it means that there is space in the queue.*/
-    semaphore_acquire_token(_channel->writeTokens);
+    OS_semaphore_acquire_token(_channel->writeTokens);
     /*got a token, lock the queue and write data*/
     OS_mutex_acquire(_channel->queueLock);
-    queue_write(_channel->queue,_word);
+    OS_queue_write(_channel->queue,_word);
     /*there is new data available in the queue so we need to put a token into THE READ SEMAPHORE*/
-    semaphore_release_token(_channel->readTokens);
+    OS_semaphore_release_token(_channel->readTokens);
     /*finally release the lock so the next task can read/write*/
     OS_mutex_release(_channel->queueLock);
 }
@@ -80,13 +80,13 @@ void channel_write(OS_channel_t * _channel, uint32_t _word){
  * on this method.*/
 uint32_t channel_read(OS_channel_t * _channel){
     /*first need to get read token. if a token is available it means that there is data in the queue.*/
-    semaphore_acquire_token(_channel->readTokens);
+    OS_semaphore_acquire_token(_channel->readTokens);
     /*got a token, lock the queue and read data*/
     OS_mutex_acquire(_channel->queueLock);
     uint32_t readData;
-    queue_read(_channel->queue,&readData);
+    OS_queue_read(_channel->queue,&readData);
     /*reading from the queue frees up space, hence place a token into THE WRITE SEMAPHORE*/
-    semaphore_release_token(_channel->writeTokens);
+    OS_semaphore_release_token(_channel->writeTokens);
     /*finally release the lock and return the data*/
     OS_mutex_release(_channel->queueLock);
     return readData;
