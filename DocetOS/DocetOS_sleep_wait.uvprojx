@@ -384,79 +384,89 @@
           <GroupName>Source Files</GroupName>
           <Files>
             <File>
-              <FileName>heap.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\heap.c</FilePath>
-            </File>
-            <File>
-              <FileName>mutex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\mutex.c</FilePath>
-            </File>
-            <File>
-              <FileName>semaphore.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\semaphore.c</FilePath>
-            </File>
-            <File>
-              <FileName>channel.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\channel.c</FilePath>
-            </File>
-            <File>
-              <FileName>hardfault.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\hardfault.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
             </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>DataStructures</GroupName>
+          <Files>
             <File>
-              <FileName>memcluster.c</FileName>
+              <FileName>channel.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\memcluster.c</FilePath>
-            </File>
-            <File>
-              <FileName>os.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\os.c</FilePath>
-            </File>
-            <File>
-              <FileName>retarget.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\retarget.c</FilePath>
-            </File>
-            <File>
-              <FileName>serial.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\serial.c</FilePath>
-            </File>
-            <File>
-              <FileName>stochasticScheduler.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\stochasticScheduler.c</FilePath>
-            </File>
-            <File>
-              <FileName>os_asm.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\os_asm.s</FilePath>
+              <FilePath>.\DataStructures\channel.c</FilePath>
             </File>
             <File>
               <FileName>hashtable.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\hashtable.c</FilePath>
+              <FilePath>.\DataStructures\hashtable.c</FilePath>
             </File>
             <File>
-              <FileName>channelManger.c</FileName>
+              <FileName>heap.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\channelManger.c</FilePath>
+              <FilePath>.\DataStructures\heap.c</FilePath>
+            </File>
+            <File>
+              <FileName>mutex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\DataStructures\mutex.c</FilePath>
             </File>
             <File>
               <FileName>queue.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\queue.c</FilePath>
+              <FilePath>.\DataStructures\queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>semaphore.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\DataStructures\semaphore.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>OS</GroupName>
+          <Files>
+            <File>
+              <FileName>channelManger.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\OS\channelManger.c</FilePath>
+            </File>
+            <File>
+              <FileName>hardfault.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\OS\hardfault.c</FilePath>
+            </File>
+            <File>
+              <FileName>memcluster.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\OS\memcluster.c</FilePath>
+            </File>
+            <File>
+              <FileName>os.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\OS\os.c</FilePath>
+            </File>
+            <File>
+              <FileName>os_asm.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\OS\os_asm.s</FilePath>
+            </File>
+            <File>
+              <FileName>retarget.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\OS\retarget.c</FilePath>
+            </File>
+            <File>
+              <FileName>serial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\OS\serial.c</FilePath>
+            </File>
+            <File>
+              <FileName>stochasticScheduler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\OS\stochasticScheduler.c</FilePath>
             </File>
           </Files>
         </Group>

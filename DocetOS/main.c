@@ -1,15 +1,15 @@
-#include "os.h"
-#include "heap.h"
+#include "../OS/os.h"
+#include "../DataStructures/heap.h"
 #include <stdio.h>
-#include "serial.h"
-#include "stochasticScheduler.h"
+#include "../OS/serial.h"
+#include "../OS/stochasticScheduler.h"
 #include <stdlib.h>
-#include "mutex.h"
-#include "hashtable.h"
-#include "memcluster.h"
-#include "structs.h"
-#include "queue.h"
-#include "channel.h"
+#include "../DataStructures/mutex.h"
+#include "../DataStructures/hashtable.h"
+#include "../OS/memcluster.h"
+#include "../OS/structs.h"
+#include "../DataStructures/queue.h"
+#include "../DataStructures/channel.h"
 
 #define MEMPOOL_SIZE 16384 //
 __align(8)

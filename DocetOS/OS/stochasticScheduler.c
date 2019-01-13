@@ -1,8 +1,8 @@
 #include "stochasticScheduler.h"
-#include "heap.h"
-#include "mutex.h"
+#include "../DataStructures/heap.h"
+#include "../DataStructures/mutex.h"
 #include <stdlib.h>
-#include "hashtable.h"
+#include "../DataStructures/hashtable.h"
 /*
  * The scheduler has the following features:
  * -> Task priority:

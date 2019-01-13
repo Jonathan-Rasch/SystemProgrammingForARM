@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "debug.h"
+#include "../OS/debug.h"
 #include "structs.h"
 #include "os.h"
 #include "hashtable.h"
