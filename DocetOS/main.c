@@ -16,57 +16,48 @@ __align(8)
 static uint32_t memory[MEMPOOL_SIZE]; 
 
 static OS_mutex_t printLock, task5_8Lock;
-static uint32_t taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8 = 0;
+static volatile uint32_t taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8 = 0;
 
 void task1(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(1234,16);
-	channel_write(channel,1);
 	while(1){
-		OS_mutex_acquire(&printLock);
-		taskcounter1 = channel_read(channel);
 		taskcounter1++;
-		printf("\t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
-		channel_write(channel,taskcounter1);
-		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
+		if(OS_mutex_acquire_non_blocking(&task5_8Lock)){
+            OS_mutex_acquire(&printLock);
+            printf("\t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",
+                   taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+            OS_mutex_release_noYield(&printLock);
+            OS_mutex_release(&task5_8Lock);
+		}
 	}
 }
 
 void task2(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(1234,16);
 	while(1){
-		OS_mutex_acquire(&printLock);
-		taskcounter2 = channel_read(channel);
 		taskcounter2++;
-		printf("\t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
-		channel_write(channel,taskcounter2);
+		OS_mutex_acquire(&printLock);
+		printf("\t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",
+					 taskcounter1, taskcounter2, taskcounter3, taskcounter4, taskcounter5, taskcounter6, taskcounter7, taskcounter8);
 		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
 	}
 }
 
 void task3(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(1234,16);
 	while(1){
-		OS_mutex_acquire(&printLock);
-		taskcounter3 = channel_read(channel);
 		taskcounter3++;
-		printf("\t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
-		channel_write(channel,taskcounter3);
-		OS_mutex_release(&printLock);
-		OS_sleep(rand()%100);
+        OS_mutex_acquire(&printLock);
+        printf("\t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",
+               taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+        OS_mutex_release(&printLock);
 	}
 }
 
 void task4(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(1234,16);
 	while (1) {
-		OS_mutex_acquire(&printLock);
-		taskcounter4 = channel_read(channel);
 		taskcounter4++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
-		channel_write(channel,taskcounter4);
-		OS_mutex_release(&printLock);
+        OS_mutex_acquire(&printLock);
+        printf("\t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",
+               taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+        OS_mutex_release(&printLock);
 	}
 }
 
@@ -75,53 +66,54 @@ void task5(void const *const args) {
 		OS_mutex_acquire(&task5_8Lock);
 		OS_mutex_acquire(&printLock);
 		taskcounter5++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \r\n",
+               taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		OS_mutex_release(&task5_8Lock);
 	}
 }
 
 void task6(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(1234,16);
 	while(1){
 		OS_mutex_acquire(&printLock);
-		taskcounter6 = channel_read(channel);
 		taskcounter6++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
-		channel_write(channel,taskcounter6);
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \r\n",
+               taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
+        OS_sleep(rand()%100);
 	}
 }
 
 void task7(void const *const args) {
-	OS_channel_t * channel = OS_channel_connect(1234,16);
 	while(1){
 		OS_mutex_acquire(&printLock);
-		taskcounter7 = channel_read(channel);
 		taskcounter7++;
-		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
-		channel_write(channel,taskcounter7);
+		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \r\n",
+               taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
+        OS_sleep(rand()%100);
 	}
 }
 
 void task8(void const *const args) {
 	OS_channel_t * channel_task9 = OS_channel_connect(1,16);
 	while (1) {
-		OS_mutex_acquire(&task5_8Lock);
 		for(int i =0; i<100;i++){
 			taskcounter8++;
 			OS_mutex_acquire(&printLock);
-			printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+			printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\r\n",
+                   taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 			OS_mutex_release(&printLock);
 		}
-		OS_mutex_release(&task5_8Lock);
+        OS_mutex_acquire(&task5_8Lock);
 		for(int i =0; i<100;i++){
 			taskcounter8++;
 			OS_mutex_acquire(&printLock);
-			printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
+			printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\r\n",
+                   taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 			OS_mutex_release(&printLock);
 		}
+        OS_mutex_release(&task5_8Lock);
 	}
 }
 

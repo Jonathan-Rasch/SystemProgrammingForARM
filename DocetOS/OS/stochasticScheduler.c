@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "../DataStructures/hashtable.h"
 #include "memcluster.h"
-
+#include "os.h"
 
 //=============================================================================
 // vars
@@ -448,7 +448,7 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 static void __updatePriorityInheritance(OS_TCB_t * task){
     OS_mutex_t * acquiredMutex = task->acquiredResourcesLinkedList;
     uint32_t highestPriority = task->priority;
-    /*loop through all mutexes owned by the given task and determine the highest priority that the task should iinherit*/
+    /*loop through all mutexes owned by the given task and determine the highest priority that the task should inherit*/
     while (acquiredMutex){
         uint32_t instanceCounter = 0;
         OS_TCB_t * taskWaitingOnMutex = (OS_TCB_t *)OS_hashtable_getNthValueAtKey(waitingTasksHashTable_reasonAsKey,(uint32_t)acquiredMutex,instanceCounter);
@@ -466,7 +466,7 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
     }
     /*having determined the priority to inherit set it and move the task to the correct index in the heap (if it is part
      * of the scheduler heap at this point in time)*/
-		uint32_t isActiveAndInHeap = OS_hashtable_get(tasksInSchedulerHeapHashTable,(uint32_t)task) && tasksInSchedulerHeapHashTable->validValueFlag;
+    uint32_t isActiveAndInHeap = OS_hashtable_get(tasksInSchedulerHeapHashTable,(uint32_t)task) && tasksInSchedulerHeapHashTable->validValueFlag;
     if(highestPriority < task->priority ){
         task->prevInheritedPriority = task->inheritedPriority;
         task->inheritedPriority = highestPriority;
@@ -483,12 +483,13 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
             OS_heap_addNode(schedulerHeap,task,task->priority);
         }
         task->inheritedPriority = 0;//nothing inherited
+        task->prevInheritedPriority = 0;
     }
     /*remove and re-add the task to the heap with the inherited priority*/
     if(isActiveAndInHeap && task->inheritedPriority && task->prevInheritedPriority != task->inheritedPriority){
         uint32_t taskHeapIndex = OS_heap_indexOfContent(schedulerHeap,(uint32_t)task);
         void * removedTask;
-				OS_heap_removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
+        OS_heap_removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
         if(removedTask != task){
             printf("SCHEDULER: ERROR during priority inheritance, taskHeapIndex is incorrect!");
             ASSERT(0);
@@ -602,7 +603,7 @@ static uint32_t __removeIfExit(uint32_t _index){
 		then free resources at a later point in time. Cannot go ahead unless no other task was using the memcluster when the scheduler
 		interrupt was called, since this operation could interfere severly.*/
 		__disable_irq();
-		if(!OS_isMemclusterInUse() && 0){
+		if(!OS_isMemclusterInUse()){
 			/* CRITICAL SECTION START
 			-> preventing internal mutexes of the memory cluster using svc callbacks
 			-> disable interrupts whilst svc callbacks of locks are disabled*/

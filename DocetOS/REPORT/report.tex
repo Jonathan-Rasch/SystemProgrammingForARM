@@ -63,10 +63,10 @@ The reasoning behind using a heap and an element of randomness for task selectio
 \includepdf[scale=0.9,pages=1]{images/SchedulerTaskSelectionFlow.pdf}
 \includepdf[scale=0.9,pages=1,pagecommand=\subsection{Sleep}]{images/SchedulerSleep.pdf}
 \includepdf[scale=0.9,pages=1,pagecommand=\subsection{Wait and Notify}]{images/WaitNotifyFlow.pdf}
-%\includepdf[scale=0.9,pages=1,pagecommand=\subsection{priority inheritance}]{images/}
-
+\includepdf[scale=0.9,pages=1,pagecommand=\subsection{priority Inheritance}]{images/PriorityInheritanceFlow.pdf}
 
 \section{The Memory Cluster}
+
 \subsection{Design Overview}
 \subsection{Initialisation Process}
 \subsection{Internal Resources}
@@ -83,8 +83,16 @@ The reasoning behind using a heap and an element of randomness for task selectio
 \subsection{Hashtable}
 \subsection{Heap}
 
+\pagebreak
 \section{Demonstration Code Overview}
+The demonstration code contains 14 tasks that together highlight the various features of the modified OS. The demonstration begins with the creation and initialisation of a single task (task0). All task resources are allocated using the memory cluster. This is possible because the memory cluster guarantees that the memory blocks it returns are 8-byte aligned. The OS is then started and task 0 begins its execution. It allocates, initialises and adds 9 further tasks to the scheduler from within the running task itself. After this task0 exits and the resources associated with it (TCB and stack) are deallocated by the OS. Below this paragraph you can see an annotated screen shot of the demo output. The screenshot shows the state of the counter of each of the tasks. The bracketed red numbers indicate which task holds the print Lock and executed the printf.\\
 
+\includegraphics[width=\textwidth]{images/priorityInheritance.png}\\
 
-%%\todo{bla bla \ldots} test  test test. bla bla test test
+Tasks 1 through 4 and tasks 6 and 7 demonstrate the operation of the mutex datatype. Task 1 is an exception because rather than wait whilst another mutex owns the lock it uses the OS\_mutex\_acquire\_non\_blocking function which enables it to skip the printf section if it is not successful in obtaining the lock because another tasks holds it. This allows it to continue increasing its counter when other tasks would have to wait. By inspecting the count that tasks 2,3,4,6 and 7 have obtained in the screen-shot and comparing this count to their priorities it can be seen that cpu time allocated to the task is dependant on the task's priority. The screen-shot also highlights that the scheduler does not only allocate time to the highest priority task and thereby prevents task starvation of lower priority tasks (see how task 4 with priority 4 still occasional increases its count despite task 5 with priority 1 also being active).\\
+
+Task 5 and 8 demonstrate the schedulers priority inheritance functionality. Priority inheritance is a feature that prevents a condition known as priority inversion where a lower priority task can potentially starve a higher priority task. This is avoided by giving the lower priority task the priority of the higher priority task for the duration that the lower priority task holds the lock to a shared resource that both tasks use. \\
+
+Task 13 (spawned from task0) is an implementation of the Sieve of Eratosthenes prime number finding algorithm which I use here to demonstrate the inter task communication abilities of the OS. The OS allows task to communicate using channels. A task can obtain a channel from the OS channel manager by stating a channel ID (the user can also create and use channels not managed by the channel manager if they so desire). Two tasks that request the same ID both get given the same channel which they can now use to pass data back and forth. The use of the channel manager lets tasks create and use channels dynamically rather than the user having to create all channels beforehand (the channel manager uses the OS memory cluster for channel allocation). Task13 allocates, initialises and adds task 9-12 to the scheduler, it also creates 4 distinct channels. Tasks 9-12 connect to one channel each. task 9 has a counter starting at 2, all numbers where (num \% 2 == 0) get written to the channel it shares with task 13. tasks 10,11 and 12 do the same with 3,5 and 7 respectively. task13 reads from the 4 channels and compares the number. If all 4 numbers match then it shows that that number is a prime and task 13 prints it to the serial bus.
+
 \end{document}
