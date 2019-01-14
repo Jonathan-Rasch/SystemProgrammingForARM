@@ -35,6 +35,7 @@ My plan was to allow DocetOS to support a large number of tasks, which made me c
   \item CPU time allocated per task should be dependant on the tasks priority, but the highest priority task should not be the only task getting CPU time (not just standard Fixed priority pre-emptive scheduling behaviour where only the highest priority task is selected)
   \item Task starvation should be avoided, even the lowest priority task should have a non-zero probability of getting selected during task switch.
   \item Task switching and status changes of tasks should not result in a large overhead of CPU time.
+    \item The scheduler needs to avoid priority inversion.
 \end{itemize}
 
 \pagebreak
@@ -55,10 +56,13 @@ At the end of this section you will find an example illustration of the internal
 
 
 \subsection{Selecting a Task}
+Before a task switch is initiated the scheduler checks if the current task has changed state (from active to sleep, wait etc.) or if it has exceeded its maximum runtime (set in the scheduler header). The scheduler does not force a task switch every SysTick to avoid wasting cycles on the task selection process. The scheduler task selection process uses a min heap which stores the tasks in ascending order of priority (lower number means the task has a higher priority). Starting from the top node of the heap the scheduler decides at each node (via pseudo random number) if the current node should be selected or if the process should be repeated for one of the child nodes. If during this process the scheduler comes across a task that is not in the active state it will remove it from the scheduler heap and place it in the corresponding heap/hashtables. The reason for not removing a task instantly when it goes into the sleep or wait state is that the task could wake/get notified before the scheduler encounters it during task selection, which would mean that moving it from the scheduler heap would have just wasted cycles.\\
+
+The reasoning behind using a heap and an element of randomness for task selection (with the chance of a task getting selected being correlated with the tasks priority) is that it avoids task starvation by giving every task a non-zero probability of getting selected, no matter how low their priority. My heap data structure also has a modification that the user can enable which allows the heap to store the index where certain content can be located in the heap, this allows for quick insertion/removal of nodes at any heap index. This is especially useful during priority inheritance process. 
 \includepdf{images/schedulerTaskSelection.pdf}
-\subsection{Sleep}
-\subsection{Wait}
-\subsection{Notify}
+\includepdf{images/SchedulerTaskSelectionFlow.pdf}
+\subsection{Sleep, Wait, Notify}
+\subsection{priority inheritance}
 
 \section{The Memory Cluster}
 \subsection{Design Overview}

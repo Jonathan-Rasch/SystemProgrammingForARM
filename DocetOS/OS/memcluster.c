@@ -10,11 +10,11 @@
 //================================================================================
 
 /*VARIABLES*/
-static OS_memory_pool_t pools[5];//array holding memory pools
-static OS_mutex_t pool_locks[5]; //pools get locked when in use
+static OS_memory_pool_t pools[NUM_MEMPOOLS];//array holding memory pools
+static OS_mutex_t pool_locks[NUM_MEMPOOLS]; //pools get locked when in use
 static OS_mutex_t hashtable_lock;
 static OS_memBlock_t * allocatedBlocksBuckets[MEMPOOL_HASH_TABLE_BUCKET_NUM];
-
+static OS_memcluster_t * memcluster;
 /*PROTOTYPES*/
 //for memory pools
 static void __addBlockToPool(OS_memory_pool_t *,OS_memBlock_t *);
@@ -29,6 +29,8 @@ static void 				deallocate	(void * memblockHeadPtr);
 /* Cluster Init Function
 */
 void memory_cluster_init(OS_memcluster_t * memory_cluster, uint32_t * memoryArray, uint32_t memory_Size_in_4byte_words){
+	memcluster = memory_cluster;
+	memcluster->clusterInUseFLAG = 0;
 	printf("MEMCLUSTER %p -> ",memoryArray);
 	for(int i=0;i<memory_Size_in_4byte_words;i++){
 		memoryArray[i] = NULL;
@@ -106,9 +108,11 @@ void memory_cluster_init(OS_memcluster_t * memory_cluster, uint32_t * memoryArra
 -> the user is responsible for not writing more than the size they requested (even though the block returned COULD be larger).
 -> user is responsible for passing the SAME pointer (not a pointer somewhere in the given memory) back to the deallocate function when no longer needed.*/
 static uint32_t * allocate(uint32_t requiredSizeIn4byteWords){
+	memcluster->clusterInUseFLAG = 1;
 	/*input checking*/
 	if(requiredSizeIn4byteWords == 0){
 		printf("ERROR: cannot allocate memory of size 0 words\r\n");
+		memcluster->clusterInUseFLAG = 0;
 		return NULL;
 	}
 	/*determine the minimum size block required*/
@@ -124,6 +128,7 @@ static uint32_t * allocate(uint32_t requiredSizeIn4byteWords){
 	}
 	if(selectedPool == NULL){
 		printf("ERROR: cannot allocate memory of size %d 4byte words, no block large enough.\r\n",requiredSizeIn4byteWords);
+		memcluster->clusterInUseFLAG = 0;
 		return NULL;
 	}
 	/* pool of correct size found, no try to grab a lock on a pool with free blocks*/
@@ -163,14 +168,17 @@ static uint32_t * allocate(uint32_t requiredSizeIn4byteWords){
 	for(uint32_t i=0;i<block->blockSize;i++){
 			*(block->headPtr+i) = NULL;
 	}
+	memcluster->clusterInUseFLAG = 0;
 	return block->headPtr;
 }
 
 /* "deallocate" checks if the given pointer belongs to an allocated memory block and returns it to its corresponding memory pool should 
 this be the case. Nothing happens (except error message) when a user tries to return a block to the cluster that does not belong to the cluster*/
 static void deallocate(void * memblockHeadPtr){
+	memcluster->clusterInUseFLAG = 1;
 	OS_memBlock_t * block = __recoverBlockFromBucket(memblockHeadPtr);
 	if(block == NULL){ // NULL pointer returned, provided memory ptr is not valid
+			memcluster->clusterInUseFLAG = 0;
 		return;
 	}
 	OS_memory_pool_t * pool = NULL;
@@ -186,6 +194,8 @@ static void deallocate(void * memblockHeadPtr){
 	OS_mutex_acquire(&pool_locks[poolIdx]);
 	__addBlockToPool(pool,block);
 	OS_mutex_release(&pool_locks[poolIdx]);
+	memcluster->clusterInUseFLAG = 0;
+	return;
 }
 
 //================================================================================
@@ -258,5 +268,19 @@ static OS_memBlock_t * __recoverBlockFromBucket(uint32_t * memory_pointer){
 	//ASSERT(0);
 	OS_mutex_release(&hashtable_lock);
 	return NULL;
+}
+
+void memory_cluster_setInternalLockState(uint32_t _enable){
+	if(_enable){
+		hashtable_lock.svcDelegatesEnabled = 1;
+		for(int i=0; i<NUM_MEMPOOLS;i++){
+			pool_locks[i].svcDelegatesEnabled = 1;
+		}
+	}else{
+		hashtable_lock.svcDelegatesEnabled = 0;
+		for(int i=0; i<NUM_MEMPOOLS;i++){
+			pool_locks[i].svcDelegatesEnabled = 0;
+		}
+	}
 }
 

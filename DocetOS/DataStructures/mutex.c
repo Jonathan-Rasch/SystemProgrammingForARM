@@ -9,8 +9,9 @@
 
 void OS_init_mutex(OS_mutex_t * mutex){
 	mutex->counter = 0;
+	mutex->svcDelegatesEnabled = 1;
 	mutex->tcbPointer = NULL; // NULL is just 0 ofc, but i think this makes it clearer
-    mutex->nextAcquiredResource = NULL;
+  mutex->nextAcquiredResource = NULL;
 };
 
 /*Allocates and initialises mutex.
@@ -46,12 +47,16 @@ void OS_mutex_acquire(OS_mutex_t * _mutex){
 			if(lockNotObtained){
 				continue;// try again, go back to loading
 			}else{
-				OS_notify_resource_aquired(_mutex);
+				if(_mutex->svcDelegatesEnabled){
+					OS_notify_resource_aquired(_mutex);
+				}
 				break; //got the lock
 			}
 		}else{
 			//somebody else holds the lock, wait for its release
-			OS_wait(_mutex,checkCode,1);
+			if(_mutex->svcDelegatesEnabled){
+				OS_wait(_mutex,checkCode,1);
+			}
 			continue;//repeat the process of trying to obtain lock
 		}
 	}
@@ -93,8 +98,10 @@ void OS_mutex_release(OS_mutex_t * _mutex){
 		if(currentTCB == NULL){
 			return;//not a task, dont try and sleep !!
 		}
-		OS_notify(_mutex);
-		OS_yield();//give other tasks a chance to get lock
+		if(_mutex->svcDelegatesEnabled){
+			OS_notify(_mutex);
+			OS_yield();//give other tasks a chance to get lock
+		}
 	}
 }
 

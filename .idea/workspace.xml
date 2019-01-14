@@ -10,16 +10,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2baeb46-297d-47e8-b8b0-469489949f26" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" afterPath="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/memcluster.h" afterPath="$PROJECT_DIR$/DocetOS/OS/memcluster.h" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/DocetOS_sleep_wait.uvoptx" afterPath="$PROJECT_DIR$/DocetOS/DocetOS_sleep_wait.uvoptx" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/OS/os.c" afterPath="$PROJECT_DIR$/DocetOS/OS/os.c" />
       <change beforePath="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" afterPath="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/~$$Drawing2.~vsdx" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/OS/structs.h" afterPath="$PROJECT_DIR$/DocetOS/OS/structs.h" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/schedulerTaskSelection.pdf" afterPath="$PROJECT_DIR$/DocetOS/REPORT/images/schedulerTaskSelection.pdf" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/schedulerTaskSelection.vsdx" afterPath="$PROJECT_DIR$/DocetOS/REPORT/images/schedulerTaskSelection.vsdx" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/~$$schedulerTaskSelection.~vsdx" afterPath="" />
       <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.aux" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.aux" />
       <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.log" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.log" />
       <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.pdf" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.pdf" />
       <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.synctex.gz" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.synctex.gz" />
       <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.tex" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.tex" />
       <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.toc" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.toc" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/main.c" afterPath="$PROJECT_DIR$/DocetOS/main.c" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -39,43 +44,36 @@
       </usages-collector>
     </session>
   </component>
+  <component name="FavoritesManager">
+    <favorites_list name="SystemProgrammingForARM" />
+  </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="memcluster.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="174" column="5" lean-forward="false" selection-start-line="174" selection-start-column="5" selection-end-line="174" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="memcluster.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="51" lean-forward="false" selection-start-line="10" selection-start-column="51" selection-end-line="10" selection-end-column="51" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="os.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="466">
+              <caret line="94" column="32" lean-forward="false" selection-start-line="94" selection-start-column="9" selection-end-line="94" selection-end-column="32" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="os.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.h">
+      <file leaf-file-name="main.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1006">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="340">
+              <caret line="231" column="48" lean-forward="false" selection-start-line="231" selection-start-column="48" selection-end-line="231" selection-end-column="48" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="structs.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/structs.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="231">
+              <caret line="60" column="43" lean-forward="false" selection-start-line="60" selection-start-column="20" selection-end-line="60" selection-end-column="43" />
               <folding />
             </state>
           </provider>
@@ -134,8 +132,18 @@
       <file leaf-file-name="stochasticScheduler.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3072">
-              <caret line="576" column="65" lean-forward="false" selection-start-line="576" selection-start-column="65" selection-end-line="576" selection-end-column="65" />
+            <state relative-caret-position="476">
+              <caret line="566" column="18" lean-forward="true" selection-start-line="566" selection-start-column="18" selection-end-line="566" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DocetOS.map" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DocetOS/Flash/DocetOS.map">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="316">
+              <caret line="713" column="24" lean-forward="false" selection-start-line="713" selection-start-column="24" selection-end-line="713" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -145,8 +153,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>OS_notify_resource_aquired</find>
-      <find>resourceAcquired_callback(</find>
       <find>} os</find>
       <find>waitCall</find>
       <find>OS_wait</find>
@@ -175,6 +181,8 @@
       <find>_sizeOfHeapNodeArray</find>
       <find>_return_content</find>
       <find>ifdef</find>
+      <find>} OS_TCB</find>
+      <find>taskexit</find>
     </findStrings>
     <replaceStrings>
       <replace>OS_hashtable_value_t</replace>
@@ -201,10 +209,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/DocetOS/channel.c" />
-        <option value="$PROJECT_DIR$/DocetOS/main.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/os_asm.s" />
         <option value="$PROJECT_DIR$/DocetOS/OS/mutex.c" />
-        <option value="$PROJECT_DIR$/DocetOS/OS/os.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/os.h" />
         <option value="$PROJECT_DIR$/DocetOS/stochasticScheduler.c" />
         <option value="$PROJECT_DIR$/DocetOS/utils/heap.c" />
@@ -229,8 +235,12 @@
         <option value="$PROJECT_DIR$/DocetOS/OS/memcluster.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.h" />
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" />
-        <option value="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/memcluster.h" />
+        <option value="$PROJECT_DIR$/DocetOS/Flash/DocetOS.map" />
+        <option value="$PROJECT_DIR$/DocetOS/main.c" />
+        <option value="$PROJECT_DIR$/DocetOS/OS/structs.h" />
+        <option value="$PROJECT_DIR$/DocetOS/OS/os.c" />
+        <option value="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" />
       </list>
     </option>
   </component>
@@ -314,6 +324,9 @@
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
   </component>
+  <component name="StructureViewFactory">
+    <option name="ACTIVE_ACTIONS" value=",KIND" />
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -330,21 +343,21 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="53631000" />
+    <option name="totallyTimeSpent" value="62572000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1913" y="-9" width="2116" height="1087" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11285714" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21571429" sideWeight="0.09034908" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32979852" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295688" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21571429" sideWeight="0.9096509" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.11285714" sideWeight="0.50410676" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -394,19 +407,11 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="2" />
+      <option name="time" value="4" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/DocetOS/heap.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/heap.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
@@ -567,14 +572,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/channel.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="850">
@@ -679,14 +676,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/structs.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-153">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/DataStructures/heap.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="579">
@@ -743,14 +732,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1006">
@@ -799,10 +780,42 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/Flash/DocetOS.map">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="316">
+          <caret line="713" column="24" lean-forward="false" selection-start-line="713" selection-start-column="24" selection-end-line="713" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="231" column="48" lean-forward="false" selection-start-line="231" selection-start-column="48" selection-end-line="231" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/structs.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="60" column="43" lean-forward="false" selection-start-line="60" selection-start-column="20" selection-end-line="60" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="466">
+          <caret line="94" column="32" lean-forward="false" selection-start-line="94" selection-start-column="9" selection-end-line="94" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3072">
-          <caret line="576" column="65" lean-forward="false" selection-start-line="576" selection-start-column="65" selection-end-line="576" selection-end-column="65" />
+        <state relative-caret-position="476">
+          <caret line="566" column="18" lean-forward="true" selection-start-line="566" selection-start-column="18" selection-end-line="566" selection-end-column="18" />
           <folding />
         </state>
       </provider>

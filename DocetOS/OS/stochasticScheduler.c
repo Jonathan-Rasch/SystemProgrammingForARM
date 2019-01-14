@@ -3,6 +3,7 @@
 #include "../DataStructures/mutex.h"
 #include <stdlib.h>
 #include "../DataStructures/hashtable.h"
+#include "memcluster.h"
 
 
 //=============================================================================
@@ -41,6 +42,8 @@ static OS_minHeap_t * sleepHeap;
 might remain in the scheduler heap (might never leave it if their sleep time expires before scheduler encounters them, in which case scheduler will unset sleep state and 
 remove the task from this hashtable).*/
 static OS_hashtable_t * sleepingTasksHashTable;
+
+static OS_TCB_t * comletedTasksLinkedList = NULL; /*stores tasks that are ready for deallocation*/
 
 //=============================================================================
 // prototypes
@@ -124,11 +127,32 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 		}
 	}
 	
+	/*free resources associated with tasks that have run to completion. These reources might not have yet been freed. This could be caused
+	by the memcluster being in use at the time.*/
+	if(comletedTasksLinkedList){
+		__disable_irq();
+		if(!OS_isMemclusterInUse()){
+				while(comletedTasksLinkedList){
+				OS_TCB_t * taskToDealloc = comletedTasksLinkedList;
+				comletedTasksLinkedList = (OS_TCB_t *)taskToDealloc->data;
+				/* CRITICAL SECTION START
+				-> preventing internal mutexes of the memory cluster using svc callbacks
+				-> disable interrupts whilst svc callbacks of locks are disabled*/
+				memory_cluster_setInternalLockState(0);
+				OS_free((uint32_t*)taskToDealloc->originalSpMemoryPointer);
+				OS_free((uint32_t*)taskToDealloc);
+				memory_cluster_setInternalLockState(1);
+				/* CRITICAL SECTION END*/
+			}
+		}
+		__enable_irq();
+	}
+	
 	/*Task has either yielded, exited or is sleeping/waiting or it exceeded its maximum allowed time, switch task*/
 	//reset YIELD state and task switch counter
 	currentTaskTCB->state &= ~TASK_STATE_YIELD;// reset so task has chance of running after next task switch
 	/*not resetting TASK_STATE_SLEEP or TASK_STATE_WAIT, these are reset elswhere upon certain conditions (i.e a lock getting released)
-	occuring*/
+	occurring*/
 	ticksSinceLastTaskSwitch = 0; //set to 0 so that next task can run for MAX_TASK_TIME_IN_SYSTICKS
 	
 	/*A rollover of the systick counter might have happened. If this is the case then the timestamp of when a task started to
@@ -231,6 +255,7 @@ static OS_TCB_t const * stochasticScheduler_scheduler(void){
 		}
 		selectedTCB = schedulerHeap->ptrToUnderlyingArray[nodeIndex].ptrToNodeContent;
 	}
+	
 	if(selectedTCB == NULL){
 		return OS_idleTCB_p;
 	}else{
@@ -279,7 +304,10 @@ static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_prior
  * NOTE: this function should NEVER be called manually
  * */
 static void stochasticScheduler_taskExit(OS_TCB_t * const tcb){
-		tcb->state |= TASK_STATE_EXIT;
+    tcb->state |= TASK_STATE_EXIT;
+		tcb->data = NULL; // used in completed tasks linked list. Needs to be NULL if not pointing to other completed task
+    /*TODO: It would be easy to release all mutexes held by the task...not sure if advisable since user might intentionally
+     * give task locks and then exit that task (for whatever reason). In that case releasing the mutexes here would cause confusion*/
 }
 
 //=============================================================================
@@ -448,7 +476,6 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
             ASSERT(0);
 					}
 					OS_heap_addNode(schedulerHeap,task,task->priority);
-					//printf("\r\ntask %p that inherited priority %d reset to %d\r\n",task,task->inheritedPriority,task->priority);
 				}
         task->inheritedPriority = 0;//nothing inherited
     }
@@ -462,7 +489,6 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
             ASSERT(0);
         }
         OS_heap_addNode(schedulerHeap,task,task->inheritedPriority);
-				//printf("\r\ntask %p with priority %d inherited priority %d \r\n",task,task->priority,task->inheritedPriority);
     }
 }
 
@@ -474,23 +500,19 @@ static void resourceAcquired_callback( OS_mutex_t * _acquiredMutex){
     OS_TCB_t * currentTcb = OS_currentTCB();
     /*Note: for now priority inheritance only works for mutex but can be extended in the future to work for
      * semaphores too. */
-		//ASSERT((uint32_t)_acquiredMutex != (uint32_t)0x2000B0D4);
     if(_acquiredMutex->counter != 0 || currentTcb == NULL){
         /*This resource already seems to have been acquired before by this task and therefore should
          * not be added again to the acquired resources linked list*/
         return;
     }
     /*add the resource to the linked list of acquired resources for later use during priority inheritance*/
-		if(_acquiredMutex == currentTcb->acquiredResourcesLinkedList){
-			return;
-		}
+	if(_acquiredMutex == currentTcb->acquiredResourcesLinkedList){
+		return;
+	}
     _acquiredMutex->nextAcquiredResource = NULL;
     OS_mutex_t * tmpMutex = currentTcb->acquiredResourcesLinkedList;
     currentTcb->acquiredResourcesLinkedList = _acquiredMutex;
     _acquiredMutex->nextAcquiredResource = tmpMutex;
-//    printf("\r\n\u001b[31mRESOURCE ACQUIRED\u001b[0m\r\n");
-//    DEBUG_hashTableState();
-//    DEBUG_heapState();
 }
 
 //=============================================================================
@@ -575,6 +597,28 @@ static uint32_t __removeIfExit(uint32_t _index){
 		OS_heap_removeNodeAt(schedulerHeap,_index,&removedNode);
 		OS_hashtable_remove(tasksInSchedulerHeapHashTable,(uint32_t)task);
 		OS_hashtable_remove(activeTasksHashTable,(uint32_t)task);
+		/*free resources associated with task if nothing else is currently using the memcluster. If memcluster is in use
+		then free resources at a later point in time. Cannot go ahead unless no other task was using the memcluster when the scheduler
+		interrupt was called, since this operation could interfere severly.*/
+		__disable_irq();
+		if(!OS_isMemclusterInUse() && 0){
+			/* CRITICAL SECTION START
+			-> preventing internal mutexes of the memory cluster using svc callbacks
+			-> disable interrupts whilst svc callbacks of locks are disabled*/
+			memory_cluster_setInternalLockState(0);
+			OS_free((uint32_t*)task->originalSpMemoryPointer);
+			OS_free((uint32_t*)task);
+			memory_cluster_setInternalLockState(1);
+			
+			/* CRITICAL SECTION END*/
+		}else if(comletedTasksLinkedList){
+			OS_TCB_t * tmpTask = comletedTasksLinkedList;
+			comletedTasksLinkedList = task;
+			task->data = (uint32_t)tmpTask;
+		}else{
+			comletedTasksLinkedList = task;
+		}
+		__enable_irq();
 		return 1;
 	}else{
 		return 0;

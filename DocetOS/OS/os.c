@@ -83,6 +83,10 @@ void OS_free(uint32_t* head_ptr){
 	_memcluster.deallocate((uint32_t*)head_ptr);
 }
 
+uint32_t OS_isMemclusterInUse(){
+	return _memcluster.clusterInUseFLAG;
+}
+
 /* Starts the OS and never returns. */
 void OS_start() {
 	ASSERT(_scheduler);
@@ -92,6 +96,7 @@ void OS_start() {
 
 /* Initialises a task control block (TCB) and its associated stack.  See os.h for details. */
 void OS_initialiseTCB(OS_TCB_t * TCB, uint32_t * const stack, void (* const func)(void const * const), void const * const data) {
+	TCB->originalSpMemoryPointer = stack - 64; //needed for dealloc of stack later on
 	TCB->sp = stack - (sizeof(OS_StackFrame_t) / sizeof(uint32_t));
 	TCB->priority = TCB->inheritedPriority = TCB->prevInheritedPriority = TCB->state = TCB->data = 0;
 	OS_StackFrame_t *sf = (OS_StackFrame_t *)(TCB->sp);

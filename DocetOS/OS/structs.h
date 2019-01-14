@@ -58,6 +58,7 @@ typedef struct {
 	/* Task stack pointer.  It's important that this is the first entry in the structure,
 	   so that a simple double-dereference of a TCB pointer yields a stack pointer. */
 	void 		* 	volatile sp;
+	void 		* 	originalSpMemoryPointer; //pointer provided by memcluster, needed for deallocate of stack
 	/* This field is intended to describe the state of the thread - whether it's yielding,
 	   runnable, or whatever.  Only one bit of this field is currently defined (see the #define
 	   below), so you can use the remaining 31 bits for anything you like. */
@@ -80,6 +81,7 @@ typedef struct {
 
 typedef struct{
 	uint32_t 		counter;
+	uint32_t volatile svcDelegatesEnabled;// enable/disable notify/wait callbacks 
 	OS_TCB_t 	* 	tcbPointer;//tcb that holds this lock
 	void 		* 	nextAcquiredResource; // points to the next resource acquired by task (or NULL if no other resource)
 } OS_mutex_t;
@@ -111,6 +113,7 @@ typedef struct{
 } OS_memory_pool_t;
 
 typedef struct {
+	uint32_t 		volatile clusterInUseFLAG; // indicates that the cluster is currently being used to allocate/deallocate
 	uint32_t * (* allocate)	    (uint32_t requiredSizeIn4byteWords);// guarantees returned memory is at least requiredSizeIn4byteWords large
 	void 	   (* deallocate)   (void * memblockHeadPtr);
 } OS_memcluster_t;

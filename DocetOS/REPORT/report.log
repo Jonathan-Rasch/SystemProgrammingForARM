@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.11.18)  13 JAN 2019 22:42
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.11.18)  14 JAN 2019 12:13
 entering extended mode
 **./report.tex
 (report.tex
@@ -1112,7 +1112,7 @@ LaTeX Info: Redefining \nameref on input line 23.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-<images/yorkUniLogo.png, id=114, 1691.31876pt x 894.34125pt>
+<images/yorkUniLogo.png, id=110, 1691.31876pt x 894.34125pt>
 File: images/yorkUniLogo.png Graphic file (type png)
 <use images/yorkUniLogo.png>
 Package pdftex.def Info: images/yorkUniLogo.png  used on input line 25.
@@ -1147,90 +1147,133 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 34.
 
 [3]
-<images/schedulerOverview.png, id=161, 1261.71375pt x 733.99219pt>
+<images/schedulerOverview.png, id=156, 1261.71375pt x 733.99219pt>
 File: images/schedulerOverview.png Graphic file (type png)
 <use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 54.
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
 (pdftex.def)             Requested size: 1261.71068pt x 733.99039pt.
 File: images/schedulerOverview.png Graphic file (type png)
 <use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 54.
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
 (pdftex.def)             Requested size: 1261.71068pt x 733.99039pt.
 File: images/schedulerOverview.png Graphic file (type png)
 <use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 54.
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
 (pdftex.def)             Requested size: 1261.71068pt x 733.99039pt.
 File: images/schedulerOverview.png Graphic file (type png)
 <use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 54.
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
 (pdftex.def)             Requested size: 845.5171pt x 491.873pt.
  [4]
 File: images/schedulerOverview.png Graphic file (type png)
 <use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 54.
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
 (pdftex.def)             Requested size: 845.5171pt x 491.873pt.
 File: images/schedulerOverview.png Graphic file (type png)
 <use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 54.
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
 (pdftex.def)             Requested size: 845.5171pt x 491.873pt.
 File: images/schedulerOverview.png Graphic file (type png)
 <use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 54.
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
 (pdftex.def)             Requested size: 845.5171pt x 491.873pt.
  [5 <./images/schedulerOverview.png>]
-<images/schedulerTaskSelection.pdf, id=174, 597.50829pt x 845.0471pt>
+Underfull \hbox (badness 10000) in paragraph at lines 59--60
+
+ []
+
+<images/schedulerTaskSelection.pdf, id=169, 597.50829pt x 845.0471pt>
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf  used on input line 
-58.
+62.
 (pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf  used on input line 
-58.
+62.
 (pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
-<images/schedulerTaskSelection.pdf, id=177, page=1, 597.50829pt x 845.0471pt>
+<images/schedulerTaskSelection.pdf, id=172, page=1, 597.50829pt x 845.0471pt>
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf, page 1>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
-t line 58.
+t line 62.
 (pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf, page 1>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
-t line 58.
+t line 62.
 (pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
- [6]
+[6]
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf, page 1>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
-t line 58.
-(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
-File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
-<use images/schedulerTaskSelection.pdf, page 1>
-Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
-t line 58.
+t line 62.
 (pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf, page 1>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
-t line 58.
+t line 62.
 (pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
- [7 <./images/schedulerTaskSelection.pdf>] [8]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 84.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 84.
+File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
+<use images/schedulerTaskSelection.pdf, page 1>
+Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
+t line 62.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [7 <./images/schedulerTaskSelection.pdf>]
+<images/SchedulerTaskSelectionFlow.pdf, id=198, 845.0471pt x 1195.01462pt>
+File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
+<use images/SchedulerTaskSelectionFlow.pdf>
+Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf  used on input l
+ine 63.
+(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
+File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
+<use images/SchedulerTaskSelectionFlow.pdf>
+Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf  used on input l
+ine 63.
+(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
+<images/SchedulerTaskSelectionFlow.pdf, id=201, page=1, 845.0471pt x 1195.01462
+pt>
+File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
+<use images/SchedulerTaskSelectionFlow.pdf, page 1>
+Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf , page1 used on 
+input line 63.
+(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
+File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
+<use images/SchedulerTaskSelectionFlow.pdf, page 1>
+Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf , page1 used on 
+input line 63.
+(pdftex.def)             Requested size: 597.53772pt x 845.00179pt.
+File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
+<use images/SchedulerTaskSelectionFlow.pdf, page 1>
+Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf , page1 used on 
+input line 63.
+(pdftex.def)             Requested size: 597.53772pt x 845.00179pt.
+File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
+<use images/SchedulerTaskSelectionFlow.pdf, page 1>
+Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf , page1 used on 
+input line 63.
+(pdftex.def)             Requested size: 597.53772pt x 845.00179pt.
+File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
+<use images/SchedulerTaskSelectionFlow.pdf, page 1>
+Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf , page1 used on 
+input line 63.
+(pdftex.def)             Requested size: 597.53772pt x 845.00179pt.
+ [8 <./images/SchedulerTaskSelectionFlow.pdf>] [9]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 88.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 88.
  (report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 84.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 84.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 88.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 88.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 21D37F087A5A2B4968BECBE0E1273DD2;1275.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 84.
+(rerunfilecheck)             Checksum: 02C3E3052D0294DAD24B7A27B805B3B2;1248.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 88.
  ) 
 Here is how much of TeX's memory you used:
- 18778 strings out of 493312
- 345873 string characters out of 3138898
+ 18786 strings out of 493312
+ 346263 string characters out of 3138898
  415765 words of memory out of 3000000
- 21895 multiletter control sequences out of 15000+200000
+ 21901 multiletter control sequences out of 15000+200000
  19604 words of font info for 59 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  62i,18n,81p,1840b,545s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1246,9 +1289,9 @@ ers\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm2074.
 pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600
 \ecbx2074.pk><A:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10
 .pfb>
-Output written on report.pdf (8 pages, 456804 bytes).
+Output written on report.pdf (9 pages, 510995 bytes).
 PDF statistics:
- 516 PDF objects out of 1000 (max. 8388607)
+ 539 PDF objects out of 1000 (max. 8388607)
  31 named destinations out of 1000 (max. 500000)
- 317 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 329 words of extra memory for PDF output out of 10000 (max. 10000000)
 

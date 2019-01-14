@@ -11,7 +11,7 @@
 #include "../DataStructures/queue.h"
 #include "../DataStructures/channel.h"
 
-#define MEMPOOL_SIZE 16384 //
+#define MEMPOOL_SIZE 26384 
 __align(8)
 static uint32_t memory[MEMPOOL_SIZE]; 
 
@@ -28,8 +28,7 @@ void task1(void const *const args) {
 		printf("\t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		channel_write(channel,taskcounter1);
 		OS_mutex_release(&printLock);
-		////////////////////////////
-		//OS_sleep(rand()%100);
+		OS_sleep(rand()%100);
 	}
 }
 
@@ -42,7 +41,7 @@ void task2(void const *const args) {
 		printf("\t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		channel_write(channel,taskcounter2);
 		OS_mutex_release(&printLock);
-		//OS_sleep(rand()%100);
+		OS_sleep(rand()%100);
 	}
 }
 
@@ -55,7 +54,7 @@ void task3(void const *const args) {
 		printf("\t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		channel_write(channel,taskcounter3);
 		OS_mutex_release(&printLock);
-		//OS_sleep(rand()%100);
+		OS_sleep(rand()%100);
 	}
 }
 
@@ -68,7 +67,6 @@ void task4(void const *const args) {
 		printf("\t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		channel_write(channel,taskcounter4);
 		OS_mutex_release(&printLock);
-		//OS_sleep(rand()%100);
 	}
 }
 
@@ -80,8 +78,6 @@ void task5(void const *const args) {
 		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		OS_mutex_release(&printLock);
 		OS_mutex_release(&task5_8Lock);
-		////////////////////////////
-		//OS_sleep(rand()%100);
 	}
 }
 
@@ -94,7 +90,6 @@ void task6(void const *const args) {
 		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		channel_write(channel,taskcounter6);
 		OS_mutex_release(&printLock);
-		//OS_sleep(rand()%100);
 	}
 }
 
@@ -107,7 +102,6 @@ void task7(void const *const args) {
 		printf("\t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t %04d \t\t\u001b[31m[%04d]\u001b[0m\t\t %04d \r\n",taskcounter1,taskcounter2,taskcounter3,taskcounter4,taskcounter5,taskcounter6,taskcounter7,taskcounter8);
 		channel_write(channel,taskcounter7);
 		OS_mutex_release(&printLock);
-		//OS_sleep(rand()%100);
 	}
 }
 
@@ -216,6 +210,45 @@ void task13(void const *const args) {
 	}
 }
 
+void task0(void const *const args) {
+    OS_TCB_t * TCB1 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+    OS_TCB_t * TCB2 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+    OS_TCB_t * TCB3 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+    OS_TCB_t * TCB4 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+    OS_TCB_t * TCB5 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+    OS_TCB_t * TCB6 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+    OS_TCB_t * TCB7 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+    OS_TCB_t * TCB8 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+    OS_TCB_t * TCB13 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+    uint32_t * stack1 = OS_alloc(64);
+    uint32_t * stack2 = OS_alloc(64);
+    uint32_t * stack3 = OS_alloc(64);
+    uint32_t * stack4 = OS_alloc(64);
+    uint32_t * stack5 = OS_alloc(64);
+    uint32_t * stack6 = OS_alloc(64);
+    uint32_t * stack7 = OS_alloc(64);
+    uint32_t * stack8 = OS_alloc(64);
+    uint32_t * stack13 = OS_alloc(64);
+    OS_initialiseTCB(TCB1, stack1+64, task1, 0);
+    OS_initialiseTCB(TCB2, stack2+64, task2, 0);
+    OS_initialiseTCB(TCB3, stack3+64, task3, 0);
+    OS_initialiseTCB(TCB4, stack4+64, task4, 0);
+    OS_initialiseTCB(TCB5, stack5+64, task5, 0);
+    OS_initialiseTCB(TCB6, stack6+64, task6, 0);
+    OS_initialiseTCB(TCB7, stack7+64, task7, 0);
+    OS_initialiseTCB(TCB8, stack8+64, task8, 0);
+    OS_initialiseTCB(TCB13, stack13+64, task13, 0);
+    OS_addTask(TCB1,5);
+    OS_addTask(TCB2,2);
+    OS_addTask(TCB3,3);
+    OS_addTask(TCB4,4);
+    OS_addTask(TCB5,1);
+    OS_addTask(TCB6,6);
+    OS_addTask(TCB7,7);
+    OS_addTask(TCB8,8);
+    OS_addTask(TCB13,13);
+}
+
 /* MAIN FUNCTION */
 int main(void) {
 	//SCnSCB->ACTLR = SCnSCB_ACTLR_DISDEFWBUF_Msk; //DEBUG, converting IMPRECISERR into PRECISERR
@@ -228,48 +261,14 @@ int main(void) {
 	/* Initialise the OS */
 	
 	OS_init(&stochasticScheduler,memory,MEMPOOL_SIZE);
-	
-	OS_TCB_t * TCB1 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
-	OS_TCB_t * TCB2 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
-	OS_TCB_t * TCB3 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
-	OS_TCB_t * TCB4 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
-	OS_TCB_t * TCB5 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
-	OS_TCB_t * TCB6 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
-	OS_TCB_t * TCB7 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
-	OS_TCB_t * TCB8 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
-	OS_TCB_t * TCB13 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
-	uint32_t * stack1 = OS_alloc(64);
-	uint32_t * stack2 = OS_alloc(64);
-	uint32_t * stack3 = OS_alloc(64);
-	uint32_t * stack4 = OS_alloc(64);
-	uint32_t * stack5 = OS_alloc(64);
-	uint32_t * stack6 = OS_alloc(64);
-	uint32_t * stack7 = OS_alloc(64);
-	uint32_t * stack8 = OS_alloc(64);
-	uint32_t * stack13 = OS_alloc(64);
+
+	OS_TCB_t * TCB0 = (OS_TCB_t*)OS_alloc(sizeof(OS_TCB_t));
+	uint32_t * stack0 = OS_alloc(64);
+	OS_initialiseTCB(TCB0, stack0+64, task0, 0);
+	OS_addTask(TCB0,1);
+
 	OS_init_mutex(&printLock);
 	OS_init_mutex(&task5_8Lock);
-	
-	/* Initialise the TCBs using the two functions above */
-	OS_initialiseTCB(TCB1, stack1+64, task1, 0);
-	OS_initialiseTCB(TCB2, stack2+64, task2, 0);
-	OS_initialiseTCB(TCB3, stack3+64, task3, 0);
-	OS_initialiseTCB(TCB4, stack4+64, task4, 0);
-	OS_initialiseTCB(TCB5, stack5+64, task5, 0);
-	OS_initialiseTCB(TCB6, stack6+64, task6, 0);
-	OS_initialiseTCB(TCB7, stack7+64, task7, 0);
-	OS_initialiseTCB(TCB8, stack8+64, task8, 0);
-	OS_initialiseTCB(TCB13, stack13+64, task13, 0);
-	
-	OS_addTask(TCB1,5);
-	OS_addTask(TCB2,2);
-	OS_addTask(TCB3,3);
-	OS_addTask(TCB4,4);
-	OS_addTask(TCB5,1);
-	OS_addTask(TCB6,6);
-	OS_addTask(TCB7,7);
-	OS_addTask(TCB8,8);
-	OS_addTask(TCB13,13);
 	
 	
 	OS_start();
