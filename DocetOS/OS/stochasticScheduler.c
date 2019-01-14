@@ -306,8 +306,9 @@ static void stochasticScheduler_addTask(OS_TCB_t * const tcb,uint32_t task_prior
 static void stochasticScheduler_taskExit(OS_TCB_t * const tcb){
     tcb->state |= TASK_STATE_EXIT;
 		tcb->data = NULL; // used in completed tasks linked list. Needs to be NULL if not pointing to other completed task
-    /*TODO: It would be easy to release all mutexes held by the task...not sure if advisable since user might intentionally
-     * give task locks and then exit that task (for whatever reason). In that case releasing the mutexes here would cause confusion*/
+    /*It would be easy to release all mutexes held by the task here...not sure if advisable since the user might make a mistake
+			whilst setting up a task which causes it to exit before releasing the locks. If I release the locks automatically it would
+			hide the actual problem of the task exiting too soon, which in turn could make it a lot harder to debug.*/
 }
 
 //=============================================================================
@@ -648,7 +649,7 @@ static uint32_t __updateSleepState(OS_TCB_t * task){
 		those tasks from sleeping much MUCH (like up to 2^32 systicks) longer than desired.*/
 		systick_rollover_detected_FLAG = 1;
 		uint32_t delta1 = (UINT32_MAX - lastSleepStateUpdate); /*time between last sleep update to task state and
-			the moment the systick timer rolled over*/
+		the moment the systick timer rolled over*/
 		deltaTime = currentTime + delta1; // total elapsed time
 	}else{
 		deltaTime = currentTime - lastSleepStateUpdate;

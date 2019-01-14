@@ -270,6 +270,7 @@ static OS_memBlock_t * __recoverBlockFromBucket(uint32_t * memory_pointer){
 	return NULL;
 }
 
+/* disables svc enables/delegates for memory cluster related locks*/
 void memory_cluster_setInternalLockState(uint32_t _enable){
 	if(_enable){
 		hashtable_lock.svcDelegatesEnabled = 1;

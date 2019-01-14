@@ -11,20 +11,14 @@
   <component name="ChangeListManager">
     <list default="true" id="c2baeb46-297d-47e8-b8b0-469489949f26" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/DocetOS_sleep_wait.uvoptx" afterPath="$PROJECT_DIR$/DocetOS/DocetOS_sleep_wait.uvoptx" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/os.c" afterPath="$PROJECT_DIR$/DocetOS/OS/os.c" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/OS/memcluster.c" afterPath="$PROJECT_DIR$/DocetOS/OS/memcluster.c" />
       <change beforePath="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" afterPath="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/OS/structs.h" afterPath="$PROJECT_DIR$/DocetOS/OS/structs.h" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/schedulerTaskSelection.pdf" afterPath="$PROJECT_DIR$/DocetOS/REPORT/images/schedulerTaskSelection.pdf" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/schedulerTaskSelection.vsdx" afterPath="$PROJECT_DIR$/DocetOS/REPORT/images/schedulerTaskSelection.vsdx" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/~$$schedulerTaskSelection.~vsdx" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.aux" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.aux" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/SchedulerTaskSelectionFlow.pdf" afterPath="$PROJECT_DIR$/DocetOS/REPORT/images/SchedulerTaskSelectionFlow.pdf" />
+      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/images/SchedulerTaskSelectionFlow.vsdx" afterPath="$PROJECT_DIR$/DocetOS/REPORT/images/SchedulerTaskSelectionFlow.vsdx" />
       <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.log" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.log" />
       <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.pdf" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.pdf" />
       <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.synctex.gz" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.synctex.gz" />
       <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.tex" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.tex" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/REPORT/report.toc" afterPath="$PROJECT_DIR$/DocetOS/REPORT/report.toc" />
-      <change beforePath="$PROJECT_DIR$/DocetOS/main.c" afterPath="$PROJECT_DIR$/DocetOS/main.c" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -53,7 +47,7 @@
         <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.c">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="466">
-              <caret line="94" column="32" lean-forward="false" selection-start-line="94" selection-start-column="9" selection-end-line="94" selection-end-column="32" />
+              <caret line="98" column="32" lean-forward="false" selection-start-line="98" selection-start-column="9" selection-end-line="98" selection-end-column="32" />
               <folding />
             </state>
           </provider>
@@ -74,16 +68,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="231">
               <caret line="60" column="43" lean-forward="false" selection-start-line="60" selection-start-column="20" selection-end-line="60" selection-end-column="43" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="os_asm.s" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DocetOS/OS/os_asm.s">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1363">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -129,11 +113,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="stochasticScheduler.c" pinned="false" current-in-tab="true">
+      <file leaf-file-name="stochasticScheduler.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="476">
-              <caret line="566" column="18" lean-forward="true" selection-start-line="566" selection-start-column="18" selection-end-line="566" selection-end-column="18" />
+            <state relative-caret-position="8969">
+              <caret line="649" column="38" lean-forward="false" selection-start-line="649" selection-start-column="8" selection-end-line="649" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="memcluster.c" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="609">
+              <caret line="272" column="68" lean-forward="true" selection-start-line="272" selection-start-column="68" selection-end-line="272" selection-end-column="68" />
               <folding />
             </state>
           </provider>
@@ -142,8 +136,8 @@
       <file leaf-file-name="DocetOS.map" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DocetOS/Flash/DocetOS.map">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="316">
-              <caret line="713" column="24" lean-forward="false" selection-start-line="713" selection-start-column="24" selection-end-line="713" selection-end-column="24" />
+            <state relative-caret-position="367">
+              <caret line="716" column="24" lean-forward="false" selection-start-line="716" selection-start-column="24" selection-end-line="716" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -232,7 +226,6 @@
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/semaphore.h" />
         <option value="$PROJECT_DIR$/DocetOS/OS/channelManger.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/debug.h" />
-        <option value="$PROJECT_DIR$/DocetOS/OS/memcluster.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.h" />
         <option value="$PROJECT_DIR$/DocetOS/DataStructures/heap.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/memcluster.h" />
@@ -241,6 +234,7 @@
         <option value="$PROJECT_DIR$/DocetOS/OS/structs.h" />
         <option value="$PROJECT_DIR$/DocetOS/OS/os.c" />
         <option value="$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c" />
+        <option value="$PROJECT_DIR$/DocetOS/OS/memcluster.c" />
       </list>
     </option>
   </component>
@@ -343,7 +337,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="62572000" />
+    <option name="totallyTimeSpent" value="66089000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1913" y="-9" width="2116" height="1087" extended-state="0" />
@@ -716,14 +710,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="174" column="5" lean-forward="false" selection-start-line="174" selection-start-column="5" selection-end-line="174" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
@@ -782,8 +768,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/Flash/DocetOS.map">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="316">
-          <caret line="713" column="24" lean-forward="false" selection-start-line="713" selection-start-column="24" selection-end-line="713" selection-end-column="24" />
+        <state relative-caret-position="367">
+          <caret line="716" column="24" lean-forward="false" selection-start-line="716" selection-start-column="24" selection-end-line="716" selection-end-column="24" />
           <folding />
         </state>
       </provider>
@@ -807,15 +793,23 @@
     <entry file="file://$PROJECT_DIR$/DocetOS/OS/os.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="466">
-          <caret line="94" column="32" lean-forward="false" selection-start-line="94" selection-start-column="9" selection-end-line="94" selection-end-column="32" />
+          <caret line="98" column="32" lean-forward="false" selection-start-line="98" selection-start-column="9" selection-end-line="98" selection-end-column="32" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DocetOS/OS/stochasticScheduler.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="566" column="18" lean-forward="true" selection-start-line="566" selection-start-column="18" selection-end-line="566" selection-end-column="18" />
+        <state relative-caret-position="8969">
+          <caret line="649" column="38" lean-forward="false" selection-start-line="649" selection-start-column="8" selection-end-line="649" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DocetOS/OS/memcluster.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="609">
+          <caret line="272" column="68" lean-forward="true" selection-start-line="272" selection-start-column="68" selection-end-line="272" selection-end-column="68" />
           <folding />
         </state>
       </provider>
