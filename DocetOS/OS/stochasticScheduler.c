@@ -438,6 +438,10 @@ static void stochasticScheduler_sleepCallback(OS_TCB_t * const tcb,uint32_t min_
 	return;
 }
 
+//=============================================================================
+// Priority inheritance related
+//=============================================================================
+
 /*changes the tasks priority depending on the priority of other tasks that are waiting on resources acquired by this
  * task. The task will use the highest priority (lowest value, minHeap) as its own priority as long as it holds the
  * resource*/
@@ -467,20 +471,20 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
         task->prevInheritedPriority = task->inheritedPriority;
         task->inheritedPriority = highestPriority;
     }else{
-				if(task->inheritedPriority && isActiveAndInHeap){//if true it means that the task was running under inherited priority previously
-					/*remove and re-add task to reset priority*/
-					uint32_t taskHeapIndex = OS_heap_indexOfContent(schedulerHeap,(uint32_t)task);
-					void * removedTask;
-					OS_heap_removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
-					if(removedTask != task){
-            printf("SCHEDULER: ERROR during priority inheritance reset, taskHeapIndex is incorrect!");
-            ASSERT(0);
-					}
-					OS_heap_addNode(schedulerHeap,task,task->priority);
-				}
+        if(task->inheritedPriority && isActiveAndInHeap){//if true it means that the task was running under inherited priority previously
+            /*remove and re-add task to reset priority*/
+            uint32_t taskHeapIndex = OS_heap_indexOfContent(schedulerHeap,(uint32_t)task);
+            void * removedTask;
+            OS_heap_removeNodeAt(schedulerHeap,taskHeapIndex,&removedTask);
+            if(removedTask != task){
+                printf("SCHEDULER: ERROR during priority inheritance reset, taskHeapIndex is incorrect!");
+                ASSERT(0);
+            }
+            OS_heap_addNode(schedulerHeap,task,task->priority);
+        }
         task->inheritedPriority = 0;//nothing inherited
     }
-		/*remove and re-add the task to the heap with the inherited priority*/
+    /*remove and re-add the task to the heap with the inherited priority*/
     if(isActiveAndInHeap && task->inheritedPriority && task->prevInheritedPriority != task->inheritedPriority){
         uint32_t taskHeapIndex = OS_heap_indexOfContent(schedulerHeap,(uint32_t)task);
         void * removedTask;
@@ -492,10 +496,6 @@ static void __updatePriorityInheritance(OS_TCB_t * task){
         OS_heap_addNode(schedulerHeap,task,task->inheritedPriority);
     }
 }
-
-//=============================================================================
-// Priority inheritance related
-//=============================================================================
 
 static void resourceAcquired_callback( OS_mutex_t * _acquiredMutex){
     OS_TCB_t * currentTcb = OS_currentTCB();
