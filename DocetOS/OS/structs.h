@@ -9,9 +9,9 @@
 typedef struct{
 	volatile uint32_t 	* 	writePointer;
 	volatile uint32_t 	* 	readPointer;
-	uint32_t 				maxCapacity;
-	uint32_t 			* 	memoryStart;
-	uint32_t 			*	memoryEnd;
+	uint32_t 								maxCapacity;
+	uint32_t 						* 	memoryStart;
+	uint32_t 						*		memoryEnd;
 } OS_queue_t;
 
 //=============================================================================
@@ -20,15 +20,15 @@ typedef struct{
 typedef struct{
 	volatile uint32_t 	* 	nextHashtableValue;
 	volatile uint32_t 	* 	underlyingData;
-	volatile uint32_t 		key;
+	volatile uint32_t 			key;
 }OS_hashtable_value_t;
 
 typedef struct{
-	uint32_t 				numberOfBuckets;
-	uint32_t 				maximumCapacity;
+	uint32_t 							numberOfBuckets;
+	uint32_t 							maximumCapacity;
 	volatile uint32_t 		remainingCapacity;
 	volatile uint32_t 		validValueFlag; // set to 0 on entry to get or remove operation. set to 1 if valid
-	volatile uint32_t 	* 	freeHashtableValueStructLinkedList;
+	volatile uint32_t 	* freeHashtableValueStructLinkedList;
 } OS_hashtable_t;
 
 //=============================================================================
@@ -45,9 +45,9 @@ typedef struct __s_heap{
 	 * restoration of the heap (node->nodeValue). */
 	OS_minHeapNode_t 				*   ptrToUnderlyingArray;
 	OS_hashtable_t 					* 	nodeContentIndexHashTable; // only created if requested by user, stores node index of a given node content for quick access.
-	uint32_t        					maxNumberOfNodes;
-	uint32_t 			volatile        currentNumNodes;
-	OS_minHeapNode_t 	volatile  	*  	nextEmptyElement;
+	uint32_t        						maxNumberOfNodes;
+	uint32_t 					volatile   currentNumNodes;
+	OS_minHeapNode_t 	volatile * nextEmptyElement;
 	OS_minHeapNode_t 				*   lastArrayElement;
 } OS_minHeap_t;
 
@@ -71,7 +71,7 @@ typedef struct {
 	uint32_t 		volatile data2;
 	uint32_t 		volatile svc_return;//data returned from svc placed in here.
 	uint32_t 		volatile inheritedPriority; // 0 if nothing inherited
-    uint32_t 		volatile prevInheritedPriority; //used to check if inherited priority changed.
+  uint32_t 		volatile prevInheritedPriority; //used to check if inherited priority changed.
 	void 		* 	volatile acquiredResourcesLinkedList; // 0 if no acquired resources
 } OS_TCB_t;
 
@@ -80,10 +80,10 @@ typedef struct {
 //=============================================================================
 
 typedef struct{
-	uint32_t 		counter;
-	uint32_t volatile svcDelegatesEnabled;// enable/disable notify/wait callbacks 
-	OS_TCB_t 	* 	tcbPointer;//tcb that holds this lock
-	void 		* 	nextAcquiredResource; // points to the next resource acquired by task (or NULL if no other resource)
+	uint32_t 							counter;
+	uint32_t 		volatile 	svcDelegatesEnabled;// enable/disable notify/wait callbacks 
+	OS_TCB_t 		* 				tcbPointer;//tcb that holds this lock
+	void 				* 				nextAcquiredResource; // points to the next resource acquired by task (or NULL if no other resource)
 } OS_mutex_t;
 
 //=============================================================================
@@ -101,21 +101,21 @@ typedef struct{
 
 typedef struct{
 	uint32_t 		volatile * 		nextMemblock; //pointer to next block, either in pool or in "allocated block linked list" of hashtable
-	uint32_t 						blockSize; // memcluster needs to know to put block back into corresponding pool
-	uint32_t * 						headPtr; // points to first address of memory that the requester can use.
+	uint32_t 									blockSize; // memcluster needs to know to put block back into corresponding pool
+	uint32_t * 								headPtr; // points to first address of memory that the requester can use.
 } OS_memBlock_t;
 
 typedef struct{
-	uint32_t 		volatile		freeBlocks;
-	uint32_t 			    		blockSize; // size of USABLE memory, does not include OS_memory_pool_t struct size
-	OS_mutex_t 		* 		    	memoryPoolLock;
-	OS_memBlock_t   * volatile 		firstMemoryBlock;
+	uint32_t 				volatile		freeBlocks;
+	uint32_t 			    					blockSize; // size of USABLE memory, does not include OS_memory_pool_t struct size
+	OS_mutex_t 		* 		    		memoryPoolLock;
+	OS_memBlock_t * volatile 		firstMemoryBlock;
 } OS_memory_pool_t;
 
 typedef struct {
 	uint32_t 		volatile clusterInUseFLAG; // indicates that the cluster is currently being used to allocate/deallocate
-	uint32_t * (* allocate)	    (uint32_t requiredSizeIn4byteWords);// guarantees returned memory is at least requiredSizeIn4byteWords large
-	void 	   (* deallocate)   (void * memblockHeadPtr);
+	uint32_t * 			(* allocate)			(uint32_t requiredSizeIn4byteWords);// guarantees returned memory is at least requiredSizeIn4byteWords large
+	void 	   				(* deallocate)   	(void * memblockHeadPtr);
 } OS_memcluster_t;
 
 //=============================================================================
@@ -123,12 +123,12 @@ typedef struct {
 //=============================================================================
 
 typedef struct{
-	uint32_t 			channelID;
-	uint32_t 			capacity;
+	uint32_t 						channelID;
+	uint32_t 						capacity;
 	OS_semaphore_t 	* 	readTokens;
 	OS_semaphore_t 	* 	writeTokens;
-	OS_mutex_t 		* 	queueLock;
-	OS_queue_t 		* 	queue;
+	OS_mutex_t 			* 	queueLock;
+	OS_queue_t 			* 	queue;
 } OS_channel_t;
 
 //=============================================================================
@@ -136,9 +136,9 @@ typedef struct{
 //=============================================================================
 
 typedef struct{
-	OS_channel_t * 	(* connect_callback)	(uint32_t _channelID,uint32_t _capacity);
-	uint32_t 		(* disconnect_callback)	(uint32_t _channelID);
-	uint32_t 		(* isAlive_callback)	(uint32_t _channelID);
+	OS_channel_t * 	(* connect_callback)		(uint32_t _channelID,uint32_t _capacity);
+	uint32_t 				(* disconnect_callback)	(uint32_t _channelID);
+	uint32_t 				(* isAlive_callback)		(uint32_t _channelID);
 } OS_channelManager_t;
 
 #endif /*STRUCTS_H*/

@@ -53,12 +53,13 @@ void OS_semaphore_acquire_token(OS_semaphore_t * _semaphore){
             continue;
         }
     }
+		/*some tasks might be waiting because they tried releasing a token when the semaphore was full.*/
     OS_notify(_semaphore);
 }
 
 /* OS_semaphore_release_token Places a token back into the semaphore.
  * -> blocks until another task removes a token if the semaphore already holds the maximum number of tokens
- * -> notifies all tasks waiting on this semaphore after successfully placing token
+ * -> notifies all tasks waiting on this semaphore after successfully placeing token
  * */
 void OS_semaphore_release_token(OS_semaphore_t * _semaphore){
     uint32_t exclusiveAcessFailed;
@@ -79,6 +80,7 @@ void OS_semaphore_release_token(OS_semaphore_t * _semaphore){
             continue;
         }
     }
+		/*some tasks might be waiting because they tried acquire a token when the semaphore was empty.*/
     OS_notify(_semaphore);
 }
 

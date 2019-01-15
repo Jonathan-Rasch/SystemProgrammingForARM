@@ -1,7 +1,3 @@
-//
-// Created by user on 07/01/19.
-//
-
 #ifndef DOCETOS_SEMAPHORE_H
 #define DOCETOS_SEMAPHORE_H
 

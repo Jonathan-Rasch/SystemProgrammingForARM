@@ -1,7 +1,4 @@
 #include "mutex.h"
-#include <stdio.h>
-#include "os_internal.h"
-#include "os.h"
 
 //================================================================================
 // init, new and destroy

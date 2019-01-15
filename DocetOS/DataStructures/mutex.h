@@ -4,6 +4,8 @@
 #include "os.h"
 #include "stm32f4xx.h"
 #include "structs.h"
+#include <stdio.h>
+#include "os_internal.h"
 
 //================================================================================
 // Exported Functions

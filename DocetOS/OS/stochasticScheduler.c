@@ -1,10 +1,4 @@
 #include "stochasticScheduler.h"
-#include "../DataStructures/heap.h"
-#include "../DataStructures/mutex.h"
-#include <stdlib.h>
-#include "../DataStructures/hashtable.h"
-#include "memcluster.h"
-#include "os.h"
 
 //=============================================================================
 // vars

@@ -1,8 +1,5 @@
 #include "hashtable.h"
-#include <stdint.h>
-#include <stdio.h>
-#include "memcluster.h"
-#include "os.h"
+
 
 //=============================================================================
 // INIT

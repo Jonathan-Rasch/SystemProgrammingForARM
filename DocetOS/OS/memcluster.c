@@ -1,9 +1,4 @@
 #include "memcluster.h"
-#include "math.h"
-#include <stdio.h>
-#include "stm32f4xx.h"
-#include "../DataStructures/hashtable.h"
-#include "../DataStructures/mutex.h"
 
 //================================================================================
 // Vars, Definitions, Prototypes And Init Function

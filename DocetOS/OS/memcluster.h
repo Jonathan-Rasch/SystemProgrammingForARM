@@ -5,6 +5,11 @@
 #include <stdint.h>
 #include "../OS/debug.h" 
 #include "../OS/structs.h"
+#include "math.h"
+#include <stdio.h>
+#include "stm32f4xx.h"
+#include "../DataStructures/hashtable.h"
+#include "../DataStructures/mutex.h"
 
 #define MEMPOOL_HASH_TABLE_BUCKET_NUM 3
 #define SMALLEST_BLOCK_SIZE 4 //in ((2^N)*4)/1024 kb

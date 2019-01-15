@@ -3,7 +3,9 @@
 
 #include <stdint.h>
 #include "structs.h"
-
+#include <stdio.h>
+#include "memcluster.h"
+#include "os.h"
 
 //prototypes
 OS_hashtable_t * new_hashtable(uint32_t _capacity,uint32_t _numberOfBuckets);

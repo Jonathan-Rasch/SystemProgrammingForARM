@@ -4,6 +4,12 @@
 #include "os.h"
 #include "stm32f4xx.h"
 #include "structs.h"
+#include "../DataStructures/heap.h"
+#include "../DataStructures/mutex.h"
+#include <stdlib.h>
+#include "../DataStructures/hashtable.h"
+#include "memcluster.h"
+#include "os.h"
 
 /*  The maximum number of tasks the scheduler can deal with*/
 #define MAX_TASKS MAX_HEAP_SIZE
