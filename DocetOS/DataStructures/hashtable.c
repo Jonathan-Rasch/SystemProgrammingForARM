@@ -132,7 +132,7 @@ uint32_t * OS_hashtable_get(OS_hashtable_t * _hashtable, uint32_t _key){
     OS_hashtable_value_t * hashVal = (OS_hashtable_value_t *)bucketArray[bucket_number];
     while(hashVal){
         if(hashVal->key == _key){
-            value = hashVal->underlyingData;
+            value = (uint32_t *)hashVal->underlyingData;
             _hashtable->validValueFlag = 1;
             return value;
         }else{
@@ -160,7 +160,7 @@ uint32_t * OS_hashtable_getNthValueAtKey(OS_hashtable_t * _hashtable, uint32_t _
                 hashVal = (OS_hashtable_value_t *)hashVal->nextHashtableValue;
                 continue;
             }
-            value = hashVal->underlyingData;
+            value = (uint32_t *)hashVal->underlyingData;
             _hashtable->validValueFlag = 1;
             return value;
         }else{
@@ -184,7 +184,7 @@ uint32_t * OS_hashtable_remove(OS_hashtable_t * _hashtable, uint32_t _key){
 	while(hashVal){
 		if(hashVal->key == _key){
 			_hashtable->validValueFlag = 1;
-			value = hashVal->underlyingData;
+			value = (uint32_t *)hashVal->underlyingData;
 			/*remove from bucket, clear, and return to linked list of unused elements*/
 			if(prevHashVal){
 				prevHashVal->nextHashtableValue = hashVal->nextHashtableValue;

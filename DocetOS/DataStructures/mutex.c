@@ -55,6 +55,8 @@ void OS_mutex_acquire(OS_mutex_t * _mutex){
 		}else{
 			//somebody else holds the lock, wait for its release
 			if(_mutex->svcDelegatesEnabled){
+				/*during certain sections of the scheduler it is necessary to disable the mutex calling svc delegates,
+				(see task exit and tcb/stack deallocation), hence the svcDelegatesEnabled Flag*/
 				OS_wait(_mutex,checkCode,1);
 			}
 			continue;//repeat the process of trying to obtain lock
@@ -98,10 +100,7 @@ void OS_mutex_release(OS_mutex_t * _mutex){
 	if(_mutex->counter == 0){
 		//releasing lock fully
 		_mutex->tcbPointer = NULL;
-		if(currentTCB == NULL){
-			return;//not a task, dont try and sleep !!
-		}
-		if(_mutex->svcDelegatesEnabled){
+		if(_mutex->svcDelegatesEnabled && currentTCB != NULL){
 			OS_notify(_mutex);
 			OS_yield();//give other tasks a chance to get lock
 		}

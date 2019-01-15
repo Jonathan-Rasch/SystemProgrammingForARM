@@ -67,8 +67,8 @@ static uint32_t __updateSleepState(OS_TCB_t * task);
 static void __updatePriorityInheritance(OS_TCB_t * task);
 
 //debug
-static void DEBUG_hashTableState();
-static void DEBUG_heapState();
+static void DEBUG_hashTableState(void);
+static void DEBUG_heapState(void);
 
 //=============================================================================
 // init
