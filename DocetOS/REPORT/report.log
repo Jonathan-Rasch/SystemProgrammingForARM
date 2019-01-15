@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.11.18)  14 JAN 2019 23:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.11.18)  15 JAN 2019 01:19
 entering extended mode
 **./report.tex
 (report.tex
@@ -1370,25 +1370,63 @@ File: images/PriorityInheritanceFlow.pdf Graphic file (type pdf)
 Package pdftex.def Info: images/PriorityInheritanceFlow.pdf , page1 used on inp
 ut line 66.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
- [11 <./images/PriorityInheritanceFlow.pdf>] [12]
-Underfull \hbox (badness 10000) in paragraph at lines 88--89
+ [11 <./images/PriorityInheritanceFlow.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 69--70
 
  []
 
-<images/priorityInheritance.png, id=317, 948.54375pt x 761.84625pt>
+<images/MemoryClusterOverview.pdf, id=313, 845.0471pt x 1195.01462pt>
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf  used on input line 7
+5.
+(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf  used on input line 7
+5.
+(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
+<images/MemoryClusterOverview.pdf, id=316, page=1, 845.0471pt x 1195.01462pt>
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf, page 1>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
+ line 75.
+(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf, page 1>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
+ line 75.
+(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
+[12]
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf, page 1>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
+ line 75.
+(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf, page 1>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
+ line 75.
+(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf, page 1>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
+ line 75.
+(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
+ [13 <./images/MemoryClusterOverview.pdf>] [14]
+Underfull \hbox (badness 10000) in paragraph at lines 90--91
+
+ []
+
+<images/priorityInheritance.png, id=348, 948.54375pt x 761.84625pt>
 File: images/priorityInheritance.png Graphic file (type png)
 <use images/priorityInheritance.png>
-Package pdftex.def Info: images/priorityInheritance.png  used on input line 90.
+Package pdftex.def Info: images/priorityInheritance.png  used on input line 92.
 
 (pdftex.def)             Requested size: 483.69687pt x 388.48994pt.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 90--91
+Overfull \hbox (17.62482pt too wide) in paragraph at lines 92--93
 [][] 
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 90--91
-
  []
 
 
@@ -1396,29 +1434,40 @@ Underfull \hbox (badness 10000) in paragraph at lines 92--93
 
  []
 
-[13 <./images/priorityInheritance.png>]
+
 Underfull \hbox (badness 10000) in paragraph at lines 94--95
 
  []
 
-[14]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 99.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 99.
+[15 <./images/priorityInheritance.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 96--97
+
+ []
+
+
+Overfull \hbox (17.38351pt too wide) in paragraph at lines 101--102
+\T1/cmr/m/n/12 tion and chan-nel setup from the user by pro-vid-ing con-ve-nien
+ce func-tions (e.g OS_channel_connect)
+ []
+
+[16]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 103.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 103.
  (report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 99.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 99.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 103.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 103.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 3DE12C6A803A85E8F640884917108F20;1300.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 99.
+(rerunfilecheck)             Checksum: 866A73733F5A3FC8E8C05DE43C2FA737;1284.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 103.
  ) 
 Here is how much of TeX's memory you used:
- 18825 strings out of 493312
- 347489 string characters out of 3138898
- 415765 words of memory out of 3000000
- 21927 multiletter control sequences out of 15000+200000
+ 18836 strings out of 493312
+ 347862 string characters out of 3138898
+ 415764 words of memory out of 3000000
+ 21934 multiletter control sequences out of 15000+200000
  19604 words of font info for 59 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,19n,81p,1840b,551s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 62i,19n,81p,1858b,553s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\
 ecbx1440.pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\
 ec\dpi600\ecbx1200.pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour
@@ -1431,9 +1480,9 @@ ers\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm2074.
 pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600
 \ecbx2074.pk><A:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10
 .pfb>
-Output written on report.pdf (14 pages, 778313 bytes).
+Output written on report.pdf (16 pages, 831629 bytes).
 PDF statistics:
- 649 PDF objects out of 1000 (max. 8388607)
- 37 named destinations out of 1000 (max. 500000)
- 402 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 684 PDF objects out of 1000 (max. 8388607)
+ 39 named destinations out of 1000 (max. 500000)
+ 422 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -178,7 +178,8 @@ static void deallocate(void * memblockHeadPtr){
 	memcluster->clusterInUseFLAG = 1;
 	OS_memBlock_t * block = __recoverBlockFromBucket(memblockHeadPtr);
 	if(block == NULL){ // NULL pointer returned, provided memory ptr is not valid
-			memcluster->clusterInUseFLAG = 0;
+		memcluster->clusterInUseFLAG = 0;
+		printf("\r\nMEMCLUSTE: ERROR memory pointer passed to deallocate function that is not known to the memory cluster!\r\n");
 		return;
 	}
 	OS_memory_pool_t * pool = NULL;
