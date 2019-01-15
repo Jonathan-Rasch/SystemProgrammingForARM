@@ -29,20 +29,21 @@ This document outlines the extensions and modifications made to the DocetOS oper
 \tableofcontents
 \pagebreak
 \section{The Stochastic Scheduler}
-My plan was to allow DocetOS to support a large number of tasks, which made me come up with the following key requirements for the priority scheduler:
+My extensions aim to allow DocetOS to work with a large number of tasks efficiently, to achieve this the scheduler needs to meet the following requirements:
 \begin{itemize}
+\setlength\itemsep{0.0em}
   \item The scheduler should be pre-emptive, but allow tasks enough time to run to avoid wasting CPU time on frequent context switching.
-  \item CPU time allocated per task should be dependant on the tasks priority, but the highest priority task should not be the only task getting CPU time (not just standard Fixed priority pre-emptive scheduling behaviour where only the highest priority task is selected)
-  \item Task starvation should be avoided, even the lowest priority task should have a non-zero probability of getting selected during task switch.
+  \item CPU time allocated per task should be dependant on the tasks priority.
+  \item Task starvation needs to be avoided
   \item Task switching and status changes of tasks should not result in a large overhead of CPU time.
     \item The scheduler needs to avoid priority inversion.
 \end{itemize}
 
-\pagebreak
 \subsection{Implementation}
 At the end of this section you will find an example illustration of the internal state of the scheduler at a particular point in time. The scheduler contains 2 heaps and 5 hashtables which are used to keep track of the various states a task can be in, and allow quick access to any task no matter its state.
 
 \begin{itemize}
+\setlength\itemsep{0.0em}
   \item The \textbf{Scheduler Heap} is used by the scheduler to determine what task to select for execution. This heap can contain tasks that are active and tasks that are waiting, sleeping or have tasks that have run to completion (see highlight 1). Tasks that are not active are only moved/removed from the scheduler heap if they are encountered in the heap during task selection. This is done to save cpu time on operations that might be unnecessary, a task that goes to sleep might wake up long before the scheduler comes across it in the heap, so moving it to the sleep heap would only waste cpu cycles on restructuring the sleep and scheduler heaps. When the scheduler comes across a sleeping/waiting task it checks if this state is still applicable and only then moves the task to a different heap/hashtable.
   \item The \textbf{Sleep Heap} stores tasks that are sleeping and have been removed from the scheduler heap. In this heap the tasks position in the heap is not determined by its priority but by its remaining sleep time (highlight 2). The scheduler removes the first node, updates its remaining sleep time by referring to the time it started sleeping and checks if it has woken up, if it has it is added back to the scheduler heap and the process is repeated. If the first node has not woken up yet then none of the other nodes will have woken up either. This approach means only one sleeping node has to be updated.
   \item The \textbf{tasksInSchedulerHeapHashTable} keeps track of all the tasks currently present in the scheduler heap. Used to check what tasks have to be added back to the scheduler heap after wake/notify and which ones were never removed.
@@ -91,7 +92,7 @@ The memory cluster consists of one mutex and one linked list per memory pool. Th
 \section{Demonstration Code Overview}
 The demonstration code contains 14 tasks that together highlight the various features of the modified OS. The demonstration begins with the creation and initialisation of a single task (task0). All task resources are allocated using the memory cluster. This is possible because the memory cluster guarantees that the memory blocks it returns are 8-byte aligned. The OS is then started and task 0 begins its execution. It allocates, initialises and adds 9 further tasks to the scheduler from within the running task itself. After this task0 exits and the resources associated with it (TCB and stack) are deallocated by the OS. Below this paragraph you can see an annotated screen shot of the demo output. The screenshot shows the state of the counter of each of the tasks. The bracketed red numbers indicate which task holds the print Lock and executed the printf.\\
 
-\includegraphics[width=\textwidth]{images/priorityInheritance.png}\\
+\includegraphics[width=0.92\textwidth]{images/priorityInheritance.png}\\
 
 Tasks 1 through 4 and tasks 6 and 7 demonstrate the operation of the mutex datatype. Task 1 is an exception because rather than wait whilst another mutex owns the lock it uses the OS\_mutex\_acquire\_non\_blocking function which enables it to skip the printf section if it is not successful in obtaining the lock because another tasks holds it. This allows it to continue increasing its counter when other tasks would have to wait. By inspecting the count that tasks 2,3,4,6 and 7 have obtained in the screen-shot and comparing this count to their priorities it can be seen that cpu time allocated to the task is dependant on the task's priority. The screen-shot also highlights that the scheduler does not only allocate time to the highest priority task and thereby prevents task starvation of lower priority tasks (see how task 4 with priority 4 still occasional increases its count despite task 5 with priority 1 also being active). Tasks 6 and 7 showcase the operating system's sleep functionality after printing to the serial bus by going to sleep for a random interval between 0 and 100 SysTicks.\\
 
@@ -100,6 +101,6 @@ Task 5 and 8 demonstrate the schedulers priority inheritance functionality. Prio
 Task 13 (spawned from task0) is an implementation of the Sieve of Eratosthenes prime number finding algorithm which I use here to demonstrate the inter task communication abilities of the OS. The OS allows task to communicate using channels. A task can obtain a channel from the OS channel manager by stating a channel ID (the user can also create and use channels not managed by the channel manager if they so desire). Two tasks that request the same ID both get given the same channel which they can now use to pass data back and forth. The use of the channel manager lets tasks create and use channels dynamically rather than the user having to create all channels beforehand (the channel manager uses the OS memory cluster for channel allocation). Task13 allocates, initialises and adds task 9-12 to the scheduler, it also creates 4 distinct channels. Tasks 9-12 connect to one channel each. task 9 has a counter starting at 2, all numbers where (num \% 2 == 0) get written to the channel it shares with task 13. tasks 10, 11 and 12 do the same with 3, 5 and 7 respectively. task13 reads from the 4 channels and compares the numbers. If all 4 numbers match then it shows that that number is a prime and task 13 prints it to the serial bus.
 
 \section{Conclusion}
-I have extended DocetOS with a range of features that allow the user to implement complex tasks with relative ease, abstracting away/hiding lower level operations such as memory allocation and channel setup from the user by providing convenience functions (e.g OS\_channel\_connect) that handle these procedures. I think that the OS components I have added are well suited for running a larger number of tasks efficiently and allow the system to be scaled to up (provided that certain parameters are tweaked, e.g memcluster block sizes and maximum task runtime before scheduler forces a task switch).
+I have extended DocetOS with a range of features that allow the user to implement complex tasks with relative ease. Complex lower level operations such as memory allocation and channel setup are hidden from the user by providing several convenience functions (e.g OS\_channel\_connect) that handle these procedures. I think that the OS components I have added are well suited for running a larger number of tasks efficiently and allow the system to be scaled to up (provided that certain parameters are tweaked, e.g memcluster block sizes and maximum task runtime before scheduler forces a task switch).
 
 \end{document}

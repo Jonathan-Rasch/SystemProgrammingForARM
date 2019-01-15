@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.11.18)  15 JAN 2019 01:19
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.11.18)  15 JAN 2019 02:00
 entering extended mode
 **./report.tex
 (report.tex
@@ -1139,331 +1139,319 @@ rkUniLogo.png>]
 \openout5 = `report.toc'.
 
  [2]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 34.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 35.
  ("A:\Program Files\MiKTeX 2.9\tex\latex\base\omscmr.fd"
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 34.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 35.
+<images/schedulerOverview.png, id=156, 1261.71375pt x 733.99219pt>
+File: images/schedulerOverview.png Graphic file (type png)
+<use images/schedulerOverview.png>
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 56.
+(pdftex.def)             Requested size: 1261.71068pt x 733.99039pt.
+File: images/schedulerOverview.png Graphic file (type png)
+<use images/schedulerOverview.png>
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 56.
+(pdftex.def)             Requested size: 1261.71068pt x 733.99039pt.
+File: images/schedulerOverview.png Graphic file (type png)
+<use images/schedulerOverview.png>
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 56.
+(pdftex.def)             Requested size: 1261.71068pt x 733.99039pt.
+File: images/schedulerOverview.png Graphic file (type png)
+<use images/schedulerOverview.png>
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 56.
+(pdftex.def)             Requested size: 845.5171pt x 491.873pt.
 
 [3]
-<images/schedulerOverview.png, id=161, 1261.71375pt x 733.99219pt>
 File: images/schedulerOverview.png Graphic file (type png)
 <use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
-(pdftex.def)             Requested size: 1261.71068pt x 733.99039pt.
-File: images/schedulerOverview.png Graphic file (type png)
-<use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
-(pdftex.def)             Requested size: 1261.71068pt x 733.99039pt.
-File: images/schedulerOverview.png Graphic file (type png)
-<use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
-(pdftex.def)             Requested size: 1261.71068pt x 733.99039pt.
-File: images/schedulerOverview.png Graphic file (type png)
-<use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
-(pdftex.def)             Requested size: 845.5171pt x 491.873pt.
- [4]
-File: images/schedulerOverview.png Graphic file (type png)
-<use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 56.
 (pdftex.def)             Requested size: 845.5171pt x 491.873pt.
 File: images/schedulerOverview.png Graphic file (type png)
 <use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 56.
 (pdftex.def)             Requested size: 845.5171pt x 491.873pt.
 File: images/schedulerOverview.png Graphic file (type png)
 <use images/schedulerOverview.png>
-Package pdftex.def Info: images/schedulerOverview.png  used on input line 55.
+Package pdftex.def Info: images/schedulerOverview.png  used on input line 56.
 (pdftex.def)             Requested size: 845.5171pt x 491.873pt.
- [5 <./images/schedulerOverview.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 59--60
+ [4 <./images/schedulerOverview.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 60--61
 
  []
 
-<images/schedulerTaskSelection.pdf, id=174, 597.50829pt x 845.0471pt>
+<images/schedulerTaskSelection.pdf, id=170, 597.50829pt x 845.0471pt>
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf  used on input line 
-62.
+63.
 (pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf  used on input line 
-62.
+63.
 (pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
-<images/schedulerTaskSelection.pdf, id=177, page=1, 597.50829pt x 845.0471pt>
+<images/schedulerTaskSelection.pdf, id=173, page=1, 597.50829pt x 845.0471pt>
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf, page 1>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
-t line 62.
+t line 63.
 (pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf, page 1>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
-t line 62.
+t line 63.
 (pdftex.def)             Requested size: 537.75249pt x 760.53537pt.
-[6]
+[5]
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf, page 1>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
-t line 62.
-(pdftex.def)             Requested size: 537.75249pt x 760.53537pt.
-File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
-<use images/schedulerTaskSelection.pdf, page 1>
-Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
-t line 62.
+t line 63.
 (pdftex.def)             Requested size: 537.75249pt x 760.53537pt.
 File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
 <use images/schedulerTaskSelection.pdf, page 1>
 Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
-t line 62.
+t line 63.
 (pdftex.def)             Requested size: 537.75249pt x 760.53537pt.
- [7 <./images/schedulerTaskSelection.pdf>]
-<images/SchedulerTaskSelectionFlow.pdf, id=203, 845.0471pt x 1195.01462pt>
+File: images/schedulerTaskSelection.pdf Graphic file (type pdf)
+<use images/schedulerTaskSelection.pdf, page 1>
+Package pdftex.def Info: images/schedulerTaskSelection.pdf , page1 used on inpu
+t line 63.
+(pdftex.def)             Requested size: 537.75249pt x 760.53537pt.
+ [6 <./images/schedulerTaskSelection.pdf>]
+<images/SchedulerTaskSelectionFlow.pdf, id=198, 845.0471pt x 1195.01462pt>
 File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
 <use images/SchedulerTaskSelectionFlow.pdf>
 Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf  used on input l
-ine 63.
+ine 64.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
 File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
 <use images/SchedulerTaskSelectionFlow.pdf>
 Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf  used on input l
-ine 63.
+ine 64.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
-<images/SchedulerTaskSelectionFlow.pdf, id=206, page=1, 845.0471pt x 1195.01462
+<images/SchedulerTaskSelectionFlow.pdf, id=201, page=1, 845.0471pt x 1195.01462
 pt>
 File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
 <use images/SchedulerTaskSelectionFlow.pdf, page 1>
 Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf , page1 used on 
-input line 63.
+input line 64.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
 File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
 <use images/SchedulerTaskSelectionFlow.pdf, page 1>
 Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf , page1 used on 
-input line 63.
+input line 64.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
 <use images/SchedulerTaskSelectionFlow.pdf, page 1>
 Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf , page1 used on 
-input line 63.
+input line 64.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
 <use images/SchedulerTaskSelectionFlow.pdf, page 1>
 Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf , page1 used on 
-input line 63.
+input line 64.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/SchedulerTaskSelectionFlow.pdf Graphic file (type pdf)
 <use images/SchedulerTaskSelectionFlow.pdf, page 1>
 Package pdftex.def Info: images/SchedulerTaskSelectionFlow.pdf , page1 used on 
-input line 63.
+input line 64.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
- [8 <./images/SchedulerTaskSelectionFlow.pdf>]
-<images/SchedulerSleep.pdf, id=229, 845.0471pt x 1195.01462pt>
+ [7 <./images/SchedulerTaskSelectionFlow.pdf>]
+<images/SchedulerSleep.pdf, id=225, 845.0471pt x 1195.01462pt>
 File: images/SchedulerSleep.pdf Graphic file (type pdf)
 <use images/SchedulerSleep.pdf>
-Package pdftex.def Info: images/SchedulerSleep.pdf  used on input line 64.
+Package pdftex.def Info: images/SchedulerSleep.pdf  used on input line 65.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
 File: images/SchedulerSleep.pdf Graphic file (type pdf)
 <use images/SchedulerSleep.pdf>
-Package pdftex.def Info: images/SchedulerSleep.pdf  used on input line 64.
+Package pdftex.def Info: images/SchedulerSleep.pdf  used on input line 65.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
-<images/SchedulerSleep.pdf, id=232, page=1, 845.0471pt x 1195.01462pt>
+<images/SchedulerSleep.pdf, id=228, page=1, 845.0471pt x 1195.01462pt>
 File: images/SchedulerSleep.pdf Graphic file (type pdf)
 <use images/SchedulerSleep.pdf, page 1>
 Package pdftex.def Info: images/SchedulerSleep.pdf , page1 used on input line 6
-4.
+5.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
 File: images/SchedulerSleep.pdf Graphic file (type pdf)
 <use images/SchedulerSleep.pdf, page 1>
 Package pdftex.def Info: images/SchedulerSleep.pdf , page1 used on input line 6
-4.
+5.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/SchedulerSleep.pdf Graphic file (type pdf)
 <use images/SchedulerSleep.pdf, page 1>
 Package pdftex.def Info: images/SchedulerSleep.pdf , page1 used on input line 6
-4.
+5.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/SchedulerSleep.pdf Graphic file (type pdf)
 <use images/SchedulerSleep.pdf, page 1>
 Package pdftex.def Info: images/SchedulerSleep.pdf , page1 used on input line 6
-4.
+5.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/SchedulerSleep.pdf Graphic file (type pdf)
 <use images/SchedulerSleep.pdf, page 1>
 Package pdftex.def Info: images/SchedulerSleep.pdf , page1 used on input line 6
-4.
+5.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
- [9 <./images/SchedulerSleep.pdf>]
-<images/WaitNotifyFlow.pdf, id=261, 845.0471pt x 1195.01462pt>
+ [8 <./images/SchedulerSleep.pdf>]
+<images/WaitNotifyFlow.pdf, id=257, 845.0471pt x 1195.01462pt>
 File: images/WaitNotifyFlow.pdf Graphic file (type pdf)
 <use images/WaitNotifyFlow.pdf>
-Package pdftex.def Info: images/WaitNotifyFlow.pdf  used on input line 65.
+Package pdftex.def Info: images/WaitNotifyFlow.pdf  used on input line 66.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
 File: images/WaitNotifyFlow.pdf Graphic file (type pdf)
 <use images/WaitNotifyFlow.pdf>
-Package pdftex.def Info: images/WaitNotifyFlow.pdf  used on input line 65.
+Package pdftex.def Info: images/WaitNotifyFlow.pdf  used on input line 66.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
-<images/WaitNotifyFlow.pdf, id=264, page=1, 845.0471pt x 1195.01462pt>
+<images/WaitNotifyFlow.pdf, id=260, page=1, 845.0471pt x 1195.01462pt>
 File: images/WaitNotifyFlow.pdf Graphic file (type pdf)
 <use images/WaitNotifyFlow.pdf, page 1>
 Package pdftex.def Info: images/WaitNotifyFlow.pdf , page1 used on input line 6
-5.
+6.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
 File: images/WaitNotifyFlow.pdf Graphic file (type pdf)
 <use images/WaitNotifyFlow.pdf, page 1>
 Package pdftex.def Info: images/WaitNotifyFlow.pdf , page1 used on input line 6
-5.
+6.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/WaitNotifyFlow.pdf Graphic file (type pdf)
 <use images/WaitNotifyFlow.pdf, page 1>
 Package pdftex.def Info: images/WaitNotifyFlow.pdf , page1 used on input line 6
-5.
+6.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/WaitNotifyFlow.pdf Graphic file (type pdf)
 <use images/WaitNotifyFlow.pdf, page 1>
 Package pdftex.def Info: images/WaitNotifyFlow.pdf , page1 used on input line 6
-5.
+6.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/WaitNotifyFlow.pdf Graphic file (type pdf)
 <use images/WaitNotifyFlow.pdf, page 1>
 Package pdftex.def Info: images/WaitNotifyFlow.pdf , page1 used on input line 6
-5.
+6.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
- [10 <./images/WaitNotifyFlow.pdf>]
-<images/PriorityInheritanceFlow.pdf, id=287, 845.0471pt x 1195.01462pt>
+ [9 <./images/WaitNotifyFlow.pdf>]
+<images/PriorityInheritanceFlow.pdf, id=283, 845.0471pt x 1195.01462pt>
 File: images/PriorityInheritanceFlow.pdf Graphic file (type pdf)
 <use images/PriorityInheritanceFlow.pdf>
 Package pdftex.def Info: images/PriorityInheritanceFlow.pdf  used on input line
- 66.
+ 67.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
 File: images/PriorityInheritanceFlow.pdf Graphic file (type pdf)
 <use images/PriorityInheritanceFlow.pdf>
 Package pdftex.def Info: images/PriorityInheritanceFlow.pdf  used on input line
- 66.
+ 67.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
-<images/PriorityInheritanceFlow.pdf, id=290, page=1, 845.0471pt x 1195.01462pt>
+<images/PriorityInheritanceFlow.pdf, id=286, page=1, 845.0471pt x 1195.01462pt>
 
 File: images/PriorityInheritanceFlow.pdf Graphic file (type pdf)
 <use images/PriorityInheritanceFlow.pdf, page 1>
 Package pdftex.def Info: images/PriorityInheritanceFlow.pdf , page1 used on inp
-ut line 66.
+ut line 67.
 (pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
 File: images/PriorityInheritanceFlow.pdf Graphic file (type pdf)
 <use images/PriorityInheritanceFlow.pdf, page 1>
 Package pdftex.def Info: images/PriorityInheritanceFlow.pdf , page1 used on inp
-ut line 66.
+ut line 67.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/PriorityInheritanceFlow.pdf Graphic file (type pdf)
 <use images/PriorityInheritanceFlow.pdf, page 1>
 Package pdftex.def Info: images/PriorityInheritanceFlow.pdf , page1 used on inp
-ut line 66.
+ut line 67.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/PriorityInheritanceFlow.pdf Graphic file (type pdf)
 <use images/PriorityInheritanceFlow.pdf, page 1>
 Package pdftex.def Info: images/PriorityInheritanceFlow.pdf , page1 used on inp
-ut line 66.
+ut line 67.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
 File: images/PriorityInheritanceFlow.pdf Graphic file (type pdf)
 <use images/PriorityInheritanceFlow.pdf, page 1>
 Package pdftex.def Info: images/PriorityInheritanceFlow.pdf , page1 used on inp
-ut line 66.
+ut line 67.
 (pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
- [11 <./images/PriorityInheritanceFlow.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 69--70
-
- []
-
-<images/MemoryClusterOverview.pdf, id=313, 845.0471pt x 1195.01462pt>
-File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
-<use images/MemoryClusterOverview.pdf>
-Package pdftex.def Info: images/MemoryClusterOverview.pdf  used on input line 7
-5.
-(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
-File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
-<use images/MemoryClusterOverview.pdf>
-Package pdftex.def Info: images/MemoryClusterOverview.pdf  used on input line 7
-5.
-(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
-<images/MemoryClusterOverview.pdf, id=316, page=1, 845.0471pt x 1195.01462pt>
-File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
-<use images/MemoryClusterOverview.pdf, page 1>
-Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
- line 75.
-(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
-File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
-<use images/MemoryClusterOverview.pdf, page 1>
-Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
- line 75.
-(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
-[12]
-File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
-<use images/MemoryClusterOverview.pdf, page 1>
-Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
- line 75.
-(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
-File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
-<use images/MemoryClusterOverview.pdf, page 1>
-Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
- line 75.
-(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
-File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
-<use images/MemoryClusterOverview.pdf, page 1>
-Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
- line 75.
-(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
- [13 <./images/MemoryClusterOverview.pdf>] [14]
-Underfull \hbox (badness 10000) in paragraph at lines 90--91
+ [10 <./images/PriorityInheritanceFlow.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 70--71
 
  []
 
-<images/priorityInheritance.png, id=348, 948.54375pt x 761.84625pt>
+<images/MemoryClusterOverview.pdf, id=309, 845.0471pt x 1195.01462pt>
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf  used on input line 7
+6.
+(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf  used on input line 7
+6.
+(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
+<images/MemoryClusterOverview.pdf, id=312, page=1, 845.0471pt x 1195.01462pt>
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf, page 1>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
+ line 76.
+(pdftex.def)             Requested size: 845.04504pt x 1195.0117pt.
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf, page 1>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
+ line 76.
+(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
+[11]
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf, page 1>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
+ line 76.
+(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf, page 1>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
+ line 76.
+(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
+File: images/MemoryClusterOverview.pdf Graphic file (type pdf)
+<use images/MemoryClusterOverview.pdf, page 1>
+Package pdftex.def Info: images/MemoryClusterOverview.pdf , page1 used on input
+ line 76.
+(pdftex.def)             Requested size: 760.53537pt x 1075.50323pt.
+ [12 <./images/MemoryClusterOverview.pdf>] [13]
+Underfull \hbox (badness 10000) in paragraph at lines 93--94
+
+ []
+
+<images/priorityInheritance.png, id=344, 948.54375pt x 761.84625pt>
 File: images/priorityInheritance.png Graphic file (type png)
 <use images/priorityInheritance.png>
-Package pdftex.def Info: images/priorityInheritance.png  used on input line 92.
+Package pdftex.def Info: images/priorityInheritance.png  used on input line 95.
 
-(pdftex.def)             Requested size: 483.69687pt x 388.48994pt.
+(pdftex.def)             Requested size: 445.00023pt x 357.40517pt.
 
-Overfull \hbox (17.62482pt too wide) in paragraph at lines 92--93
-[][] 
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 92--93
+Underfull \hbox (badness 10000) in paragraph at lines 95--96
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 94--95
+Underfull \hbox (badness 10000) in paragraph at lines 97--98
 
  []
 
-[15 <./images/priorityInheritance.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 96--97
+[14 <./images/priorityInheritance.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 99--100
 
  []
 
-
-Overfull \hbox (17.38351pt too wide) in paragraph at lines 101--102
-\T1/cmr/m/n/12 tion and chan-nel setup from the user by pro-vid-ing con-ve-nien
-ce func-tions (e.g OS_channel_connect)
- []
-
-[16]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 103.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 103.
+[15]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 106.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 106.
  (report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 103.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 103.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 106.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 106.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: 866A73733F5A3FC8E8C05DE43C2FA737;1284.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 103.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 106.
  ) 
 Here is how much of TeX's memory you used:
- 18836 strings out of 493312
- 347862 string characters out of 3138898
- 415764 words of memory out of 3000000
+ 18835 strings out of 493312
+ 347855 string characters out of 3138898
+ 416764 words of memory out of 3000000
  21934 multiletter control sequences out of 15000+200000
  19604 words of font info for 59 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1480,9 +1468,9 @@ ers\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm2074.
 pk> <C:\Users\Human\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600
 \ecbx2074.pk><A:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10
 .pfb>
-Output written on report.pdf (16 pages, 831629 bytes).
+Output written on report.pdf (15 pages, 830400 bytes).
 PDF statistics:
- 684 PDF objects out of 1000 (max. 8388607)
- 39 named destinations out of 1000 (max. 500000)
+ 679 PDF objects out of 1000 (max. 8388607)
+ 38 named destinations out of 1000 (max. 500000)
  422 words of extra memory for PDF output out of 10000 (max. 10000000)
 
