@@ -83,16 +83,19 @@ The channel manager is implemented using two hash tables, one for holding a refe
 
 \pagebreak
 \section{Data Structures}
-I have implemented several basic data structures that are used by various components throughout the OS. These data structures are also available to the user to aid in the implementation of their desired functionality. Most of theses data structures come with convenience functions to allow easy creation  and destruction ( e.g through "new\_xyz()" and "destroy\_xyz()"). The following section outlines the structure and the design of the most important functions of these data structures.
+I have Designed and implemented several basic data structures that are used by various components throughout the OS. These data structures are also available to the user to aid in the implementation of their desired functionality. Most of theses data structures come with convenience functions to allow easy creation  and destruction ( e.g through "new\_xyz()" and "destroy\_xyz()"). The following section outlines the structure and the design of the most important sections of these data structures.
 \subsection{Mutex}
 \includegraphics[width=1\textwidth]{images/Mutex.png}\\
 \subsection{Semaphore}
-\includegraphics[width=1\textwidth]{images/Semaphore.png}
+\includegraphics[width=0.9\textwidth]{images/Semaphore.png}
 \subsection{Queue}
-\includegraphics[width=1\textwidth]{images/Queue.png}\\
+\includegraphics[width=0.9\textwidth]{images/Queue.png}\\
 \subsection{Channel}
+The channel is implemented using 1 mutex 2 semaphores (one for read tokens and one for write tokens) and a queue for storing the data.\\
+\includegraphics[width=1\textwidth]{images/Channel.png}\\
 \subsection{Hashtable}
-\subsection{Heap}
+A generic hash table implementation.\\
+\includegraphics[width=1\textwidth]{images/hashtable.png}\\
 
 \pagebreak
 \section{Demonstration Code Overview}
@@ -100,7 +103,7 @@ The demonstration code contains 14 tasks that together highlight the various fea
 
 \includegraphics[width=0.92\textwidth]{images/priorityInheritance.png}\\
 
-Tasks 1 through 4 and tasks 6 and 7 demonstrate the operation of the mutex datatype. Task 1 is an exception because rather than wait whilst another mutex owns the lock it uses the OS\_mutex\_acquire\_non\_blocking function which enables it to skip the printf section if it is not successful in obtaining the lock because another tasks holds it. This allows it to continue increasing its counter when other tasks would have to wait. By inspecting the count that tasks 2,3,4,6 and 7 have obtained in the screen-shot and comparing this count to their priorities it can be seen that cpu time allocated to the task is dependant on the task's priority. The screen-shot also highlights that the scheduler does not only allocate time to the highest priority task and thereby prevents task starvation of lower priority tasks (see how task 4 with priority 4 still occasional increases its count despite task 5 with priority 1 also being active). Tasks 6 and 7 showcase the operating system's sleep functionality after printing to the serial bus by going to sleep for a random interval between 0 and 100 SysTicks.\\
+Tasks 1 through 4 and tasks 6 and 7 demonstrate the operation of the mutex data structure. Task 1 is an exception because rather than wait whilst another mutex owns the lock it uses the OS\_mutex\_acquire\_non\_blocking function which enables it to skip the printf section if it is not successful in obtaining the lock because another tasks holds it. This allows it to continue increasing its counter when other tasks would have to wait. By inspecting the count that tasks 2,3,4,6 and 7 have obtained in the screen-shot and comparing this count to their priorities it can be seen that cpu time allocated to the task is dependant on the task's priority. The screen-shot also highlights that the scheduler does not only allocate time to the highest priority task and thereby prevents task starvation of lower priority tasks (see how task 4 with priority 4 still occasional increases its count despite task 5 with priority 1 also being active). Tasks 6 and 7 showcase the operating system's sleep functionality. After printing to the serial bus these tasks go to sleep for a random interval between 0 and 100 SysTicks.\\
 
 Task 5 and 8 demonstrate the schedulers priority inheritance functionality. Priority inheritance is a feature that prevents a condition known as priority inversion where a lower priority task can potentially starve a higher priority task. This is avoided by giving the lower priority task the priority of the higher priority task for the duration that the lower priority task holds the lock to a shared resource that both tasks use. \\
 
